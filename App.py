@@ -185,7 +185,7 @@ allocated_df = df_teams[df_teams['StakeHolder'] != ""]
 remaining_count = 48 - len(allocated_df)
 
 if remaining_count > 0:
-    # --- GLOBAL AND ABSOLUTE OVERRIDES FOR NATIVE DRAW BUTTON ---
+    # --- BULLETPROOF NATIVE OVERRIDES FOR THE MAIN DRAW BUTTON ---
     st.markdown(
         """
         <style>
@@ -202,55 +202,46 @@ if remaining_count > 0:
                 margin-top: 15px !important;
             }
             div[data-testid="InputInstructions"] { display: none !important; }
-            
+
             /* ========================================================
-               ABSOLUTE GLOBAL SELECTORS TO KEEP BUTTON AT 100% WIDTH
+               FORCE STREAMLIT'S NATIVE BUTTON TO BE BIG AND WHITE
                ======================================================== */
-            /* Force every conceivable wrapping div ancestor to respect full width sizing */
-            div[data-testid="stButton"]:has(button[key="draw_toggle_btn"]),
-            div[data-testid="stVerticalBlockBorderWrapper"]:has(button[key="draw_toggle_btn"]),
-            div[data-testid="stVerticalBlock"]:has(button[key="draw_toggle_btn"]),
-            div.element-container:has(button[key="draw_toggle_btn"]) {
+            /* Force layout blocks to break open to 100% full width */
+            div[data-testid="stMainBlockContainer"] div[data-testid="stButton"],
+            div[data-testid="stMainBlockContainer"] div[data-testid="stButton"] button {
                 width: 100% !important;
                 max-width: 100% !important;
-                min-width: 100% !important;
                 display: block !important;
             }
 
-            button[key="draw_toggle_btn"] {
+            /* Style the button directly */
+            div[data-testid="stButton"] button:not([type="submit"]) {
                 background-color: #ffffff !important;
                 border: 1px solid #dee2e6 !important;
-                outline: none !important;
                 border-radius: 12px !important;
-                padding: 12px 20px !important; 
-                min-height: 74px !important; 
+                padding: 14px 20px !important; 
+                min-height: 74px !important;
                 height: auto !important;
-                width: 100% !important;
-                max-width: 100% !important;
                 box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.18) !important;
-                transition: background-color 0.25s ease, border-color 0.25s ease !important;
-                box-sizing: border-box !important;
-                display: block !important;
+                transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease !important;
             }
-            
-            button[key="draw_toggle_btn"] p {
+
+            /* Style the text inside the button */
+            div[data-testid="stButton"] button:not([type="submit"]) p {
                 font-size: clamp(16px, 4.6vw, 22px) !important; 
                 font-weight: 800 !important;
                 color: #111111 !important;
                 text-align: center !important;
-                margin: 0px !important;
                 line-height: 1.3 !important;
-                white-space: normal !important;
-                word-wrap: break-word !important;
-                display: block !important;
-                width: 100% !important;
+                margin: 0px !important;
             }
 
-            button[key="draw_toggle_btn"]:hover {
+            /* Hover states */
+            div[data-testid="stButton"] button:not([type="submit"]):hover {
                 background-color: #e6c619 !important;
                 border-color: #e6c619 !important;
             }
-            button[key="draw_toggle_btn"]:hover p {
+            div[data-testid="stButton"] button:not([type="submit"]):hover p {
                 color: #ffffff !important;
             }
 
@@ -280,8 +271,8 @@ if remaining_count > 0:
         unsafe_allow_html=True
     )
     
-    # Render native button safely with explicit custom key targeting
-    if st.button("👋 Click here to enter your PIN & draw a team!", key="draw_toggle_btn"):
+    # Clean native streamlit execution path
+    if st.button("👋 Click here to enter your PIN & draw a team!"):
         st.session_state.show_draw_form = not st.session_state.show_draw_form
         st.rerun()
 
