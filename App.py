@@ -144,7 +144,6 @@ if remaining_count > 0:
                 background-color: transparent !important;
             }
             
-            /* Removes the fine gray outline and shadow around form content details */
             div[data-testid="stExpanderDetails"] {
                 border: none !important;
                 box-shadow: none !important;
@@ -155,7 +154,7 @@ if remaining_count > 0:
             /* --- THE BIG WHITE CONTAINER BUTTON --- */
             div[data-testid="stExpander"] summary {
                 background-color: #ffffff !important;
-                border: 0px solid #ffffff !important;
+                border: none !important;
                 border-radius: 12px !important;
                 padding: 0px !important;
                 height: 70px !important; 
