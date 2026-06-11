@@ -160,8 +160,73 @@ with c_btn2:
 
 st.write("")
 
-# Live Data Table
-display_df = df_teams[['Country', 'Emoji', 'StakeHolder']].copy()
-display_df['StakeHolder'] = display_df['StakeHolder'].apply(lambda x: "⏳ Available" if x == "" else x)
+# --- STYLED LIVE DATA TABLE ---
+# Build a clean, custom HTML Table to allow centering and custom emoji sizing
+table_html = """
+<style>
+    .sweepstake-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-family: sans-serif;
+    }
+    .sweepstake-table th {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: white;
+        text-align: center;
+        padding: 12px;
+        font-weight: bold;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    }
+    .sweepstake-table td {
+        padding: 16px;
+        text-align: center;
+        vertical-align: middle; /* Keeps everything perfectly centered vertically */
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .emoji-cell {
+        font-size: 38px; /* Makes your country flags nice and big */
+        line-height: 1;
+        display: block;
+    }
+    .status-available {
+        color: #888888;
+        font-style: italic;
+    }
+    .status-owned {
+        font-weight: bold;
+        color: #29b5e8;
+    }
+</style>
+<table class="sweepstake-table">
+    <tr>
+        <th>Flag</th>
+        <th>Country Qualified</th>
+        <th>Owner Account</th>
+    </tr>
+"""
 
-st.dataframe(display_df, use_container_width=True, hide_index=True, height=550)
+# Dynamic generation of table rows from your live dataframe
+for _, row in df_teams.iterrows():
+    country = row['Country']
+    emoji = row['Emoji']
+    owner = row['StakeHolder']
+    
+    # Assign specific styling classes based on availability status
+    if owner == "":
+        owner_display = "<span class='status-available'>⏳ Available</span>"
+    else:
+        owner_display = f"<span class='status-owned'>👤 {owner}</span>"
+        
+    table_html += f"""
+    <tr>
+        <td><span class="emoji-cell">{emoji}</span></td>
+        <td style="font-size: 16px; font-weight: 500;">{country}</td>
+        <td style="font-size: 16px;">{owner_display}</td>
+    </tr>
+    """
+
+table_html += "</table>"
+
+# Render the beautifully custom-styled table directly into the layout dashboard
+st.markdown(table_html, unsafe_allow_html=True)
