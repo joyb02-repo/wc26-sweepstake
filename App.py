@@ -51,124 +51,91 @@ allocated_df = df_teams[df_teams['StakeHolder'] != ""]
 remaining_count = 48 - len(allocated_df)
 
 if remaining_count > 0:
-    # --- STYLED COLLAPSED HEADER & BUTTON TWEAKS ---
+    # --- UNIVERSAL STYLING FOR FORM ELEMENTS & BUTTONS ---
     st.markdown(
         """
         <style>
-            /* Target the collapsed header bar button container */
-            div[data-testid="stExpander"] button {
-                background-color: #f8f9fa !important;
-                border: 1px solid #e0e0e0 !important;
-                border-radius: 8px !important;
-                padding: 1.2rem 1rem !important; /* Added vertical breathing room for huge text */
-                transition: background-color 0.2s ease;
-                display: flex !important;
-                justify-content: center !important; 
-                align-items: center !important;
-                width: 100% !important;
-            }
-            
-            /* Hover effect for the header button */
-            div[data-testid="stExpander"] button:hover {
-                background-color: #eaeaea !important;
-            }
-
-            /* Center the container flexbox contents natively */
-            div[data-testid="stExpander"] button > div {
-                display: flex !important;
-                justify-content: center !important;
-                align-items: center !important;
-                width: auto !important;
-                gap: 10px !important;
-            }
-
-            /* Make text and small arrow icon dark inside the header */
-            div[data-testid="stExpander"] button p, 
-            div[data-testid="stExpander"] button svg {
-                color: #111111 !important;
-                fill: #111111 !important;
-            }
-            
-            /* 1. Header Font Size Increase */
-            div[data-testid="stExpander"] button p {
-                font-size: 28px !important; /* Substantially larger header font */
-                font-weight: 700 !important;
-                text-align: center !important;
-                margin: 0 auto !important;
-                line-height: 1.3 !important;
-            }
-
-            /* Keep expanded details container sleek and dark */
-            div[data-testid="stExpanderDetails"] {
-                background-color: rgba(255, 255, 255, 0.03) !important;
-                color: #ffffff !important;
-                border-bottom-left-radius: 8px !important;
-                border-bottom-right-radius: 8px !important;
-                border: 1px solid rgba(255, 255, 255, 0.1) !important;
-                border-top: none !important;
-                padding: 24px !important;
-            }
-
-            /* Ensure input labels remain white inside the expansion block */
-            div[data-testid="stExpanderDetails"] label p {
-                color: #ffffff !important;
-                font-size: 14px !important;
-            }
-            
-            /* Compress the height of the input fields to make them smaller */
-            div[data-testid="stExpanderDetails"] input {
-                padding-top: 6px !important;
-                padding-bottom: 6px !important;
+            /* Make text input fields smaller and more compact */
+            div[data-testid="stTextInput"] input {
+                padding: 6px 10px !important;
                 height: 38px !important;
                 font-size: 14px !important;
             }
 
-            /* Make the password visibility toggle eye button smaller and stick right */
-            div[data-testid="stExpanderDetails"] button[aria-label="View password text"] {
-                transform: scale(0.75) !important; 
-                right: 2px !important; 
-                height: 34px !important;
-                width: 34px !important;
+            /* Shrink password visibility eye icon container and snap right */
+            div[data-testid="stTextInput"] button[aria-label="View password text"] {
+                transform: scale(0.75) !important;
+                right: 0px !important;
+                top: 2px !important;
                 background: transparent !important;
             }
             
-            /* Hide input entry instruction hints ("Press Enter to submit") */
-            div[data-testid="stExpanderDetails"] [data-testid="InputInstructions"] {
+            /* Completely wipe the "Press Enter to submit" prompt */
+            div[data-testid="InputInstructions"] {
                 display: none !important;
             }
-            
-            /* Clean up container default form carding layout borders */
-            div[data-testid="stExpanderDetails"] div[data-testid="stForm"] {
-                border: none !important;
-                background: transparent !important;
-                padding: 0px !important;
+
+            /* Custom Styling for the Container Form area */
+            .custom-form-container {
+                background-color: rgba(255, 255, 255, 0.03) !important;
+                border: 1px solid rgba(255, 255, 255, 0.1) !important;
+                border-bottom-left-radius: 8px;
+                border-bottom-right-radius: 8px;
+                padding: 20px 24px !important;
+                margin-top: -8px; /* Tightly couples form underneath header */
             }
 
-            /* 2. Smaller + Centered Submit Form Button Rules */
-            div[data-testid="stExpanderDetails"] div.stFormSubmitButton {
-                text-align: center !important;
-                display: flex !important;
-                justify-content: center !important;
-                width: 100% !important;
-                margin-top: 10px !important;
-            }
-
-            div[data-testid="stExpanderDetails"] div.stFormSubmitButton button {
-                font-size: 15px !important; /* Smaller text size */
-                font-weight: 600 !important;
-                padding: 0.4rem 1.5rem !important; /* Compact scaling padding */
-                height: auto !important;
-                width: auto !important; /* Prevents stretching to full width */
-                margin: 0 auto !important; /* Native centering backup */
+            /* Style white label text explicitly */
+            .custom-form-container label p {
+                color: #ffffff !important;
+                font-size: 14px !important;
+                font-weight: 500 !important;
             }
         </style>
         """, 
         unsafe_allow_html=True
     )
-    
-    with st.expander("👋 Click here to enter your PIN & draw a team!", expanded=False):
-        with st.form(key="sweepstake_form", clear_on_submit=True):
-            # Form fields placed side-by-side using columns
+
+    # Maintain expander toggle state completely native using query parameters
+    is_open = st.query_params.get("expanded", "false") == "true"
+    toggle_label = "🔽 Click here to enter your PIN & draw a team!" if is_open else "👋 Click here to enter your PIN & draw a team!"
+
+    # 1. CRISP INVERTED, LARGE, PERFECTLY CENTERED HEADER BAR BUTTON
+    if st.button(toggle_label, use_container_width=True, type="secondary"):
+        st.query_params["expanded"] = "false" if is_open else "true"
+        st.rerun()
+
+    # Injecting precise button styling properties directly onto the wrapper
+    st.markdown(
+        """
+        <style>
+            /* Force secondary action buttons to adapt light inverse styles */
+            div.element-container button[kind="secondary"] {
+                background-color: #f8f9fa !important;
+                color: #111111 !important;
+                border: 1px solid #e0e0e0 !important;
+                border-radius: 8px !important;
+                font-size: 26px !important; /* Prominent clean large text */
+                font-weight: 700 !important;
+                padding: 0.75rem 1rem !important;
+                text-align: center !important;
+                display: block !important;
+            }
+            div.element-container button[kind="secondary"]:hover {
+                background-color: #eaeaea !important;
+                border-color: #cccccc !important;
+            }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+    # 2. RENDER THE DARK SECTION CONTAINER IF OPENED
+    if is_open:
+        st.markdown('<div class="custom-form-container">', unsafe_allow_html=True)
+        
+        with st.form(key="sweepstake_form", clear_on_submit=False):
+            # Dynamic side-by-side arrangement
             form_col1, form_col2 = st.columns([1.2, 1])
             
             with form_col1:
@@ -176,7 +143,14 @@ if remaining_count > 0:
             with form_col2:
                 user_pin = st.text_input("Enter Your Unique 5-Digit PIN:", type="password", placeholder="xxxxx", max_chars=5).strip()
                 
-            submit_button = st.form_submit_button(label="Verify & Draw My Country!")
+            st.write("")
+            
+            # Form submission layouts
+            btn_space1, btn_space2, btn_space3 = st.columns([1, 1.5, 1])
+            with btn_space2:
+                submit_button = st.form_submit_button(label="Verify & Draw My Country!", use_container_width=True)
+
+        st.markdown('</div>', unsafe_allow_html=True)
 
         if submit_button:
             if not user_name or not user_pin:
@@ -233,6 +207,7 @@ if remaining_count > 0:
                                 st.success(f"🎉 **Congratulations {user_name}!** (Draw {draw_count + 1}/5)")
                                 st.subheader(f"Your country: **{chosen_country}**")
                                 time.sleep(4)
+                                st.query_params["expanded"] = "false"
                                 st.rerun()
                             except Exception:
                                 st.error("Submission failed. Connection issue.")
