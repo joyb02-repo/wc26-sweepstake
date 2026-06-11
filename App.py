@@ -20,9 +20,80 @@ with col2:
 # --- TITLE WITHOUT MARKDOWN HOVER ANCHORS ---
 st.markdown("<div style='text-align: center; font-size: 40px; font-weight: bold; color: white; margin-bottom: 25px;'>2026 World Cup Sweepstake</div>", unsafe_allow_html=True)
 
+# --- CLEAN CUSTOM CSS INJECTION ---
+st.markdown(
+    """
+    <style>
+        /* ABSOLUTE FORCE: Hide every single native hover anchor link on the screen globally */
+        a {
+            display: none !important;
+        }
+        .stMarkdown a, button a, div[data-testid="stMarkdownContainer"] a {
+            display: none !important;
+        }
+        svg.css-6q9sum, svg.e1tzwq550, .st-emotion-cache-b698xo a {
+            display: none !important;
+        }
 
-# --- 1. SMALL & INVERTED INFO TAB (WRAPPED IN UNIQUE ID) ---
-st.markdown('<div id="mini-dark-info-tab">', unsafe_allow_html=True)
+        /* --------------------------------------------------------------------------------- */
+        /* --- SURGICAL OVERRIDE: STYLES ONLY THE VERY FIRST EXPANDER CONTAINER (INFO TAB) --- */
+        /* --------------------------------------------------------------------------------- */
+        div[data-testid="stExpanderWithHeader"]:first-of-type summary {
+            background-color: #15171c !important; /* Inverted dark background look */
+            border: 1px solid #2d3139 !important;
+            border-radius: 6px !important;
+            padding: 0.25rem 0.75rem !important; /* Makes it significantly shorter/smaller */
+            min-height: auto !important;
+            max-height: 38px !important; 
+        }
+
+        div[data-testid="stExpanderWithHeader"]:first-of-type summary p {
+            font-size: 13px !important; /* Noticeably smaller text */
+            font-weight: 500 !important;
+            color: #cccccc !important; /* Light text font swap */
+        }
+
+        /* Shrunk chevron icon tracking inside the first container block */
+        div[data-testid="stExpanderWithHeader"]:first-of-type summary svg {
+            color: #cccccc !important;
+            fill: #cccccc !important;
+            width: 14px !important;
+            height: 14px !important;
+        }
+        
+        /* Remove instructions hint */
+        div[data-testid="InputInstructions"] {
+            display: none !important;
+        }
+
+        /* Style the green submission button without breaking parent layout constraints */
+        div[data-testid="stForm"] button[kind="primary"],
+        div[data-testid="stForm"] button[type="submit"],
+        .stFormSubmitButton > button {
+            font-size: 15px !important; 
+            font-weight: 600 !important;
+            padding: 0.5rem 2.5rem !important; 
+            background-color: #28a745 !important; 
+            color: #ffffff !important;
+            border: 1px solid #218838 !important;
+            border-radius: 6px !important;
+            box-shadow: none !important;
+            transition: background-color 0.2s ease, border-color 0.2s ease !important;
+        }
+
+        div[data-testid="stForm"] button[kind="primary"]:hover,
+        div[data-testid="stForm"] button[type="submit"]:hover,
+        .stFormSubmitButton > button:hover {
+            background-color: #218838 !important; 
+            border-color: #1e7e34 !important;
+            color: #ffffff !important;
+        }
+    </style>
+    """, 
+    unsafe_allow_html=True
+)
+
+# --- 1. INFORMATION SWEEPSTAKE TAB ---
 with st.expander("ℹ️ How the Sweepstake Works (Rules & Entry Details)", expanded=False):
     st.markdown(
         """
@@ -39,7 +110,6 @@ with st.expander("ℹ️ How the Sweepstake Works (Rules & Entry Details)", expa
         *Good luck! Ensure your entry fees are sent before drawing your team.*
         """
     )
-st.markdown('</div>', unsafe_allow_html=True)
 
 st.write("")
 
@@ -74,100 +144,7 @@ allocated_df = df_teams[df_teams['StakeHolder'] != ""]
 remaining_count = 48 - len(allocated_df)
 
 if remaining_count > 0:
-    # --- CLEAN CUSTOM CSS INJECTION FOR THE TEXT SIZES & CENTERING ---
-    st.markdown(
-        """
-        <style>
-            /* ABSOLUTE FORCE: Hide every single native hover anchor link on the screen globally */
-            a {
-                display: none !important;
-            }
-            .stMarkdown a, button a, div[data-testid="stMarkdownContainer"] a {
-                display: none !important;
-            }
-            svg.css-6q9sum, svg.e1tzwq550, .st-emotion-cache-b698xo a {
-                display: none !important;
-            }
-
-            /* --- NATIVE/GLOBAL STYLE (This styles your 2nd Draw tab back to big, white, and bold) --- */
-            div[data-testid="stExpander"] summary {
-                background-color: #f8f9fa !important;
-                border: 1px solid #e0e0e0 !important;
-                border-radius: 8px !important;
-                padding: 0.5rem 1rem !important;
-                display: flex !important;
-                justify-content: center !important; 
-                align-items: center !important;
-            }
-
-            div[data-testid="stExpander"] summary p {
-                font-size: 22px !important; 
-                font-weight: bold !important;
-                color: #111111 !important; 
-                margin: 0px !important;
-                text-align: center !important;
-            }
-
-            div[data-testid="stExpander"] summary svg {
-                color: #111111 !important;
-                fill: #111111 !important;
-            }
-
-            /* --- STRICT TARGETED ISOLATION: Style ONLY the info tab wrapper --- */
-            div#mini-dark-info-tab div[data-testid="stExpander"] summary {
-                background-color: #15171c !important; /* Inverted dark look */
-                border: 1px solid #2d3139 !important;
-                border-radius: 6px !important;
-                padding: 0.25rem 0.75rem !important; /* Significantly smaller container height */
-                min-height: auto !important;
-            }
-
-            div#mini-dark-info-tab div[data-testid="stExpander"] summary p {
-                font-size: 13px !important; /* Significantly smaller text */
-                font-weight: 500 !important;
-                color: #cccccc !important; /* Light text color */
-            }
-
-            div#mini-dark-info-tab div[data-testid="stExpander"] summary svg {
-                color: #cccccc !important;
-                fill: #cccccc !important;
-                width: 14px !important;
-                height: 14px !important;
-            }
-            
-            /* Remove instructions hint */
-            div[data-testid="InputInstructions"] {
-                display: none !important;
-            }
-
-            /* Style the green submission button without breaking parent layout constraints */
-            div[data-testid="stForm"] button[kind="primary"],
-            div[data-testid="stForm"] button[type="submit"],
-            .stFormSubmitButton > button {
-                font-size: 15px !important; 
-                font-weight: 600 !important;
-                padding: 0.5rem 2.5rem !important; 
-                background-color: #28a745 !important; 
-                color: #ffffff !important;
-                border: 1px solid #218838 !important;
-                border-radius: 6px !important;
-                box-shadow: none !important;
-                transition: background-color 0.2s ease, border-color 0.2s ease !important;
-            }
-
-            div[data-testid="stForm"] button[kind="primary"]:hover,
-            div[data-testid="stForm"] button[type="submit"]:hover,
-            .stFormSubmitButton > button:hover {
-                background-color: #218838 !important; 
-                border-color: #1e7e34 !important;
-                color: #ffffff !important;
-            }
-        </style>
-        """, 
-        unsafe_allow_html=True
-    )
-    
-    # --- 2. RESTORED NATIVE DRAW A TEAM TAB ---
+    # --- 2. ENTRY TICKET DRAW TAB ---
     with st.expander("👋 Click here to enter your PIN & draw a team!", expanded=False):
         with st.form(key="sweepstake_form", clear_on_submit=False):
             form_col1, form_col2 = st.columns([1.2, 1])
