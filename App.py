@@ -94,26 +94,27 @@ if remaining_count > 0:
                 margin-top: 15px !important;
             }
 
-            div[data-testid="stExpander"] div.stFormSubmitButton button {
+            /* Catch-all global selector mapping to force the button green */
+            div[data-testid="stExpander"] div.stFormSubmitButton button,
+            div[data-testid="stForm"] button[kind="primary"],
+            div[data-testid="stForm"] button[type="submit"],
+            .stFormSubmitButton > button {
                 font-size: 15px !important; 
                 font-weight: 600 !important;
                 padding: 0.4rem 2rem !important; 
                 width: auto !important; 
-            }
-            
-            /* Forced high-specificity target wrapper for the green button theme styling */
-            div[data-testid="stForm"] button[kind="primary"],
-            div[data-testid="stForm"] button[type="submit"] {
                 background-color: #28a745 !important; /* Vibrant green */
                 color: #ffffff !important;
                 border: 1px solid #218838 !important;
                 border-radius: 6px !important;
                 box-shadow: none !important;
-                transition: background-color 0.2s ease, border-color 0.2s ease;
+                transition: background-color 0.2s ease, border-color 0.2s ease !important;
             }
 
+            div[data-testid="stExpander"] div.stFormSubmitButton button:hover,
             div[data-testid="stForm"] button[kind="primary"]:hover,
-            div[data-testid="stForm"] button[type="submit"]:hover {
+            div[data-testid="stForm"] button[type="submit"]:hover,
+            .stFormSubmitButton > button:hover {
                 background-color: #218838 !important; /* Darker green on hover */
                 border-color: #1e7e34 !important;
                 color: #ffffff !important;
