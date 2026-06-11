@@ -161,7 +161,6 @@ with c_btn2:
 st.write("")
 
 # --- STYLED LIVE DATA TABLE ---
-# Build a single, fully encapsulated HTML block to fix rendering breaks
 table_html = """
 <style>
     .sweepstake-table {
@@ -169,7 +168,6 @@ table_html = """
         border-collapse: collapse;
         margin-top: 15px;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        background-color: transparent;
     }
     .sweepstake-table th {
         background-color: rgba(255, 255, 255, 0.08);
@@ -212,7 +210,6 @@ table_html = """
     <tbody>
 """
 
-# Dynamically construct each row with perfect spacing closures
 for _, row in df_teams.iterrows():
     country = row['Country']
     emoji = row['Emoji']
@@ -231,11 +228,10 @@ for _, row in df_teams.iterrows():
         </tr>
     """
 
-# Properly seal off the table markup framework
 table_html += """
     </tbody>
 </table>
 """
 
-# Render the single structural component cleanly
+# CRITICAL: This is the exact tool that converts the text into the real scoreboard
 st.markdown(table_html, unsafe_allow_html=True)
