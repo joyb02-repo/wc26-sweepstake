@@ -161,7 +161,6 @@ with c_btn2:
 st.write("")
 
 # --- STYLED LIVE DATA TABLE ---
-# Ensure the variable initialization starts flush against the left wall of your text editor!
 table_head = """<style>
 .sweepstake-table {width: 100%; border-collapse: collapse; margin-top: 15px; font-family: sans-serif;}
 .sweepstake-table th {background-color: rgba(255, 255, 255, 0.08); color: #ffffff !important; text-align: center; padding: 14px; font-weight: 600; font-size: 15px; border-bottom: 2px solid rgba(255, 255, 255, 0.15);}
@@ -171,7 +170,15 @@ table_head = """<style>
 .status-owned {font-weight: bold; color: #29b5e8;}
 </style>
 <table class="sweepstake-table">
-<thead><tr><th style="width: 20%;">Flag</th><th style="width: 40%;">Country Qualified</th><th style="width: 40%;">Owner Account</th></tr></thead>
+<thead>
+    <tr>
+        <th style="width: 12%;">Flag</th>
+        <th style="width: 25%;">Country</th>
+        <th style="width: 13%;">Rating</th>
+        <th style="width: 25%;">Star Player</th>
+        <th style="width: 25%;">Owner Account</th>
+    </tr>
+</thead>
 <tbody>"""
 
 table_rows = ""
@@ -180,18 +187,35 @@ for _, row in df_teams.iterrows():
     emoji = row['Emoji']
     owner = row['StakeHolder']
     
+    # Extract the new columns from your Google Sheet data frame safely
+    # Using .get() or fillna ensures the app doesn't crash if a row is missing data
+    rating = str(row.get('Rating', '')).replace('nan', '').strip()
+    star_player = str(row.get('Star Player', '')).replace('nan', '').strip()
+    
+    # Handle fallbacks for empty rows
+    if not star_player:
+        star_player = "-"
+    if not rating:
+        rating = "-"
+
     if owner == "":
         owner_display = "<span class='status-available'>⏳ Available</span>"
     else:
         owner_display = f"<span class='status-owned'>👤 {owner}</span>"
         
-    # Keep this row template compacted to avoid accidental markdown code-block triggers
-    table_rows += f"<tr><td><span class='emoji-cell'>{emoji}</span></td><td style='font-size: 16px; font-weight: 500; color: white;'>{country}</td><td style='font-size: 16px;'>{owner_display}</td></tr>"
+    # Append the row with the two new cells injected in the middle
+    table_rows += f"""<tr>
+        <td><span class='emoji-cell'>{emoji}</span></td>
+        <td style='font-size: 16px; font-weight: 500; color: white;'>{country}</td>
+        <td style='font-size: 15px; color: #ffbf00; font-weight: bold;'>{rating}</td>
+        <td style='font-size: 15px; color: #ffffff;'>⭐ {star_player}</td>
+        <td style='font-size: 16px;'>{owner_display}</td>
+    </tr>"""
 
 table_foot = "</tbody></table>"
 
 # Assemble the pieces seamlessly
 complete_table_html = table_head + table_rows + table_foot
 
-# Render using raw layout insertion
-st.components.v1.html(complete_table_html, height=600, scrolling=True)
+# Render inside the sandboxed HTML component to keep formatting locked in
+st.components.v1.html(complete_table_html, height=700, scrolling=True)
