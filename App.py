@@ -29,7 +29,7 @@ st.markdown(
         .stMarkdown a, button a, div[data-testid="stMarkdownContainer"] a { display: none !important; }
         svg.css-6q9sum, svg.e1tzwq550, .st-emotion-cache-b698xo a { display: none !important; }
 
-        /* General Expander Styling (Centering text) */
+        /* General Expander Base Rule */
         div[data-testid="stExpander"] summary {
             display: flex !important;
             justify-content: center !important; 
@@ -37,42 +37,45 @@ st.markdown(
             border-radius: 8px !important;
         }
 
-        /* --- FIRST EXPANDER (INFO TAB): Dark & Small --- */
-        div[data-testid="stExpander"]:nth-of-type(1) summary {
-            background-color: #1e1e1e !important; /* Dark Background */
+        /* --- INFO TAB STYLING (FIRST EXPANDER) --- */
+        /* Targets the first expander container on the page directly */
+        div[data-testid="stExpander"]:first-of-type summary {
+            background-color: #1e1e1e !important; /* Dark background */
             border: 1px solid #333333 !important;
-            padding: 0.2rem 1rem !important; /* Smaller Padding */
-            margin-bottom: 10px;
+            padding: 0.35rem 1rem !important; /* Small padding height */
         }
-        div[data-testid="stExpander"]:nth-of-type(1) summary p {
-            font-size: 14px !important; /* Smaller Font */
-            color: #ffffff !important; /* Light Text */
+        div[data-testid="stExpander"]:first-of-type summary p {
+            font-size: 14px !important; /* Small font size */
+            color: #ffffff !important; /* Light text color */
             font-weight: normal !important;
             margin: 0px !important;
         }
-        div[data-testid="stExpander"]:nth-of-type(1) summary svg {
-            fill: #ffffff !important; /* White arrow icon */
+        div[data-testid="stExpander"]:first-of-type summary svg {
+            fill: #ffffff !important; /* White toggle arrow */
             width: 14px !important;
             height: 14px !important;
         }
 
-        /* --- SECOND EXPANDER (DRAW TAB): Light & Large --- */
-        div[data-testid="stExpander"]:nth-of-type(2) summary {
-            background-color: #f8f9fa !important; /* Light Background */
+        /* --- DRAW/REGISTRATION TAB STYLING (SECOND EXPANDER) --- */
+        /* Targets any expander following the first one to restore large white format */
+        div[data-testid="stExpander"] ~ div[data-testid="stExpander"] summary {
+            background-color: #f8f9fa !important; /* Crisp white layout background */
             border: 1px solid #e0e0e0 !important;
-            padding: 0.5rem 1rem !important; /* Larger Padding */
+            padding: 0.6rem 1rem !important; /* Large container padding */
         }
-        div[data-testid="stExpander"]:nth-of-type(2) summary p {
-            font-size: 26px !important; /* Large Font */
+        div[data-testid="stExpander"] ~ div[data-testid="stExpander"] summary p {
+            font-size: 26px !important; /* High prominence header font */
             font-weight: bold !important;
-            color: #111111 !important; /* Dark Text */
+            color: #111111 !important; /* Dark contrast text */
             margin: 0px !important;
         }
-        div[data-testid="stExpander"]:nth-of-type(2) summary svg {
-            fill: #111111 !important; /* Dark arrow icon */
+        div[data-testid="stExpander"] ~ div[data-testid="stExpander"] summary svg {
+            fill: #111111 !important; /* Dark contrast toggle arrow */
+            width: 22px !important;
+            height: 22px !important;
         }
 
-        /* --- FORM & BUTTON STYLING --- */
+        /* --- FORM & SUBMIT BUTTON STYLING --- */
         div[data-testid="InputInstructions"] { display: none !important; }
 
         div[data-testid="stForm"] button[kind="primary"],
@@ -95,7 +98,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# --- NEW COLLAPSABLE INFORMATION TAB (First Expander) ---
+# --- NEW COLLAPSABLE INFORMATION TAB (Small & Dark) ---
 with st.expander("ℹ️ How the Sweepstake Works (Rules & Entry Details)", expanded=False):
     st.markdown(
         """
@@ -113,14 +116,14 @@ with st.expander("ℹ️ How the Sweepstake Works (Rules & Entry Details)", expa
 
 st.write("")
 
-# --- SECURE USER CONFIGURATION ---
+# --- SECURE USER CONFIGURATION VIA SECRETS ---
 SPREADSHEET_ID = st.secrets["SPREADSHEET_ID"]
 FORM_ID = st.secrets["FORM_ID"]
 ENTRY_ACTION = st.secrets["ENTRY_ACTION"]  
 ENTRY_ROW = st.secrets["ENTRY_ROW"]     
 ENTRY_VALUE = st.secrets["ENTRY_VALUE"]    
 
-# Read data
+# Read data anonymously using basic web endpoints
 try:
     url_teams = f"https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=Sheet1"
     url_pins = f"https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=Pins"
@@ -140,7 +143,7 @@ allocated_df = df_teams[df_teams['StakeHolder'] != ""]
 remaining_count = 48 - len(allocated_df)
 
 if remaining_count > 0:
-    # DRAW TAB (Second Expander)
+    # --- DRAW TAB (Large & White) ---
     with st.expander("👋 Click here to enter your PIN & draw a team!", expanded=False):
         with st.form(key="sweepstake_form", clear_on_submit=False):
             form_col1, form_col2 = st.columns([1.2, 1])
@@ -212,7 +215,7 @@ st.write("")
 if st.button("🔄 Refresh", use_container_width=True):
     st.rerun()
 
-# --- TABLE VIEW ---
+# --- LIVE DATA TABLE VIEW ---
 table_head = """<style>
 ::-webkit-scrollbar { width: 10px; }
 ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.4); border-radius: 10px; }
