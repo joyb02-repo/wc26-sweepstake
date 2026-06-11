@@ -73,14 +73,14 @@ if remaining_count > 0:
                 border-radius: 8px !important;
                 padding: 0.5rem 1rem !important;
                 display: flex !important;
-                justify-content: center !important; /* Centers text horizontally */
+                justify-content: center !important; 
                 align-items: center !important;
             }
 
             div[data-testid="stExpander"] summary p {
                 font-size: 26px !important;
                 font-weight: bold !important;
-                color: #111111 !important; /* Dark Text */
+                color: #111111 !important; 
                 margin: 0px !important;
                 text-align: center !important;
             }
@@ -96,21 +96,23 @@ if remaining_count > 0:
                 display: none !important;
             }
 
-            /* 2. Absolute Form Box Spacing Configuration */
+            /* 2. Absolute Form Box Dead-Center Alignment Override */
             div[data-testid="stForm"] {
                 padding-bottom: 15px !important;
             }
-
-            /* Target the structural form row wrapper to break standard grid alignment */
+            
+            /* FORCE HORIZONTAL LAYOUT CENTERING ON BUTTON OVERRIDE WRAPPER ONLY */
             div[data-testid="stForm"] div.stFormSubmitButton {
-                text-align: center !important;
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
                 width: 100% !important;
-                display: block !important;
-                margin-top: 20px !important; /* Precise 5-space vertical break cushion below input fields */
+                text-align: center !important;
+                margin-top: 25px !important; /* Preserves the extra 5 spaces cushion below fields */
                 margin-bottom: 5px !important;
             }
 
-            /* Direct target configuration to align and hold the green button exactly in the center */
+            /* Catch-all global selector mapping to force the button green and centered */
             div[data-testid="stForm"] div.stFormSubmitButton button,
             div[data-testid="stForm"] button[kind="primary"],
             div[data-testid="stForm"] button[type="submit"],
@@ -119,9 +121,8 @@ if remaining_count > 0:
                 font-weight: 600 !important;
                 padding: 0.5rem 2.5rem !important; 
                 width: auto !important; 
-                min-width: 280px !important; /* Stretches the button beautifully in the middle */
-                margin: 0 auto !important; /* Locks structural layout dead center */
-                display: inline-block !important;
+                min-width: 280px !important; /* Gives the button an elegant shape */
+                margin: 0 auto !important; 
                 background-color: #28a745 !important; /* Vibrant green */
                 color: #ffffff !important;
                 border: 1px solid #218838 !important;
@@ -145,14 +146,14 @@ if remaining_count > 0:
     
     with st.expander("👋 Click here to enter your PIN & draw a team!", expanded=False):
         with st.form(key="sweepstake_form", clear_on_submit=False):
+            # Fields are back inside their original balanced columns to preserve correct layout and gaps
             form_col1, form_col2 = st.columns([1.2, 1])
             
             with form_col1:
                 user_name = st.text_input("Enter Your Full Name:", placeholder="e.g., Jane Doe", max_chars=22).strip()
             with form_col2:
                 user_pin = st.text_input("Enter Your Unique 5-Digit PIN:", type="password", placeholder="xxxxx", max_chars=5).strip()
-            
-            # Button is declared directly on the form root layout to allow the full-width alignment code to take control
+                
             submit_button = st.form_submit_button(label="Verify & Draw My Country!")
 
         if submit_button:
@@ -184,7 +185,7 @@ if remaining_count > 0:
                             team_sheet_row = int(chosen_team_row.index[0]) + 2
                             pin_sheet_row = int(pin_match.index[0]) + 2
                             
-                            # Animation Sequence - Using raw safe wrapper divs to prevent Markdown anchors completely
+                            # Animation Sequence
                             animation_placeholder = st.empty()
                             all_emojis = df_teams['Emoji'].tolist()
                             for i in range(25):
