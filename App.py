@@ -139,21 +139,16 @@ if remaining_count > 0:
             svg.css-6q9sum, svg.e1tzwq550, .st-emotion-cache-b698xo a { display: none !important; }
 
             /* --- REMOVE EXPANDER OUTLINE STROKES & NATIVE BORDERS --- */
-            div[data-testid="stExpander"] {
+            /* Aggressively strips all nested structural containers created by Streamlit for the expander block */
+            div[data-testid="stExpander"], 
+            div[data-testid="stExpander"] * {
                 border: none !important;
-                background-color: transparent !important;
+                border-color: transparent !important;
                 box-shadow: none !important;
+                outline: none !important;
             }
             
-            /* Wipes out the persistent light grey container line surrounding the header block */
-            div[data-testid="stExpander"] > div:first-child {
-                border: none !important;
-                box-shadow: none !important;
-            }
-
             div[data-testid="stExpanderDetails"] {
-                border: none !important;
-                box-shadow: none !important;
                 padding-left: 0px !important;
                 padding-right: 0px !important;
             }
