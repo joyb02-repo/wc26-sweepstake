@@ -6,7 +6,7 @@ import random
 import time
 import re
 
-# Page config - Safely updated to use your custom icon image file
+# Page config
 st.set_page_config(page_title="2026 World Cup Sweepstake", page_icon="icon.png", layout="centered")
 
 # --- CENTERING THE LOGO ---
@@ -73,14 +73,14 @@ if remaining_count > 0:
                 border-radius: 8px !important;
                 padding: 0.5rem 1rem !important;
                 display: flex !important;
-                justify-content: center !important; /* Centers text horizontally */
+                justify-content: center !important; 
                 align-items: center !important;
             }
 
             div[data-testid="stExpander"] summary p {
                 font-size: 26px !important;
                 font-weight: bold !important;
-                color: #111111 !important; /* Dark Text */
+                color: #111111 !important; 
                 margin: 0px !important;
                 text-align: center !important;
             }
@@ -103,7 +103,7 @@ if remaining_count > 0:
                 font-size: 15px !important; 
                 font-weight: 600 !important;
                 padding: 0.5rem 2.5rem !important; 
-                background-color: #28a745 !important; /* Vibrant green */
+                background-color: #28a745 !important; 
                 color: #ffffff !important;
                 border: 1px solid #218838 !important;
                 border-radius: 6px !important;
@@ -114,7 +114,7 @@ if remaining_count > 0:
             div[data-testid="stForm"] button[kind="primary"]:hover,
             div[data-testid="stForm"] button[type="submit"]:hover,
             .stFormSubmitButton > button:hover {
-                background-color: #218838 !important; /* Darker green on hover */
+                background-color: #218838 !important; 
                 border-color: #1e7e34 !important;
                 color: #ffffff !important;
             }
@@ -163,7 +163,7 @@ if remaining_count > 0:
                             team_sheet_row = int(chosen_team_row.index[0]) + 2
                             pin_sheet_row = int(pin_match.index[0]) + 2
                             
-                            # Animation Sequence - Using raw safe wrapper divs to prevent Markdown anchors completely
+                            # Animation Sequence
                             animation_placeholder = st.empty()
                             all_emojis = df_teams['Emoji'].tolist()
                             for i in range(25):
@@ -260,6 +260,7 @@ table_head = """<style>
 .emoji-cell {font-size: 38px; line-height: 1; display: inline-block; vertical-align: middle;}
 .status-available {color: #888888; font-style: italic;}
 .status-owned {font-weight: bold; color: #29b5e8;}
+.owner-cell {font-size: 13px !important;} /* Scaled down for high compatibility down to the pixel */
 .row-taken {background-color: rgba(255, 75, 75, 0.12) !important;} 
 </style>
 <table class="sweepstake-table">
@@ -300,7 +301,7 @@ for _, row in df_teams.iterrows():
         <td style='font-size: 16px; font-weight: 500; color: white;'>{country}</td>
         <td style='font-size: 15px; color: #ffbf00; font-weight: bold;'>{rating}</td>
         <td style='font-size: 13px; color: #cccccc;'>{star_player}</td>
-        <td style='font-size: 16px;'>{owner_display}</td>
+        <td class='owner-cell'>{owner_display}</td>
     </tr>"""
 
 table_foot = "</tbody></table>"
