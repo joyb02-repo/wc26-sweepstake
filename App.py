@@ -86,8 +86,8 @@ if remaining_count > 0:
                 display: none !important;
             }
 
-            /* Global styling rules for other expanders (e.g. Draw Team tab) */
-            div[data-testid="stExpander"] summary {
+            /* --- SCOPED OVERRIDE: ONLY TARGET THE SECOND TAB (DRAW A TEAM) TO BE LARGE & WHITE --- */
+            div[data-testid="stExpander"]:nth-of-type(2) summary {
                 background-color: #f8f9fa !important;
                 border: 1px solid #e0e0e0 !important;
                 border-radius: 8px !important;
@@ -97,7 +97,7 @@ if remaining_count > 0:
                 align-items: center !important;
             }
 
-            div[data-testid="stExpander"] summary p {
+            div[data-testid="stExpander"]:nth-of-type(2) summary p {
                 font-size: 22px !important; 
                 font-weight: bold !important;
                 color: #111111 !important; 
@@ -105,12 +105,12 @@ if remaining_count > 0:
                 text-align: center !important;
             }
 
-            div[data-testid="stExpander"] summary svg {
+            div[data-testid="stExpander"]:nth-of-type(2) summary svg {
                 color: #111111 !important;
                 fill: #111111 !important;
             }
 
-            /* --- STRICT TARGETED OVERRIDE FOR THE FIRST TAB (INFO SWEEPSTAKE) ONLY --- */
+            /* --- SCOPED OVERRIDE: ONLY TARGET THE FIRST TAB (INFO SWEEPSTAKE) TO BE SMALL & DARK --- */
             div[data-testid="stExpander"]:nth-of-type(1) summary {
                 background-color: #15171c !important; /* Dark theme contrast background */
                 border: 1px solid #2d3139 !important;
