@@ -96,22 +96,24 @@ if remaining_count > 0:
                 display: none !important;
             }
 
-            /* 2. Symmetrical tightening: Reduce internal space between fields and button */
+            /* 2. Form Spacing & Absolute Button Centering */
             div[data-testid="stForm"] {
-                padding-bottom: 10px !important;
+                padding-bottom: 15px !important;
             }
             
-            div[data-testid="stExpander"] div.stFormSubmitButton {
+            /* Target wrapper block to force perfect horizontal layout centering */
+            div[data-testid="stForm"] div.stFormSubmitButton {
                 text-align: center !important;
                 display: flex !important;
                 justify-content: center !important;
+                align-items: center !important;
                 width: 100% !important;
-                margin-top: -10px !important; /* Pull button up slightly for perfect symmetry */
-                margin-bottom: 2px !important;
+                margin-top: 15px !important; /* Adds the extra spacing below input fields */
+                margin-bottom: 5px !important;
             }
 
             /* Catch-all global selector mapping to force the button green */
-            div[data-testid="stExpander"] div.stFormSubmitButton button,
+            div[data-testid="stForm"] div.stFormSubmitButton button,
             div[data-testid="stForm"] button[kind="primary"],
             div[data-testid="stForm"] button[type="submit"],
             .stFormSubmitButton > button {
@@ -119,6 +121,7 @@ if remaining_count > 0:
                 font-weight: 600 !important;
                 padding: 0.4rem 2rem !important; 
                 width: auto !important; 
+                margin: 0 auto !important; /* Structural center override */
                 background-color: #28a745 !important; /* Vibrant green */
                 color: #ffffff !important;
                 border: 1px solid #218838 !important;
@@ -127,7 +130,7 @@ if remaining_count > 0:
                 transition: background-color 0.2s ease, border-color 0.2s ease !important;
             }
 
-            div[data-testid="stExpander"] div.stFormSubmitButton button:hover,
+            div[data-testid="stForm"] div.stFormSubmitButton button:hover,
             div[data-testid="stForm"] button[kind="primary"]:hover,
             div[data-testid="stForm"] button[type="submit"]:hover,
             .stFormSubmitButton > button:hover {
