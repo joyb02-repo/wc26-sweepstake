@@ -96,32 +96,37 @@ if remaining_count > 0:
                 display: none !important;
             }
 
-            /* 2. Form Spacing & Absolute Button Centering */
+            /* 2. Absolute Form Box Dead-Center Alignment Override */
             div[data-testid="stForm"] {
-                padding-bottom: 15px !important;
+                padding-bottom: 20px !important;
+                display: flex !important;
+                flex-direction: column !important;
             }
             
-            /* Target wrapper block to force perfect horizontal layout centering */
+            /* Forces the structural form row container to stop floating left */
+            div[data-testid="stForm"] data-testid="stBlock",
+            div[data-testid="stForm"] .element-container,
             div[data-testid="stForm"] div.stFormSubmitButton {
-                text-align: center !important;
                 display: flex !important;
                 justify-content: center !important;
                 align-items: center !important;
                 width: 100% !important;
-                margin-top: 15px !important; /* Adds the extra spacing below input fields */
-                margin-bottom: 5px !important;
+                text-align: center !important;
+                margin-top: 15px !important; /* Padding cushion below fields */
+                margin-bottom: 0px !important;
             }
 
-            /* Catch-all global selector mapping to force the button green */
+            /* Target button itself to sit symmetrically in the center block */
             div[data-testid="stForm"] div.stFormSubmitButton button,
             div[data-testid="stForm"] button[kind="primary"],
             div[data-testid="stForm"] button[type="submit"],
             .stFormSubmitButton > button {
                 font-size: 15px !important; 
                 font-weight: 600 !important;
-                padding: 0.4rem 2rem !important; 
+                padding: 0.5rem 2.5rem !important; 
                 width: auto !important; 
-                margin: 0 auto !important; /* Structural center override */
+                min-width: 250px !important; /* Gives the button an elegant shape */
+                margin: 0 auto !important; 
                 background-color: #28a745 !important; /* Vibrant green */
                 color: #ffffff !important;
                 border: 1px solid #218838 !important;
