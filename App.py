@@ -121,15 +121,46 @@ else:
 
 # --- SCOREBOARD VIEW ---
 st.write("---")
-st.subheader("Live Sweepstake Scoreboard")
+st.markdown("<h3 style='text-align: center;'>📊 Live Sweepstake Scoreboard</h3>", unsafe_allow_html=True)
+st.write("")
 
-col1, col2 = st.columns(2)
-col1.metric(label="Countries Remaining", value=f"{remaining_count} / 48")
-col2.metric(label="Total Confirmed Entries", value=len(allocated_df))
+# Create 4 columns to squeeze the metrics into the center of the screen
+m_col1, m_col2, m_col3, m_col4 = st.columns([1, 2, 2, 1])
 
-if st.button("🔄 Refresh Standings"):
-    st.rerun()
+with m_col2:
+    st.markdown(
+        f"""
+        <div style="text-align: center; background-color: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px;">
+            <p style="font-size: 14px; margin-bottom: 0px; color: gray;">Countries Remaining</p>
+            <h2 style="margin-top: 0px; font-size: 32px; color: #ff4b4b;">{remaining_count} / 48</h2>
+        </div>
+        """, 
+        unsafe_allow_html=True
+    )
 
+with m_col3:
+    st.markdown(
+        f"""
+        <div style="text-align: center; background-color: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px;">
+            <p style="font-size: 14px; margin-bottom: 0px; color: gray;">Total Confirmed Entries</p>
+            <h2 style="margin-top: 0px; font-size: 32px; color: #29b5e8;">{len(allocated_df)}</h2>
+        </div>
+        """, 
+        unsafe_allow_html=True
+    )
+
+st.write("")
+st.write("")
+
+# Center the refresh button right below the metrics
+c_btn1, c_btn2, c_btn3 = st.columns([2, 1, 2])
+with c_btn2:
+    if st.button("🔄 Refresh", use_container_width=True):
+        st.rerun()
+
+st.write("")
+
+# Live Data Table
 display_df = df_teams[['Country', 'Emoji', 'StakeHolder']].copy()
 display_df['StakeHolder'] = display_df['StakeHolder'].apply(lambda x: "⏳ Available" if x == "" else x)
 
