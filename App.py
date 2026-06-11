@@ -127,63 +127,40 @@ if remaining_count > 0:
                 display: none !important;
             }
 
-            /* --- 2. HUGE WHITE CONTAINER (DEFAULT STATE) --- */
+            /* --- 2. HUGE WHITE HEADER WITH DARK TEXT (AS PER WIREFRAME) --- */
             div[data-testid="stExpander"] summary {
                 background-color: #ffffff !important;
                 border: 1px solid #ffffff !important;
                 border-radius: 12px !important;
-                padding: 1.2rem 1.5rem !important;
+                padding: 1.2rem 1.5rem !important; /* Thick, chunkier padding */
                 display: flex !important;
-                justify-content: center !important; 
+                justify-content: center !important; /* Force layouts components to dead center */
                 align-items: center !important;
                 box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15) !important;
-                transition: background-color 0.25s ease, border-color 0.25s ease !important;
             }
 
-            /* Overrides the structural flex parent block layout constraints */
-            div[data-testid="stExpander"] summary > div {
+            /* Surgical check on the inner header block */
+            div[data-testid="stExpander"] summary > div:first-child {
                 display: flex !important;
                 justify-content: center !important;
-                align-items: center !important;
                 width: 100% !important;
-                text-align: center !important;
             }
 
-            /* Text Styling (Default Dark Text centered inside internal block) */
             div[data-testid="stExpander"] summary p {
-                font-size: 24px !important;
-                font-weight: 800 !important;
-                color: #111111 !important;
+                font-size: 24px !important; /* Standout large text size */
+                font-weight: 800 !important; /* Ultra bold */
+                color: #111111 !important; /* Deep contrast dark color text */
                 margin: 0px !important;
                 text-align: center !important; 
-                width: 100% !important;
-                display: block !important;
-                transition: color 0.25s ease !important;
+                width: 100% !important; 
             }
 
-            /* Native Chevron Color Match */
+            /* Forces layout expander arrow icon to render dark color to match text */
             div[data-testid="stExpander"] summary svg {
                 color: #111111 !important;
                 fill: #111111 !important;
                 width: 22px !important;
                 height: 22px !important;
-                transition: color 0.25s ease, fill 0.25s ease !important;
-            }
-            
-            /* --- HOVER INTERACTION: LIGHT GOLDEN BACKGROUND + WHITE TEXT --- */
-            div[data-testid="stExpander"] summary:hover {
-                background-color: #e6c619 !important; /* Light golden tone */
-                border-color: #e6c619 !important;
-                cursor: pointer;
-            }
-            
-            div[data-testid="stExpander"] summary:hover p {
-                color: #ffffff !important; /* Flips text font to white */
-            }
-            
-            div[data-testid="stExpander"] summary:hover svg {
-                color: #ffffff !important; /* Flips toggle arrow icon to white */
-                fill: #ffffff !important;
             }
             
             /* Remove instructions hint */
@@ -219,7 +196,7 @@ if remaining_count > 0:
     )
     
     # --- THE BIG DRAW EXPANDER ---
-    with st.expander("▶ Click here to enter your PIN & draw a team! ◀", expanded=False):
+    with st.expander("👋 Click here to enter your PIN & draw a team!", expanded=False):
         with st.form(key="sweepstake_form", clear_on_submit=False):
             form_col1, form_col2 = st.columns([1.2, 1])
             
