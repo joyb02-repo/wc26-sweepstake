@@ -138,13 +138,19 @@ if remaining_count > 0:
             .stMarkdown a, button a, div[data-testid="stMarkdownContainer"] a { display: none !important; }
             svg.css-6q9sum, svg.e1tzwq550, .st-emotion-cache-b698xo a { display: none !important; }
 
-            /* --- REMOVE EXPANDER OUTLINE STROKES --- */
+            /* --- REMOVE EXPANDER OUTLINE STROKES & NATIVE BORDERS --- */
             div[data-testid="stExpander"] {
                 border: none !important;
                 background-color: transparent !important;
                 box-shadow: none !important;
             }
             
+            /* Wipes out the persistent light grey container line surrounding the header block */
+            div[data-testid="stExpander"] > div:first-child {
+                border: none !important;
+                box-shadow: none !important;
+            }
+
             div[data-testid="stExpanderDetails"] {
                 border: none !important;
                 box-shadow: none !important;
@@ -162,7 +168,8 @@ if remaining_count > 0:
             /* --- THE BIG WHITE CONTAINER BUTTON --- */
             div[data-testid="stExpander"] summary {
                 background-color: #ffffff !important;
-                border: 1px solid #ffffff !important;
+                border: none !important;
+                outline: none !important;
                 border-radius: 12px !important;
                 padding: 0px !important;
                 height: 70px !important; 
@@ -172,7 +179,7 @@ if remaining_count > 0:
                 align-items: center !important;
                 position: relative !important;
                 box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15) !important;
-                transition: background-color 0.25s ease, border-color 0.25s ease !important;
+                transition: background-color 0.25s ease !important;
             }
 
             /* Completely remove the native chevron toggle graphic */
@@ -222,7 +229,6 @@ if remaining_count > 0:
             /* --- HOVER INTERACTION --- */
             div[data-testid="stExpander"] summary:hover {
                 background-color: #e6c619 !important; /* Light Golden */
-                border-color: #e6c619 !important;
                 cursor: pointer;
             }
             
