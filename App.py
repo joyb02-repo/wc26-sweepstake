@@ -280,7 +280,7 @@ if remaining_count > 0:
         unsafe_allow_html=True
     )
     
-    if st.button("👋 Click here to enter your PIN & draw a team!"):
+    if st.button("👋 Click here to enter your PIN & draw a Country!"):
         st.session_state.show_draw_form = not st.session_state.show_draw_form
         st.rerun()
 
