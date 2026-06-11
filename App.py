@@ -51,21 +51,38 @@ allocated_df = df_teams[df_teams['StakeHolder'] != ""]
 remaining_count = 48 - len(allocated_df)
 
 if remaining_count > 0:
-    # --- CHANGE 3: STYLED EXPANDER TO MAKE IT POP OUT ---
-    # Custom CSS to inject styling directly into Streamlit's expander widget label
+    # --- STYLED INVERSE EXPANDER VIEW ---
     st.markdown(
         """
         <style>
-            /* Targets the text inside the expander header */
+            /* Revert text label inside the expander header back to white */
             .stExpander p {
-                font-size: 19px !important; /* Makes it slightly bigger */
+                font-size: 19px !important; 
                 font-weight: 600 !important;
-                color: #ff4b4b !important; /* Vibrant Red/Coral color to make it pop */
+                color: #ffffff !important; 
             }
-            /* Adds a subtle border highlight to draw the eye */
+            /* Reverses the color palette of the expander content box (Dark text on light background) */
+            div[data-testid="stExpanderDetails"] {
+                background-color: #f8f9fa !important;
+                color: #111111 !important;
+                border-radius: 0px 0px 8px 8px !important;
+                padding: 20px !important;
+            }
+            /* Ensure form inputs inside the reversed block have proper dark labels */
+            div[data-testid="stExpanderDetails"] label p {
+                color: #111111 !important;
+                font-weight: 500 !important;
+            }
+            div[data-testid="stExpanderDetails"] div[data-testid="stForm"] {
+                border: none !important;
+                background: transparent !important;
+                padding: 0px !important;
+            }
+            /* Clean structural border around the widget structure */
             .stExpander {
-                border: 1px solid rgba(255, 75, 75, 0.3) !important;
+                border: 1px solid rgba(255, 255, 255, 0.2) !important;
                 border-radius: 8px !important;
+                background-color: transparent !important;
             }
         </style>
         """, 
@@ -178,15 +195,32 @@ with c_btn2:
 
 st.write("")
 
-# --- STYLED LIVE DATA TABLE WITH HIGHLIGHTS ---
+# --- STYLED LIVE DATA TABLE WITH CUSTOM HIGH-VIS SCROLLBAR ---
 table_head = """<style>
+/* Custom Light Shade Webkit Scrollbar Configuration */
+::-webkit-scrollbar {
+    width: 10px !important;
+    height: 10px !important;
+}
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-radius: 10px !important;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.4) !important; /* Lighter, highly visible track thumb */
+    border: 2px solid rgba(0, 0, 0, 0.2) !important;
+    border-radius: 10px !important;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.6) !important;
+}
+
 .sweepstake-table {width: 100%; border-collapse: collapse; margin-top: 15px; font-family: sans-serif;}
 .sweepstake-table th {background-color: rgba(255, 255, 255, 0.08); color: #ffffff !important; text-align: center; padding: 14px; font-weight: 600; font-size: 15px; border-bottom: 2px solid rgba(255, 255, 255, 0.15);}
 .sweepstake-table td {padding: 16px; text-align: center; vertical-align: middle !important; border-bottom: 1px solid rgba(255, 255, 255, 0.05);}
 .emoji-cell {font-size: 38px; line-height: 1; display: inline-block; vertical-align: middle;}
 .status-available {color: #888888; font-style: italic;}
 .status-owned {font-weight: bold; color: #29b5e8;}
-/* CHANGE 2: Styling for rows that are already claimed */
 .row-taken {background-color: rgba(255, 75, 75, 0.12) !important;} 
 </style>
 <table class="sweepstake-table">
@@ -215,7 +249,6 @@ for _, row in df_teams.iterrows():
     if not rating:
         rating = "-"
 
-    # CHANGE 2: Determine if row needs a light red background class applied
     row_class = "class='row-taken'" if owner != "" else ""
 
     if owner == "":
@@ -223,7 +256,6 @@ for _, row in df_teams.iterrows():
     else:
         owner_display = f"<span class='status-owned'>👤 {owner}</span>"
         
-    # CHANGE 1: Font size modified to 13px (smaller) and the star emoji has been removed
     table_rows += f"""<tr {row_class}>
         <td><span class='emoji-cell'>{emoji}</span></td>
         <td style='font-size: 16px; font-weight: 500; color: white;'>{country}</td>
