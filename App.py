@@ -20,8 +20,8 @@ with col2:
 # --- TITLE WITHOUT MARKDOWN HOVER ANCHORS ---
 st.markdown("<div style='text-align: center; font-size: 40px; font-weight: bold; color: white; margin-bottom: 25px;'>2026 World Cup Sweepstake</div>", unsafe_allow_html=True)
 
-# --- NEW COLLAPSABLE INFORMATION TAB (TARGETED TO BE SMALL & DARK) ---
-with st.expander("<span class='info-tab-marker'>ℹ️ How the Sweepstake Works (Rules & Entry Details)</span>", expanded=False):
+# --- NEW COLLAPSABLE INFORMATION TAB ---
+with st.expander("ℹ️ How the Sweepstake Works (Rules & Entry Details)", expanded=False):
     st.markdown(
         """
         Welcome to the **2026 World Cup Sweepstake**! Here is everything you need to know to get started:
@@ -86,7 +86,7 @@ if remaining_count > 0:
                 display: none !important;
             }
 
-            /* 1. Boost text size, invert header to a light fill, and center text alignment */
+            /* Global styling rules for other expanders (e.g. Draw Team tab) */
             div[data-testid="stExpander"] summary {
                 background-color: #f8f9fa !important;
                 border: 1px solid #e0e0e0 !important;
@@ -98,33 +98,41 @@ if remaining_count > 0:
             }
 
             div[data-testid="stExpander"] summary p {
-                font-size: 22px !important; /* Slightly optimized text dynamic to accommodate two clean bars */
+                font-size: 22px !important; 
                 font-weight: bold !important;
                 color: #111111 !important; 
                 margin: 0px !important;
                 text-align: center !important;
             }
 
-            /* Force the native expander arrow icon fill to match dark text color */
             div[data-testid="stExpander"] summary svg {
                 color: #111111 !important;
                 fill: #111111 !important;
             }
 
-            /* --- TARGETED OVERRIDE FOR THE INFORMATION TAB ONLY --- */
-            div[data-testid="stExpander"]:has(.info-tab-marker) summary {
-                background-color: #1e1e1e !important; /* Dark styling choice */
-                border: 1px solid #333333 !important;
-                padding: 0.3rem 1rem !important; /* Noticeably smaller container block height */
+            /* --- STRICT TARGETED OVERRIDE FOR THE FIRST TAB (INFO SWEEPSTAKE) ONLY --- */
+            div[data-testid="stExpander"]:nth-of-type(1) summary {
+                background-color: #15171c !important; /* Dark theme contrast background */
+                border: 1px solid #2d3139 !important;
+                border-radius: 6px !important;
+                padding: 0.25rem 0.75rem !important; /* Makes container significantly shorter */
+                min-height: auto !important;
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
             }
-            div[data-testid="stExpander"]:has(.info-tab-marker) summary p {
-                font-size: 14px !important; /* Smaller text formatting */
-                font-weight: normal !important;
-                color: #e0e0e0 !important; /* Lighter high contrast font */
+
+            div[data-testid="stExpander"]:nth-of-type(1) summary p {
+                font-size: 13px !important; /* Noticeably smaller typography size */
+                font-weight: 500 !important;
+                color: #cccccc !important; /* Lighter/soft font color replacement */
+                text-align: center !important;
             }
-            div[data-testid="stExpander"]:has(.info-tab-marker) summary svg {
-                color: #e0e0e0 !important; /* Matches light toggle arrow */
-                fill: #e0e0e0 !important;
+
+            /* Force dropdown chevron icon inside the info container to match style changes */
+            div[data-testid="stExpander"]:nth-of-type(1) summary svg {
+                color: #cccccc !important;
+                fill: #cccccc !important;
                 width: 14px !important;
                 height: 14px !important;
             }
