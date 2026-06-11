@@ -6,12 +6,27 @@ import random
 import time
 import re
 
+# Page config (Kept the tab icon clean)
 st.set_page_config(page_title="2026 World Cup Sweepstake", page_icon="⚽", layout="centered")
-st.title("⚽ 2026 World Cup Sweepstake")
+
+# --- CENTERING THE LOGO ---
+# Creating 3 columns with a wide middle column acts as an automatic centering tool
+col1, col2, col3 = st.columns([1, 2, 1])
+with col2:
+    try:
+        # Pulls 'wclogo.png' directly from your GitHub repository folder root
+        st.image("wclogo.png", use_container_width=True)
+    except Exception:
+        # Safe fallback layout if the image path encounters a localized hiccup
+        st.write("") 
+
+# Centered Title (Without the soccer ball emoji)
+st.markdown("<h1 style='text-align: center;'>2026 World Cup Sweepstake</h1>", unsafe_allow_html=True)
+st.write("") # Clean spacing element
 
 # --- USER CONFIGURATION (PASTE YOUR COPIED CONFIGS HERE) ---
 SPREADSHEET_ID = "17PNVdOezXPwPmhV3vM1uWmeKsY9lJhFHKM3mBCyUJqU"
-FORM_ID = "1FAIpQLScZsUCEPlh6YqzhGTb5JfLNA_oNeb6wGksMejlrMlWnjPUYoQ" # Look at your form URL, grab the string after /d/
+FORM_ID = "1FAIpQLScZsUCEPlh6YqzhGTb5JfLNA_oNeb6wGksMejlrMlWnjPUYoQ"
 
 # Update these with your exact Entry numbers from Step 2
 ENTRY_ACTION = "entry.1179688956"  
@@ -41,10 +56,10 @@ allocated_df = df_teams[df_teams['StakeHolder'] != ""]
 remaining_count = 48 - len(allocated_df)
 
 if remaining_count > 0:
-    with st.expander("👋 Paid your $5? Click here to enter your PIN & Draw!", expanded=False):
+    with st.expander("👋 Click here to enter your PIN & Draw!", expanded=False):
         with st.form(key="sweepstake_form", clear_on_submit=True):
             user_name = st.text_input("Enter Your Full Name:", placeholder="e.g., Jane Doe").strip()
-            user_pin = st.text_input("Enter Your Unique 4-Digit PIN:", type="password", placeholder="xxxx").strip()
+            user_pin = st.text_input("Enter Your Unique 5-Digit PIN:", type="password", placeholder="xxxx").strip()
             submit_button = st.form_submit_button(label="🎲 Verify & Draw My Country!")
 
         if submit_button:
@@ -106,7 +121,7 @@ else:
 
 # --- SCOREBOARD VIEW ---
 st.write("---")
-st.subheader("📊 Live Sweepstake Scoreboard")
+st.subheader("Live Sweepstake Scoreboard")
 
 col1, col2 = st.columns(2)
 col1.metric(label="Countries Remaining", value=f"{remaining_count} / 48")
