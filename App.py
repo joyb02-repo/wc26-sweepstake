@@ -27,16 +27,42 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# --- CENTERING THE LOGO ---
-col1, col2, col3 = st.columns([1, 2, 1])
-with col2:
-    try:
-        st.image("wclogo.png", use_container_width=True)
-    except Exception:
-        st.write("") 
-
-# --- TITLE WITHOUT MARKDOWN HOVER ANCHORS ---
-st.markdown("<div style='text-align: center; font-size: 40px; font-weight: bold; color: white; margin-bottom: 25px;'>2026 World Cup Sweepstake</div>", unsafe_allow_html=True)
+# --- UNIFIED BRANDING HEADER (LOCKED RATIO & NO LINE WRAPPING) ---
+st.markdown(
+    """
+    <div style="
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        justify-content: center; 
+        width: 100%; 
+        margin-bottom: 25px;
+        box-sizing: border-box;
+    ">
+        <img src="app/static/wclogo.png" style="
+            width: 35vw; 
+            max-width: 240px; 
+            min-width: 120px; 
+            height: auto; 
+            margin-bottom: 15px;
+        " onerror="this.style.display='none';">
+        
+        <div style="
+            font-size: clamp(22px, 5.2vw, 40px); 
+            font-weight: bold; 
+            color: white; 
+            text-align: center;
+            white-space: nowrap !important;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+        ">
+            2026 World Cup Sweepstake
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 
 # --- 1. RULES DROP-DOWN ---
