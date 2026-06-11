@@ -1,5 +1,4 @@
 import streamlit as st
-from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 import random
 import time
@@ -7,8 +6,10 @@ import time
 st.set_page_config(page_title="2026 World Cup Sweepstake", page_icon="⚽", layout="centered")
 st.title("⚽ 2026 World Cup Sweepstake")
 
-# 1. Establish Live Google Sheets Connection
-conn = st.connection("gsheets", type=GSheetsConnection)
+# --- FOOLPROOF ALTERNATIVE SYNTAX ---
+conn = st.connection("gsheets", type="gsheets")
+
+# ... (rest of your app.py code stays exactly the same)
 
 # Read both sheets fresh (ttl=0 avoids local caching)
 try:
