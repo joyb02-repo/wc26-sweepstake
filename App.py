@@ -51,117 +51,44 @@ allocated_df = df_teams[df_teams['StakeHolder'] != ""]
 remaining_count = 48 - len(allocated_df)
 
 if remaining_count > 0:
-    # --- STYLING ENGINE FOR ZERO GAP AND FLUSH DIALOG ATTACHMENT ---
+    # --- CLEAN CUSTOM CSS INJECTION FOR THE TEXT SIZES & CENTERING ---
     st.markdown(
         """
         <style>
-            /* Completely destroy gaps and margins between blocks inside layout wrappers */
-            [data-testid="stVerticalBlock"] {
-                gap: 0px !important;
-            }
-            [data-testid="stVerticalBlock"] > div {
-                padding-bottom: 0px !important;
-                margin-bottom: 0px !important;
-                gap: 0px !important;
-            }
-
-            /* Main light interactive header configuration styling */
-            div.element-container button[kind="secondary"] {
-                background-color: #f8f9fa !important;
-                color: #111111 !important;
-                border: 1px solid #e0e0e0 !important;
-                border-radius: 8px !important;
+            /* 1. Boost the text size inside the expander header */
+            div[data-testid="stExpander"] summary p {
                 font-size: 26px !important;
-                font-weight: 700 !important;
-                padding: 0.75rem 1rem !important;
-                text-align: center !important;
-                display: block !important;
-                margin-bottom: 0px !important;
-                transition: border-radius 0s, background-color 0.2s;
+                font-weight: bold !important;
+                color: #ffffff !important;
             }
             
-            div.element-container button[kind="secondary"]:hover {
-                background-color: #eaeaea !important;
-                border-color: #cccccc !important;
-            }
-
-            /* Smoothly attach layout if panel state context is active */
-            .panel-attached button[kind="secondary"] {
-                border-bottom-left-radius: 0px !important;
-                border-bottom-right-radius: 0px !important;
-                border-bottom: none !important;
-            }
-
-            /* Custom input block body panel layout shell overrides */
-            .custom-form-container {
-                background-color: rgba(255, 255, 255, 0.03) !important;
-                border: 1px solid rgba(255, 255, 255, 0.1) !important;
-                border-bottom-left-radius: 8px !important;
-                border-bottom-right-radius: 8px !important;
-                padding: 24px !important;
-                margin-top: 0px !important;
-            }
-
-            /* Wipe the generic Streamlit native card styling framework completely */
-            div[data-testid="stForm"], div.stForm {
-                border: none !important;
-                background: transparent !important;
-                padding: 0px !important;
-                margin: 0px !important;
-                box-shadow: none !important;
-            }
-
-            /* Compact text field properties resizing configuration */
-            div[data-testid="stTextInput"] input {
-                padding: 6px 10px !important;
-                height: 38px !important;
-                font-size: 14px !important;
-            }
-
-            /* Position password eye button completely flush inside right margin border */
-            div[data-testid="stTextInput"] button[aria-label="View password text"] {
-                transform: scale(0.75) !important;
-                right: 0px !important;
-                top: 2px !important;
-                background: transparent !important;
-            }
-
-            /* Clear hints */
+            /* Remove instructions hint */
             div[data-testid="InputInstructions"] {
                 display: none !important;
             }
 
-            .custom-form-container label p {
-                color: #ffffff !important;
-                font-size: 14px !important;
-                font-weight: 500 !important;
+            /* 2. Center the form button container and make the button text smaller */
+            div[data-testid="stExpander"] div.stFormSubmitButton {
+                text-align: center !important;
+                display: flex !important;
+                justify-content: center !important;
+                width: 100% !important;
+                margin-top: 15px !important;
+            }
+
+            div[data-testid="stExpander"] div.stFormSubmitButton button {
+                font-size: 15px !important; /* Smaller text size */
+                font-weight: 600 !important;
+                padding: 0.4rem 2rem !important; /* Compact styling */
+                width: auto !important; /* Prevents stretching */
             }
         </style>
         """, 
         unsafe_allow_html=True
     )
-
-    is_open = st.query_params.get("expanded", "false") == "true"
-    toggle_label = "🔽 Click here to enter your PIN & draw a team!" if is_open else "👋 Click here to enter your PIN & draw a team!"
-
-    # Use specific class wrappers to force-remove structural padding
-    if is_open:
-        st.markdown('<div class="panel-attached">', unsafe_allow_html=True)
-    else:
-        st.markdown('<div>', unsafe_allow_html=True)
-
-    if st.button(toggle_label, use_container_width=True, type="secondary"):
-        st.query_params["expanded"] = "false" if is_open else "true"
-        st.rerun()
-
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    # Render attached container section block cleanly without separation spacing gaps
-    if is_open:
-        # Wrap everything in a localized single block context to bypass layout spacing
-        st.markdown('<div class="custom-form-container">', unsafe_allow_html=True)
-        
-        # We handle action validation cleanly within a form execution context
+    
+    # Reverted entirely to the clean, default native layout framework
+    with st.expander("👋 Click here to enter your PIN & draw a team!", expanded=False):
         with st.form(key="sweepstake_form", clear_on_submit=False):
             form_col1, form_col2 = st.columns([1.2, 1])
             
@@ -170,13 +97,7 @@ if remaining_count > 0:
             with form_col2:
                 user_pin = st.text_input("Enter Your Unique 5-Digit PIN:", type="password", placeholder="xxxxx", max_chars=5).strip()
                 
-            st.write("")
-            
-            btn_space1, btn_space2, btn_space3 = st.columns([1, 1.5, 1])
-            with btn_space2:
-                submit_button = st.form_submit_button(label="Verify & Draw My Country!", use_container_width=True)
-
-        st.markdown('</div>', unsafe_allow_html=True)
+            submit_button = st.form_submit_button(label="Verify & Draw My Country!")
 
         if submit_button:
             if not user_name or not user_pin:
@@ -233,7 +154,6 @@ if remaining_count > 0:
                                 st.success(f"🎉 **Congratulations {user_name}!** (Draw {draw_count + 1}/5)")
                                 st.subheader(f"Your country: **{chosen_country}**")
                                 time.sleep(4)
-                                st.query_params["expanded"] = "false"
                                 st.rerun()
                             except Exception:
                                 st.error("Submission failed. Connection issue.")
