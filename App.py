@@ -20,8 +20,8 @@ with col2:
 # --- TITLE WITHOUT MARKDOWN HOVER ANCHORS ---
 st.markdown("<div style='text-align: center; font-size: 40px; font-weight: bold; color: white; margin-bottom: 25px;'>2026 World Cup Sweepstake</div>", unsafe_allow_html=True)
 
-# --- NEW COLLAPSABLE INFORMATION TAB ---
-with st.expander("ℹ️ How the Sweepstake Works (Rules & Entry Details)", expanded=False):
+# --- NEW COLLAPSABLE INFORMATION TAB (TARGETED TO BE SMALL & DARK) ---
+with st.expander("<span class='info-tab-marker'>ℹ️ How the Sweepstake Works (Rules & Entry Details)</span>", expanded=False):
     st.markdown(
         """
         Welcome to the **2026 World Cup Sweepstake**! Here is everything you need to know to get started:
@@ -109,6 +109,24 @@ if remaining_count > 0:
             div[data-testid="stExpander"] summary svg {
                 color: #111111 !important;
                 fill: #111111 !important;
+            }
+
+            /* --- TARGETED OVERRIDE FOR THE INFORMATION TAB ONLY --- */
+            div[data-testid="stExpander"]:has(.info-tab-marker) summary {
+                background-color: #1e1e1e !important; /* Dark styling choice */
+                border: 1px solid #333333 !important;
+                padding: 0.3rem 1rem !important; /* Noticeably smaller container block height */
+            }
+            div[data-testid="stExpander"]:has(.info-tab-marker) summary p {
+                font-size: 14px !important; /* Smaller text formatting */
+                font-weight: normal !important;
+                color: #e0e0e0 !important; /* Lighter high contrast font */
+            }
+            div[data-testid="stExpander"]:has(.info-tab-marker) summary svg {
+                color: #e0e0e0 !important; /* Matches light toggle arrow */
+                fill: #e0e0e0 !important;
+                width: 14px !important;
+                height: 14px !important;
             }
             
             /* Remove instructions hint */
