@@ -185,23 +185,25 @@ if remaining_count > 0:
             
             /* --- ELIMINATE REMNANT CONTAINER LINES AND LABELS --- */
             div[data-testid="stForm"] {
-                border: none !important;
+                border: 1px solid #2d3139 !important;
+                border-radius: 12px !important;
                 box-shadow: none !important;
-                padding: 15px 0px 0px 0px !important;
-                background-color: transparent !important;
+                padding: 20px !important;
+                background-color: #11141a !important;
+                margin-top: 15px !important;
             }
             div[data-testid="InputInstructions"] {
                 display: none !important;
             }
 
-            /* --- CUSTOM PILL TOGGLE BUTTON INJECTION --- */
-            div.element-container:has(button[key="draw_toggle_btn"]) {
-                display: flex !important;
-                justify-content: center !important;
+            /* --- FORCE FULL WIDTH CONTAINER FOR PILL TOGGLE BUTTON --- */
+            .stButton {
                 width: 100% !important;
             }
             
-            button[key="draw_toggle_btn"] {
+            /* Target button target block natively */
+            button[key="draw_toggle_btn"], 
+            .stButton > button {
                 background-color: #ffffff !important;
                 border: none !important;
                 outline: none !important;
@@ -212,9 +214,11 @@ if remaining_count > 0:
                 width: 100% !important;
                 box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15) !important;
                 transition: background-color 0.25s ease !important;
+                display: block !important;
             }
             
-            button[key="draw_toggle_btn"] p {
+            button[key="draw_toggle_btn"] p,
+            .stButton > button p {
                 font-size: clamp(15px, 4.5vw, 22px) !important; 
                 font-weight: 800 !important;
                 color: #111111 !important;
@@ -224,13 +228,16 @@ if remaining_count > 0:
                 white-space: normal !important;
                 word-wrap: break-word !important;
                 transition: color 0.25s ease !important;
+                width: 100% !important;
             }
 
             /* Hover states explicitly tracked */
-            button[key="draw_toggle_btn"]:hover {
+            button[key="draw_toggle_btn"]:hover,
+            .stButton > button:hover {
                 background-color: #e6c619 !important; /* Golden state */
             }
-            button[key="draw_toggle_btn"]:hover p {
+            button[key="draw_toggle_btn"]:hover p,
+            .stButton > button:hover p {
                 color: #ffffff !important;
             }
 
@@ -248,6 +255,15 @@ if remaining_count > 0:
                 box-shadow: none !important;
                 transition: background-color 0.2s ease, border-color 0.2s ease !important;
                 width: auto !important;
+                min-height: unset !important;
+            }
+            
+            div[data-testid="stForm"] button[kind="primary"] p,
+            div[data-testid="stForm"] button[type="submit"] p,
+            .stFormSubmitButton > button p {
+                color: #ffffff !important;
+                font-size: 15px !important;
+                font-weight: 600 !important;
             }
 
             @media (max-width: 480px) {
@@ -270,8 +286,8 @@ if remaining_count > 0:
         unsafe_allow_html=True
     )
     
-    # Render the custom text button that stores state layout
-    if st.button("👋 Click here to enter your PIN & draw a team!", key="draw_toggle_btn"):
+    # Render the text button at 100% width container allocation
+    if st.button("👋 Click here to enter your PIN & draw a team!", key="draw_toggle_btn", use_container_width=True):
         st.session_state.show_draw_form = not st.session_state.show_draw_form
         st.rerun()
 
