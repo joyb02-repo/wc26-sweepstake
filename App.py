@@ -51,38 +51,58 @@ allocated_df = df_teams[df_teams['StakeHolder'] != ""]
 remaining_count = 48 - len(allocated_df)
 
 if remaining_count > 0:
-    # --- STYLED INVERSE EXPANDER VIEW ---
+    # --- STYLED COLLAPSED HEADER (INVERSE COLORS) ---
     st.markdown(
         """
         <style>
-            /* Revert text label inside the expander header back to white */
-            .stExpander p {
-                font-size: 19px !important; 
-                font-weight: 600 !important;
-                color: #ffffff !important; 
-            }
-            /* Reverses the color palette of the expander content box (Dark text on light background) */
-            div[data-testid="stExpanderDetails"] {
+            /* 1. Target the collapsed header bar only (Light background) */
+            div[data-testid="stExpander"] button {
                 background-color: #f8f9fa !important;
+                border: 1px solid #e0e0e0 !important;
+                border-radius: 8px !important;
+                padding: 0.5rem 1rem !important;
+                transition: background-color 0.2s ease;
+            }
+            
+            /* Hover effect for the header button */
+            div[data-testid="stExpander"] button:hover {
+                background-color: #eaeaea !important;
+            }
+
+            /* 2. Make the text and the small arrow icon dark inside the header */
+            div[data-testid="stExpander"] button p, 
+            div[data-testid="stExpander"] button svg {
                 color: #111111 !important;
-                border-radius: 0px 0px 8px 8px !important;
+                fill: #111111 !important;
+            }
+            
+            /* Boost the font size and weight of the header text */
+            div[data-testid="stExpander"] button p {
+                font-size: 19px !important;
+                font-weight: 600 !important;
+            }
+
+            /* 3. Keep the expanded interior details box dark as original */
+            div[data-testid="stExpanderDetails"] {
+                background-color: rgba(255, 255, 255, 0.03) !important;
+                color: #ffffff !important;
+                border-bottom-left-radius: 8px !important;
+                border-bottom-right-radius: 8px !important;
+                border: 1px solid rgba(255, 255, 255, 0.1) !important;
+                border-top: none !important; /* Seamless connection to the light header */
                 padding: 20px !important;
             }
-            /* Ensure form inputs inside the reversed block have proper dark labels */
+
+            /* Ensure labels inside the form remain white */
             div[data-testid="stExpanderDetails"] label p {
-                color: #111111 !important;
-                font-weight: 500 !important;
+                color: #ffffff !important;
             }
+            
+            /* Clean up the form container borders */
             div[data-testid="stExpanderDetails"] div[data-testid="stForm"] {
                 border: none !important;
                 background: transparent !important;
                 padding: 0px !important;
-            }
-            /* Clean structural border around the widget structure */
-            .stExpander {
-                border: 1px solid rgba(255, 255, 255, 0.2) !important;
-                border-radius: 8px !important;
-                background-color: transparent !important;
             }
         </style>
         """, 
@@ -155,115 +175,3 @@ if remaining_count > 0:
                                 st.error("Submission failed. Connection issue.")
 else:
     st.info("🎉 All 48 countries have been claimed!")
-
-# --- SCOREBOARD VIEW ---
-st.write("---")
-st.markdown("<h3 style='text-align: center;'>Live Sweepstake Scoreboard</h3>", unsafe_allow_html=True)
-st.write("")
-
-m_col1, m_col2, m_col3, m_col4 = st.columns([1, 2, 2, 1])
-
-with m_col2:
-    st.markdown(
-        f"""
-        <div style="text-align: center; background-color: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px;">
-            <p style="font-size: 14px; margin-bottom: 0px; color: gray;">Countries Remaining</p>
-            <h2 style="margin-top: 0px; font-size: 32px; color: #ff4b4b;">{remaining_count} / 48</h2>
-        </div>
-        """, 
-        unsafe_allow_html=True
-    )
-
-with m_col3:
-    st.markdown(
-        f"""
-        <div style="text-align: center; background-color: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px;">
-            <p style="font-size: 14px; margin-bottom: 0px; color: gray;">Total Confirmed Entries</p>
-            <h2 style="margin-top: 0px; font-size: 32px; color: #29b5e8;">{len(allocated_df)}</h2>
-        </div>
-        """, 
-        unsafe_allow_html=True
-    )
-
-st.write("")
-st.write("")
-
-c_btn1, c_btn2, c_btn3 = st.columns([2, 1, 2])
-with c_btn2:
-    if st.button("🔄 Refresh", use_container_width=True):
-        st.rerun()
-
-st.write("")
-
-# --- STYLED LIVE DATA TABLE WITH CUSTOM HIGH-VIS SCROLLBAR ---
-table_head = """<style>
-/* Custom Light Shade Webkit Scrollbar Configuration */
-::-webkit-scrollbar {
-    width: 10px !important;
-    height: 10px !important;
-}
-::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05) !important;
-    border-radius: 10px !important;
-}
-::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.4) !important; /* Lighter, highly visible track thumb */
-    border: 2px solid rgba(0, 0, 0, 0.2) !important;
-    border-radius: 10px !important;
-}
-::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.6) !important;
-}
-
-.sweepstake-table {width: 100%; border-collapse: collapse; margin-top: 15px; font-family: sans-serif;}
-.sweepstake-table th {background-color: rgba(255, 255, 255, 0.08); color: #ffffff !important; text-align: center; padding: 14px; font-weight: 600; font-size: 15px; border-bottom: 2px solid rgba(255, 255, 255, 0.15);}
-.sweepstake-table td {padding: 16px; text-align: center; vertical-align: middle !important; border-bottom: 1px solid rgba(255, 255, 255, 0.05);}
-.emoji-cell {font-size: 38px; line-height: 1; display: inline-block; vertical-align: middle;}
-.status-available {color: #888888; font-style: italic;}
-.status-owned {font-weight: bold; color: #29b5e8;}
-.row-taken {background-color: rgba(255, 75, 75, 0.12) !important;} 
-</style>
-<table class="sweepstake-table">
-<thead>
-    <tr>
-        <th style="width: 12%;">Flag</th>
-        <th style="width: 25%;">Country</th>
-        <th style="width: 13%;">Rating</th>
-        <th style="width: 25%;">Star Player</th>
-        <th style="width: 25%;">Owner Account</th>
-    </tr>
-</thead>
-<tbody>"""
-
-table_rows = ""
-for _, row in df_teams.iterrows():
-    country = row['Country']
-    emoji = row['Emoji']
-    owner = row['StakeHolder']
-    
-    rating = str(row.get('Rating', '')).replace('nan', '').strip()
-    star_player = str(row.get('Star Player', '')).replace('nan', '').strip()
-    
-    if not star_player:
-        star_player = "-"
-    if not rating:
-        rating = "-"
-
-    row_class = "class='row-taken'" if owner != "" else ""
-
-    if owner == "":
-        owner_display = "<span class='status-available'>⏳ Available</span>"
-    else:
-        owner_display = f"<span class='status-owned'>👤 {owner}</span>"
-        
-    table_rows += f"""<tr {row_class}>
-        <td><span class='emoji-cell'>{emoji}</span></td>
-        <td style='font-size: 16px; font-weight: 500; color: white;'>{country}</td>
-        <td style='font-size: 15px; color: #ffbf00; font-weight: bold;'>{rating}</td>
-        <td style='font-size: 13px; color: #cccccc;'>{star_player}</td>
-        <td style='font-size: 16px;'>{owner_display}</td>
-    </tr>"""
-
-table_foot = "</tbody></table>"
-complete_table_html = table_head + table_rows + table_foot
-st.components.v1.html(complete_table_html, height=700, scrolling=True)
