@@ -184,6 +184,10 @@ df_pins['Status'] = df_pins['Status'].fillna("Active").astype(str).str.strip()
 allocated_df = df_teams[df_teams['StakeHolder'] != ""]
 remaining_count = 48 - len(allocated_df)
 
+# Dynamic Prize Pool calculation ($5 AUD per stakeholder entry, duplicates included)
+total_entries = len(allocated_df)
+prize_pool_total = total_entries * 5
+
 if remaining_count > 0:
     # --- BULLETPROOF NATIVE OVERRIDES FOR THE MAIN DRAW BUTTON ---
     st.markdown(
@@ -206,7 +210,6 @@ if remaining_count > 0:
             /* ========================================================
                FORCE FULL EXTENSION UP TO THE EDGES OF THE WRAPPERS
                ======================================================== */
-            /* Target Streamlit's element wrappers and force block expansion */
             div[data-testid="stMainBlockContainer"] div[data-testid="stButton"],
             div[data-testid="stMainBlockContainer"] div[data-testid="stButton"] > div,
             .element-container:has(button:not([type="submit"])) {
@@ -216,7 +219,6 @@ if remaining_count > 0:
                 display: block !important;
             }
 
-            /* Apply aggressive full-bleed width styling on the native button */
             div[data-testid="stButton"] button:not([type="submit"]) {
                 background-color: #ffffff !important;
                 border: 1px solid #dee2e6 !important;
@@ -234,7 +236,6 @@ if remaining_count > 0:
                 align-items: center !important;
             }
 
-            /* Explicit text centering constraint overrides */
             div[data-testid="stButton"] button:not([type="submit"]) p {
                 font-size: clamp(16px, 4.6vw, 22px) !important; 
                 font-weight: 800 !important;
@@ -245,7 +246,6 @@ if remaining_count > 0:
                 width: 100% !important;
             }
 
-            /* Hover states */
             div[data-testid="stButton"] button:not([type="submit"]):hover {
                 background-color: #e6c619 !important;
                 border-color: #e6c619 !important;
@@ -280,7 +280,6 @@ if remaining_count > 0:
         unsafe_allow_html=True
     )
     
-    # Render native button safely
     if st.button("👋 Click here to enter your PIN & draw a team!"):
         st.session_state.show_draw_form = not st.session_state.show_draw_form
         st.rerun()
@@ -353,9 +352,60 @@ if remaining_count > 0:
 else:
     st.info("🎉 All 48 countries have been claimed!")
 
-# --- SCOREBOARD VIEW ---
+# --- VIBRANT PRIZE POOL SECTION ---
 st.write("---")
-st.markdown("<h3 style='text-align: center;'>Live Sweepstake Scoreboard</h3>", unsafe_allow_html=True)
+st.markdown(
+    f"""
+    <div style="
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        border: 2px solid #e6c619;
+        border-radius: 14px;
+        padding: 22px;
+        text-align: center;
+        box-shadow: 0px 6px 20px rgba(230, 198, 25, 0.15);
+        margin-top: 10px;
+        margin-bottom: -10px;
+        width: 100%;
+        box-sizing: border-box;
+    ">
+        <span style="
+            font-size: clamp(12px, 3.5vw, 15px);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #cbd5e1;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 4px;
+        ">
+            🏆 Current Total Prize Pool 🏆
+        </span>
+        <span style="
+            font-size: clamp(34px, 8.5vw, 54px);
+            font-weight: 900;
+            color: #e6c619;
+            line-height: 1.1;
+            display: block;
+            text-shadow: 0px 2px 10px rgba(230, 198, 25, 0.3);
+        ">
+            ${prize_pool_total:,.2f} <span style="font-size: clamp(16px, 4vw, 24px); font-weight: 700; color: #94a3b8;">AUD</span>
+        </span>
+        <span style="
+            font-size: clamp(11px, 3vw, 13px);
+            color: #94a3b8;
+            display: block;
+            margin-top: 6px;
+            font-style: italic;
+        ">
+            Winner takes home 100% of the pool! ({total_entries} active entries)
+        </span>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+# --- LIVE SCOREBOARD HEADLINE ---
+st.write("")
+st.markdown("<h3 style='text-align: center; margin-top: 15px;'>Live Sweepstake Scoreboard</h3>", unsafe_allow_html=True)
 st.write("")
 
 m_col1, m_col2, m_col3, m_col4 = st.columns([1, 2, 2, 1])
