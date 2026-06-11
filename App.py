@@ -387,7 +387,7 @@ st.markdown(
             🏆 Total Prize Pool Fund 🏆
         </span>
         <span style="
-            font-size: clamp(36px, 9vw, 56px);
+            font-size: clamp(40px, 9vw, 56px);
             font-weight: 900;
             color: #e6c619;
             line-height: 1.1;
