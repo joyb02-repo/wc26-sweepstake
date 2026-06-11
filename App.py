@@ -7,7 +7,7 @@ import time
 import re
 
 # Page config
-st.set_page_config(page_title="2026 World Cup Sweepstake", page_icon="⚽", layout="centered")
+st.set_page_config(page_title="2026 World Cup Sweepstake", page_icon="🏆", layout="centered")
 
 # --- CENTERING THE LOGO ---
 col1, col2, col3 = st.columns([1, 2, 1])
