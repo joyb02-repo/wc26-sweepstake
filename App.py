@@ -171,7 +171,7 @@ allocated_df = df_teams[df_teams['StakeHolder'] != ""]
 remaining_count = 48 - len(allocated_df)
 
 if remaining_count > 0:
-    # --- EXPANDER & FORM STYLE INJECTION ---
+    # --- FORM STYLE INJECTION ---
     st.markdown(
         """
         <style>
@@ -180,107 +180,11 @@ if remaining_count > 0:
             .stMarkdown a, button a, div[data-testid="stMarkdownContainer"] a { display: none !important; }
             svg.css-6q9sum, svg.e1tzwq550, .st-emotion-cache-b698xo a { display: none !important; }
 
-            /* --- REMOVE EXPANDER OUTLINE STROKES & NATIVE BORDERS --- */
-            div[data-testid="stExpander"], 
-            div[data-testid="stExpander"] * {
-                border: none !important;
-                border-color: transparent !important;
-                box-shadow: none !important;
-                outline: none !important;
-            }
-            
-            div[data-testid="stExpanderDetails"] {
-                padding-left: 0px !important;
-                padding-right: 0px !important;
-            }
-
             /* --- TARGET AND REMOVE THE PERSISTENT NATIVE FORM CONTAINER BORDER --- */
             div[data-testid="stForm"] {
                 border: none !important;
                 box-shadow: none !important;
                 padding: 10px 0px 0px 0px !important;
-            }
-
-            /* --- THE BIG WHITE CONTAINER BUTTON (RESPONSIVE) --- */
-            div[data-testid="stExpander"] summary {
-                background-color: #ffffff !important;
-                border: none !important;
-                outline: none !important;
-                border-radius: 12px !important;
-                padding: 8px 16px !important; 
-                min-height: 70px !important; 
-                height: auto !important; 
-                
-                display: flex !important;
-                justify-content: center !important; 
-                align-items: center !important;
-                position: relative !important;
-                box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15) !important;
-                transition: background-color 0.25s ease !important;
-            }
-
-            /* --- COMPLETE AND ABSOLUTE REMOVAL OF ALL DROPDOWN ARROWS / CHEVRONS --- */
-            div[data-testid="stExpander"] summary svg,
-            div[data-testid="stExpander"] summary div svg,
-            div[data-testid="stExpander"] summary [data-testid="stExpanderToggleIcon"],
-            div[data-testid="stExpander"] [data-testid="stExpanderToggleIcon"],
-            .stExpander summary svg,
-            .stExpander [data-testid="stExpanderToggleIcon"] {
-                display: none !important;
-                visibility: hidden !important;
-                opacity: 0 !important;
-                width: 0px !important;
-                height: 0px !important;
-            }
-
-            /* Force standard layout centering properties back onto structural blocks */
-            div[data-testid="stExpander"] summary > div {
-                position: relative !important;
-                left: unset !important;
-                right: unset !important;
-                top: unset !important;
-                bottom: unset !important;
-                display: flex !important;
-                justify-content: center !important;
-                align-items: center !important;
-                width: 100% !important;
-                max-width: 100% !important;
-                margin: 0px !important;
-                padding: 0px !important;
-            }
-            
-            div[data-testid="stExpander"] summary > div > div {
-                display: flex !important;
-                justify-content: center !important;
-                align-items: center !important;
-                width: 100% !important;
-            }
-
-            /* Fluid Typography Header Row Formatting */
-            div[data-testid="stExpander"] summary p,
-            div[data-testid="stExpander"] summary span {
-                font-size: clamp(15px, 4.5vw, 22px) !important; 
-                font-weight: 800 !important;
-                color: #111111 !important;
-                margin: 0px !important;
-                padding: 0px !important;
-                text-align: center !important; 
-                white-space: normal !important; 
-                word-wrap: break-word !important;
-                display: block !important;
-                width: 100% !important;
-                transition: color 0.25s ease !important;
-            }
-
-            /* --- HOVER INTERACTION --- */
-            div[data-testid="stExpander"] summary:hover {
-                background-color: #e6c619 !important; /* Light Golden */
-                cursor: pointer;
-            }
-            
-            div[data-testid="stExpander"] summary:hover p,
-            div[data-testid="stExpander"] summary:hover span {
-                color: #ffffff !important;
             }
             
             div[data-testid="InputInstructions"] {
@@ -328,14 +232,47 @@ if remaining_count > 0:
                 border-color: #1e7e34 !important;
                 color: #ffffff !important;
             }
+            
+            /* Clean White Custom Container Header Banner */
+            .custom-form-header {
+                background-color: #ffffff !important;
+                border-radius: 12px !important;
+                padding: 8px 16px !important;
+                min-height: 70px !important;
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+                box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15) !important;
+                margin-bottom: 20px !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            .custom-form-header span {
+                font-size: clamp(15px, 4.5vw, 22px) !important;
+                font-weight: 800 !important;
+                color: #111111 !important;
+                text-align: center !important;
+                line-height: 1.3 !important;
+                display: block !important;
+            }
         </style>
         """, 
         unsafe_allow_html=True
     )
     
-    # --- THE BIG DRAW EXPANDER ---
-    with st.expander("👋 Click here to enter your PIN & draw a team!", expanded=False):
+    # --- FORM VIEW (WITH THE IMMUTABLE NO-ARROW HEADER) ---
+    with st.container():
         with st.form(key="sweepstake_form", clear_on_submit=False):
+            # Pure standard HTML banner inside the form: No arrows, no expander logic, perfectly centered
+            st.markdown(
+                """
+                <div class="custom-form-header">
+                    <span>👋 Click here to enter your PIN & draw a team!</span>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+            
             form_col1, form_col2 = st.columns([1.2, 1])
             
             with form_col1:
