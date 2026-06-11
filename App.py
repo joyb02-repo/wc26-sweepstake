@@ -6,8 +6,8 @@ import random
 import time
 import re
 
-# Page config
-st.set_page_config(page_title="2026 World Cup Sweepstake", page_icon="⚽", layout="centered")
+# Page config - Safely updated to use your custom icon image file
+st.set_page_config(page_title="2026 World Cup Sweepstake", page_icon="icon.png", layout="centered")
 
 # --- CENTERING THE LOGO ---
 col1, col2, col3 = st.columns([1, 2, 1])
@@ -73,14 +73,14 @@ if remaining_count > 0:
                 border-radius: 8px !important;
                 padding: 0.5rem 1rem !important;
                 display: flex !important;
-                justify-content: center !important; 
+                justify-content: center !important; /* Centers text horizontally */
                 align-items: center !important;
             }
 
             div[data-testid="stExpander"] summary p {
                 font-size: 26px !important;
                 font-weight: bold !important;
-                color: #111111 !important; 
+                color: #111111 !important; /* Dark Text */
                 margin: 0px !important;
                 text-align: center !important;
             }
@@ -96,33 +96,13 @@ if remaining_count > 0:
                 display: none !important;
             }
 
-            /* 2. Absolute Form Box Dead-Center Alignment Override */
-            div[data-testid="stForm"] {
-                padding-bottom: 15px !important;
-            }
-            
-            /* FORCE HORIZONTAL LAYOUT CENTERING ON BUTTON OVERRIDE WRAPPER ONLY */
-            div[data-testid="stForm"] div.stFormSubmitButton {
-                display: flex !important;
-                justify-content: center !important;
-                align-items: center !important;
-                width: 100% !important;
-                text-align: center !important;
-                margin-top: 25px !important; /* Preserves the extra 5 spaces cushion below fields */
-                margin-bottom: 5px !important;
-            }
-
-            /* Catch-all global selector mapping to force the button green and centered */
-            div[data-testid="stForm"] div.stFormSubmitButton button,
+            /* 2. Style the green submission button without breaking parent layout constraints */
             div[data-testid="stForm"] button[kind="primary"],
             div[data-testid="stForm"] button[type="submit"],
             .stFormSubmitButton > button {
-                font-size: 16px !important; 
+                font-size: 15px !important; 
                 font-weight: 600 !important;
                 padding: 0.5rem 2.5rem !important; 
-                width: auto !important; 
-                min-width: 280px !important; /* Gives the button an elegant shape */
-                margin: 0 auto !important; 
                 background-color: #28a745 !important; /* Vibrant green */
                 color: #ffffff !important;
                 border: 1px solid #218838 !important;
@@ -131,7 +111,6 @@ if remaining_count > 0:
                 transition: background-color 0.2s ease, border-color 0.2s ease !important;
             }
 
-            div[data-testid="stForm"] div.stFormSubmitButton button:hover,
             div[data-testid="stForm"] button[kind="primary"]:hover,
             div[data-testid="stForm"] button[type="submit"]:hover,
             .stFormSubmitButton > button:hover {
@@ -146,7 +125,6 @@ if remaining_count > 0:
     
     with st.expander("👋 Click here to enter your PIN & draw a team!", expanded=False):
         with st.form(key="sweepstake_form", clear_on_submit=False):
-            # Fields are back inside their original balanced columns to preserve correct layout and gaps
             form_col1, form_col2 = st.columns([1.2, 1])
             
             with form_col1:
@@ -185,7 +163,7 @@ if remaining_count > 0:
                             team_sheet_row = int(chosen_team_row.index[0]) + 2
                             pin_sheet_row = int(pin_match.index[0]) + 2
                             
-                            # Animation Sequence
+                            # Animation Sequence - Using raw safe wrapper divs to prevent Markdown anchors completely
                             animation_placeholder = st.empty()
                             all_emojis = df_teams['Emoji'].tolist()
                             for i in range(25):
