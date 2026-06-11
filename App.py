@@ -85,7 +85,7 @@ if remaining_count > 0:
                 display: none !important;
             }
 
-            /* 2. Center the form button container and make the button vibrant green */
+            /* 2. Center the form button container and make the button text smaller */
             div[data-testid="stExpander"] div.stFormSubmitButton {
                 text-align: center !important;
                 display: flex !important;
@@ -99,21 +99,24 @@ if remaining_count > 0:
                 font-weight: 600 !important;
                 padding: 0.4rem 2rem !important; 
                 width: auto !important; 
-                background-color: #24a0ed !important; /* Default override safety */
-                border: none !important;
             }
             
-            /* Target the button background specifically for the green styling frame */
+            /* Forced high-specificity target wrapper for the green button theme styling */
+            div[data-testid="stForm"] button[kind="primary"],
             div[data-testid="stForm"] button[type="submit"] {
                 background-color: #28a745 !important; /* Vibrant green */
-                color: white !important;
+                color: #ffffff !important;
+                border: 1px solid #218838 !important;
                 border-radius: 6px !important;
-                transition: background-color 0.2s ease;
+                box-shadow: none !important;
+                transition: background-color 0.2s ease, border-color 0.2s ease;
             }
 
+            div[data-testid="stForm"] button[kind="primary"]:hover,
             div[data-testid="stForm"] button[type="submit"]:hover {
                 background-color: #218838 !important; /* Darker green on hover */
-                color: white !important;
+                border-color: #1e7e34 !important;
+                color: #ffffff !important;
             }
         </style>
         """, 
