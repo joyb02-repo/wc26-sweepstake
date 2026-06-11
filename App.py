@@ -127,42 +127,38 @@ if remaining_count > 0:
                 display: none !important;
             }
 
-            /* --- 2. HUGE WHITE CONTAINER (DEFAULT STATE) --- */
+            /* --- 2. HUGE WHITE CONTAINER (REVERTED DIMENSIONS) --- */
             div[data-testid="stExpander"] summary {
                 background-color: #ffffff !important;
                 border: 1px solid #ffffff !important;
                 border-radius: 12px !important;
                 padding: 1.2rem 1.5rem !important;
                 display: flex !important;
-                flex-direction: row-reverse !important; /* Forces layout arrow to the side to fix symmetry */
-                justify-content: space-between !important; 
+                justify-content: center !important; 
                 align-items: center !important;
                 box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15) !important;
                 transition: background-color 0.25s ease, border-color 0.25s ease !important;
             }
 
-            /* Overrides the structural flex parent block layout constraints */
-            div[data-testid="stExpander"] summary > div,
-            div[data-testid="stExpander"] summary > div > div {
+            /* Overrides layout offset constraints caused by the hidden chevron icon */
+            div[data-testid="stExpander"] summary > div {
                 display: flex !important;
                 justify-content: center !important;
                 align-items: center !important;
                 width: 100% !important;
                 text-align: center !important;
+                margin-left: -24px !important; /* Counteracts the hidden native layout arrow width */
             }
 
-            /* Text Styling (Default Dark Text perfectly centered inside structural block) */
-            div[data-testid="stExpander"] summary p,
-            div[data-testid="stExpander"] summary span {
+            /* Text Styling (Symmetrical Center Align) */
+            div[data-testid="stExpander"] summary p {
                 font-size: 24px !important;
                 font-weight: 800 !important;
                 color: #111111 !important;
                 margin: 0px !important;
                 text-align: center !important; 
                 width: 100% !important;
-                display: flex !important;
-                justify-content: center !important;
-                align-items: center !important;
+                display: block !important;
                 transition: color 0.25s ease !important;
             }
 
@@ -182,8 +178,7 @@ if remaining_count > 0:
                 cursor: pointer;
             }
             
-            div[data-testid="stExpander"] summary:hover p,
-            div[data-testid="stExpander"] summary:hover span {
+            div[data-testid="stExpander"] summary:hover p {
                 color: #ffffff !important; /* Flips text font to white */
             }
             
