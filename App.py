@@ -51,17 +51,21 @@ allocated_df = df_teams[df_teams['StakeHolder'] != ""]
 remaining_count = 48 - len(allocated_df)
 
 if remaining_count > 0:
-    # --- STYLED COLLAPSED HEADER (INVERSE COLORS) ---
+    # --- STYLED COLLAPSED HEADER (INVERSE, CENTERED & BIGGER) ---
     st.markdown(
         """
         <style>
-            /* 1. Target the collapsed header bar only (Light background) */
+            /* Target the collapsed header bar button container */
             div[data-testid="stExpander"] button {
                 background-color: #f8f9fa !important;
                 border: 1px solid #e0e0e0 !important;
                 border-radius: 8px !important;
-                padding: 0.5rem 1rem !important;
+                padding: 0.75rem 1rem !important;
                 transition: background-color 0.2s ease;
+                display: flex !important;
+                justify-content: center !important; /* Centers contents horizontally */
+                align-items: center !important;
+                width: 100% !important;
             }
             
             /* Hover effect for the header button */
@@ -69,36 +73,53 @@ if remaining_count > 0:
                 background-color: #eaeaea !important;
             }
 
-            /* 2. Make the text and the small arrow icon dark inside the header */
+            /* Center the container flexbox contents natively */
+            div[data-testid="stExpander"] button > div {
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+                width: auto !important;
+                gap: 10px !important;
+            }
+
+            /* Make text and small arrow icon dark inside the header */
             div[data-testid="stExpander"] button p, 
             div[data-testid="stExpander"] button svg {
                 color: #111111 !important;
                 fill: #111111 !important;
             }
             
-            /* Boost the font size and weight of the header text */
+            /* Make text significantly bigger, bold, and center aligned */
             div[data-testid="stExpander"] button p {
-                font-size: 19px !important;
-                font-weight: 600 !important;
+                font-size: 22px !important; /* Slightly bigger text */
+                font-weight: 700 !important;
+                text-align: center !important;
+                margin: 0 auto !important;
             }
 
-            /* 3. Keep the expanded interior details box dark as original */
+            /* Keep expanded details container sleek and dark */
             div[data-testid="stExpanderDetails"] {
                 background-color: rgba(255, 255, 255, 0.03) !important;
                 color: #ffffff !important;
                 border-bottom-left-radius: 8px !important;
                 border-bottom-right-radius: 8px !important;
                 border: 1px solid rgba(255, 255, 255, 0.1) !important;
-                border-top: none !important; /* Seamless connection to the light header */
-                padding: 20px !important;
+                border-top: none !important;
+                padding: 24px !important;
             }
 
-            /* Ensure labels inside the form remain white */
+            /* Ensure input labels remain white inside the expansion block */
             div[data-testid="stExpanderDetails"] label p {
                 color: #ffffff !important;
+                font-size: 15px !important;
             }
             
-            /* Clean up the form container borders */
+            /* Hide input entry instruction hints ("Press Enter to submit") to fix clutter */
+            div[data-testid="stExpanderDetails"] [data-testid="InputInstructions"] {
+                display: none !important;
+            }
+            
+            /* Clean up container default form carding layout borders */
             div[data-testid="stExpanderDetails"] div[data-testid="stForm"] {
                 border: none !important;
                 background: transparent !important;
@@ -111,8 +132,15 @@ if remaining_count > 0:
     
     with st.expander("👋 Click here to enter your PIN & draw a team!", expanded=False):
         with st.form(key="sweepstake_form", clear_on_submit=True):
-            user_name = st.text_input("Enter Your Full Name:", placeholder="e.g., Jane Doe").strip()
-            user_pin = st.text_input("Enter Your Unique 5-Digit PIN:", type="password", placeholder="xxxxx").strip()
+            # Form fields placed side-by-side using columns
+            form_col1, form_col2 = st.columns([1.2, 1])
+            
+            with form_col1:
+                user_name = st.text_input("Enter Your Full Name:", placeholder="e.g., Jane Doe", max_chars=22).strip()
+            with form_col2:
+                user_pin = st.text_input("Enter Your Unique 5-Digit PIN:", type="password", placeholder="xxxxx", max_chars=5).strip()
+                
+            st.write("")
             submit_button = st.form_submit_button(label="Verify & Draw My Country!")
 
         if submit_button:
@@ -187,8 +215,8 @@ with m_col2:
     st.markdown(
         f"""
         <div style="text-align: center; background-color: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px;">
-            <p style="font-size: 14px; margin-bottom: 0px; color: gray;">Countries Remaining</p>
-            <h2 style="margin-top: 0px; font-size: 32px; color: #ff4b4b;">{remaining_count} / 48</h2>
+            <p style="font-size: 14px; margin-bottom: 5px; color: gray;">Countries Remaining</p>
+            <span style="font-size: 32px; font-weight: bold; color: #ff4b4b; display: block; margin-top: 5px;">{remaining_count} / 48</span>
         </div>
         """, 
         unsafe_allow_html=True
@@ -198,8 +226,8 @@ with m_col3:
     st.markdown(
         f"""
         <div style="text-align: center; background-color: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px;">
-            <p style="font-size: 14px; margin-bottom: 0px; color: gray;">Total Confirmed Entries</p>
-            <h2 style="margin-top: 0px; font-size: 32px; color: #29b5e8;">{len(allocated_df)}</h2>
+            <p style="font-size: 14px; margin-bottom: 5px; color: gray;">Total Confirmed Entries</p>
+            <span style="font-size: 32px; font-weight: bold; color: #29b5e8; display: block; margin-top: 5px;">{len(allocated_df)}</span>
         </div>
         """, 
         unsafe_allow_html=True
