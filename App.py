@@ -41,7 +41,6 @@ try:
         with open(found_path, "rb") as image_file:
             encoded_string = base64.b64encode(image_file.read()).decode()
             
-        # Render the logo container separately to prevent markdown string parsing interference
         st.markdown(
             f"""
             <div style="display: flex; justify-content: center; align-items: center; width: 100%; margin-bottom: 12px;">
@@ -220,11 +219,13 @@ if remaining_count > 0:
                 transition: background-color 0.25s ease !important;
             }
 
-            /* --- ABSOLUTE EXTERMINATION OF ALL NATIVE CHEVRONS AND SVG ICONS --- */
+            /* --- COMPLETE AND ABSOLUTE REMOVAL OF ALL DROPDOWN ARROWS / CHEVRONS --- */
             div[data-testid="stExpander"] summary svg,
             div[data-testid="stExpander"] summary div svg,
             div[data-testid="stExpander"] summary [data-testid="stExpanderToggleIcon"],
-            div[data-testid="stExpander"] [data-testid="stExpanderToggleIcon"] {
+            div[data-testid="stExpander"] [data-testid="stExpanderToggleIcon"],
+            .stExpander summary svg,
+            .stExpander [data-testid="stExpanderToggleIcon"] {
                 display: none !important;
                 visibility: hidden !important;
                 opacity: 0 !important;
