@@ -51,16 +51,16 @@ allocated_df = df_teams[df_teams['StakeHolder'] != ""]
 remaining_count = 48 - len(allocated_df)
 
 if remaining_count > 0:
-    # --- STYLED COLLAPSED HEADER & INPUT COMPRESSION ---
+    # --- STYLED COLLAPSED HEADER & BUTTON TWEAKS ---
     st.markdown(
         """
         <style>
-            /* 1. Target the collapsed header bar button container */
+            /* Target the collapsed header bar button container */
             div[data-testid="stExpander"] button {
                 background-color: #f8f9fa !important;
                 border: 1px solid #e0e0e0 !important;
                 border-radius: 8px !important;
-                padding: 0.85rem 1rem !important;
+                padding: 1.2rem 1rem !important; /* Added vertical breathing room for huge text */
                 transition: background-color 0.2s ease;
                 display: flex !important;
                 justify-content: center !important; 
@@ -89,12 +89,13 @@ if remaining_count > 0:
                 fill: #111111 !important;
             }
             
-            /* Make text significantly bigger, bold, and center aligned */
+            /* 1. Header Font Size Increase */
             div[data-testid="stExpander"] button p {
-                font-size: 24px !important; /* Scaled up header text */
+                font-size: 28px !important; /* Substantially larger header font */
                 font-weight: 700 !important;
                 text-align: center !important;
                 margin: 0 auto !important;
+                line-height: 1.3 !important;
             }
 
             /* Keep expanded details container sleek and dark */
@@ -105,7 +106,7 @@ if remaining_count > 0:
                 border-bottom-right-radius: 8px !important;
                 border: 1px solid rgba(255, 255, 255, 0.1) !important;
                 border-top: none !important;
-                padding: 20px !important;
+                padding: 24px !important;
             }
 
             /* Ensure input labels remain white inside the expansion block */
@@ -122,16 +123,16 @@ if remaining_count > 0:
                 font-size: 14px !important;
             }
 
-            /* Make the password visibility toggle eye button a lot smaller */
+            /* Make the password visibility toggle eye button smaller and stick right */
             div[data-testid="stExpanderDetails"] button[aria-label="View password text"] {
-                transform: scale(0.75) !important; /* Scales down the eye button button */
-                right: 2px !important; /* Snaps it flush to the very right edge */
+                transform: scale(0.75) !important; 
+                right: 2px !important; 
                 height: 34px !important;
                 width: 34px !important;
                 background: transparent !important;
             }
             
-            /* Hide input entry instruction hints ("Press Enter to submit") to fix clutter */
+            /* Hide input entry instruction hints ("Press Enter to submit") */
             div[data-testid="stExpanderDetails"] [data-testid="InputInstructions"] {
                 display: none !important;
             }
@@ -141,6 +142,24 @@ if remaining_count > 0:
                 border: none !important;
                 background: transparent !important;
                 padding: 0px !important;
+            }
+
+            /* 2. Smaller + Centered Submit Form Button Rules */
+            div[data-testid="stExpanderDetails"] div.stFormSubmitButton {
+                text-align: center !important;
+                display: flex !important;
+                justify-content: center !important;
+                width: 100% !important;
+                margin-top: 10px !important;
+            }
+
+            div[data-testid="stExpanderDetails"] div.stFormSubmitButton button {
+                font-size: 15px !important; /* Smaller text size */
+                font-weight: 600 !important;
+                padding: 0.4rem 1.5rem !important; /* Compact scaling padding */
+                height: auto !important;
+                width: auto !important; /* Prevents stretching to full width */
+                margin: 0 auto !important; /* Native centering backup */
             }
         </style>
         """, 
@@ -157,7 +176,6 @@ if remaining_count > 0:
             with form_col2:
                 user_pin = st.text_input("Enter Your Unique 5-Digit PIN:", type="password", placeholder="xxxxx", max_chars=5).strip()
                 
-            st.write("")
             submit_button = st.form_submit_button(label="Verify & Draw My Country!")
 
         if submit_button:
