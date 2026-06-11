@@ -29,7 +29,7 @@ st.markdown(
             background-color: #1a1c23;
             border: 1px solid #2d3139;
             border-radius: 6px;
-            margin-bottom: 20px;
+            margin-bottom: 5px; /* Shrunk from 20px to bring the tabs tight together */
             font-family: sans-serif;
         }
         .rules-dropdown summary {
@@ -144,7 +144,8 @@ if remaining_count > 0:
                 font-weight: 800 !important; /* Ultra bold */
                 color: #111111 !important; /* Deep contrast dark color text */
                 margin: 0px !important;
-                text-align: center !important;
+                text-align: center !important; /* Forces layout centering alignment */
+                width: 100% !important; /* Ensures it utilizes the full tab width to center */
             }
 
             /* Forces layout expander arrow icon to render dark color to match text */
