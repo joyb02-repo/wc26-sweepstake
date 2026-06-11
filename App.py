@@ -177,8 +177,9 @@ if remaining_count > 0:
                 transition: background-color 0.25s ease !important;
             }
 
-            /* --- ABSOLUTE EXTERMINATION OF NATIVE CHEVRONS AND TRANSFORMS --- */
+            /* --- ABSOLUTE EXTERMINATION OF ALL NATIVE CHEVRONS AND SVG ICONS --- */
             div[data-testid="stExpander"] summary svg,
+            div[data-testid="stExpander"] summary div svg,
             div[data-testid="stExpander"] summary [data-testid="stExpanderToggleIcon"],
             div[data-testid="stExpander"] [data-testid="stExpanderToggleIcon"] {
                 display: none !important;
@@ -222,7 +223,7 @@ if remaining_count > 0:
                 text-align: center !important; 
                 white-space: normal !important; 
                 word-wrap: break-word !important;
-                display: block !important; /* Forces block width to avoid catching inline float layout wrappers */
+                display: block !important;
                 width: 100% !important;
                 transition: color 0.25s ease !important;
             }
@@ -396,31 +397,40 @@ with c_btn2:
 
 st.write("")
 
-# --- TABLE VIEW ---
+# --- TABLE VIEW (AUTOMATIC WIDTH AND SCALING FOR PHONE SCREENS) ---
 table_head = """<style>
-::-webkit-scrollbar { width: 10px !important; height: 10px !important; }
+html, body { margin: 0; padding: 0; background-color: transparent; font-family: sans-serif; overflow-x: hidden; }
+::-webkit-scrollbar { width: 6px !important; height: 6px !important; }
 ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05) !important; border-radius: 10px !important; }
-::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.4) !important; border: 2px solid rgba(0, 0, 0, 0.2) !important; border-radius: 10px !important; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.6) !important; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2) !important; border-radius: 10px !important; }
 
-.sweepstake-table {width: 100%; border-collapse: collapse; margin-top: 15px; font-family: sans-serif;}
-.sweepstake-table th {background-color: rgba(255, 255, 255, 0.08); color: #ffffff !important; text-align: center; padding: 14px; font-weight: 600; font-size: 15px; border-bottom: 2px solid rgba(255, 255, 255, 0.15);}
-.sweepstake-table td {padding: 16px; text-align: center; vertical-align: middle !important; border-bottom: 1px solid rgba(255, 255, 255, 0.05);}
-.emoji-cell {font-size: 38px; line-height: 1; display: inline-block; vertical-align: middle;}
-.status-available {color: #a8ffb2; font-weight: 500;} 
-.status-owned {font-weight: bold; color: #29b5e8;}
-.owner-cell {font-size: 13px !important;} 
-.row-taken {background-color: rgba(255, 75, 75, 0.12) !important;} 
-.row-available {background-color: rgba(40, 167, 69, 0.12) !important;} 
+.table-container { width: 100%; overflow-x: hidden; box-sizing: border-box; }
+.sweepstake-table { width: 100%; border-collapse: collapse; margin-top: 5px; table-layout: auto; }
+.sweepstake-table th { background-color: rgba(255, 255, 255, 0.08); color: #ffffff !important; text-align: center; padding: 10px 6px; font-weight: 600; font-size: 13px; border-bottom: 2px solid rgba(255, 255, 255, 0.15); white-space: nowrap; }
+.sweepstake-table td { padding: 10px 4px; text-align: center; vertical-align: middle !important; border-bottom: 1px solid rgba(255, 255, 255, 0.05); box-sizing: border-box; }
+.emoji-cell { font-size: 26px; line-height: 1; display: inline-block; vertical-align: middle; }
+.status-available { color: #a8ffb2; font-weight: 500; font-size: 12px; } 
+.status-owned { font-weight: bold; color: #29b5e8; font-size: 12px; word-break: break-word; }
+.row-taken { background-color: rgba(255, 75, 75, 0.12) !important; } 
+.row-available { background-color: rgba(40, 167, 69, 0.12) !important; } 
+
+/* Responsive adaptations for smaller viewpoints */
+@media (max-width: 480px) {
+    .sweepstake-table th { font-size: 11px; padding: 8px 4px; }
+    .sweepstake-table td { font-size: 12px; padding: 8px 2px; }
+    .emoji-cell { font-size: 22px; }
+    .hide-mobile { display: none !important; }
+}
 </style>
+<div class="table-container">
 <table class="sweepstake-table">
 <thead>
     <tr>
-        <th style="width: 12%;">Flag</th>
-        <th style="width: 25%;">Country</th>
-        <th style="width: 13%;">Rating</th>
-        <th style="width: 25%;">Star Player</th>
-        <th style="width: 25%;">Owner Account</th>
+        <th style="width: 10%;">Flag</th>
+        <th>Country</th>
+        <th style="width: 12%;">Rating</th>
+        <th class="hide-mobile">Star Player</th>
+        <th style="width: 30%;">Owner Account</th>
     </tr>
 </thead>
 <tbody>"""
@@ -446,12 +456,12 @@ for _, row in df_teams.iterrows():
         
     table_rows += f"""<tr {row_class}>
         <td><span class='emoji-cell'>{emoji}</span></td>
-        <td style='font-size: 16px; font-weight: 500; color: white;'>{country}</td>
-        <td style='font-size: 15px; color: #ffbf00; font-weight: bold;'>{rating}</td>
-        <td style='font-size: 13px; color: #cccccc;'>{star_player}</td>
-        <td class='owner-cell'>{owner_display}</td>
+        <td style='font-size: 14px; font-weight: 500; color: white;'>{country}</td>
+        <td style='font-size: 14px; color: #ffbf00; font-weight: bold;'>{rating}</td>
+        <td class="hide-mobile" style='font-size: 12px; color: #cccccc;'>{star_player}</td>
+        <td>{owner_display}</td>
     </tr>"""
 
-table_foot = "</tbody></table>"
+table_foot = "</tbody></table></div>"
 complete_table_html = table_head + table_rows + table_foot
 st.components.v1.html(complete_table_html, height=700, scrolling=True)
