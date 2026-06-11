@@ -140,14 +140,16 @@ if remaining_count > 0:
                 transition: background-color 0.25s ease, border-color 0.25s ease !important;
             }
 
-            /* Center layout alignment correction */
-            div[data-testid="stExpander"] summary > div:first-child {
+            /* Overrides the structural flex parent block layout constraints */
+            div[data-testid="stExpander"] summary > div {
                 display: flex !important;
                 justify-content: center !important;
+                align-items: center !important;
                 width: 100% !important;
+                text-align: center !important;
             }
 
-            /* Text Styling (Default Dark Text) */
+            /* Text Styling (Default Dark Text centered inside internal block) */
             div[data-testid="stExpander"] summary p {
                 font-size: 24px !important;
                 font-weight: 800 !important;
@@ -155,6 +157,7 @@ if remaining_count > 0:
                 margin: 0px !important;
                 text-align: center !important; 
                 width: 100% !important;
+                display: block !important;
                 transition: color 0.25s ease !important;
             }
 
@@ -215,7 +218,7 @@ if remaining_count > 0:
         unsafe_allow_html=True
     )
     
-    # --- THE BIG DRAW EXPANDER (With Center Arrows and Hand Emoji Swapped) ---
+    # --- THE BIG DRAW EXPANDER ---
     with st.expander("▶ Click here to enter your PIN & draw a team! ◀", expanded=False):
         with st.form(key="sweepstake_form", clear_on_submit=False):
             form_col1, form_col2 = st.columns([1.2, 1])
