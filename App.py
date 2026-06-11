@@ -96,36 +96,31 @@ if remaining_count > 0:
                 display: none !important;
             }
 
-            /* 2. Absolute Form Box Dead-Center Alignment Override */
+            /* 2. Form Box Spacing & Centered Stretched Button Configuration */
             div[data-testid="stForm"] {
                 padding-bottom: 20px !important;
-                display: flex !important;
-                flex-direction: column !important;
             }
             
-            /* Forces the structural form row container to stop floating left */
-            div[data-testid="stForm"] data-testid="stBlock",
-            div[data-testid="stForm"] .element-container,
+            /* Target the structural row component wrapper containing the form button */
             div[data-testid="stForm"] div.stFormSubmitButton {
                 display: flex !important;
                 justify-content: center !important;
                 align-items: center !important;
                 width: 100% !important;
-                text-align: center !important;
-                margin-top: 15px !important; /* Padding cushion below fields */
-                margin-bottom: 0px !important;
+                margin-top: 25px !important; /* Elegant 5-space cushioning from fields */
+                margin-bottom: 5px !important;
             }
 
-            /* Target button itself to sit symmetrically in the center block */
+            /* Target button itself to center layout and stretch across the container space */
             div[data-testid="stForm"] div.stFormSubmitButton button,
             div[data-testid="stForm"] button[kind="primary"],
             div[data-testid="stForm"] button[type="submit"],
             .stFormSubmitButton > button {
-                font-size: 15px !important; 
+                font-size: 16px !important; 
                 font-weight: 600 !important;
-                padding: 0.5rem 2.5rem !important; 
-                width: auto !important; 
-                min-width: 250px !important; /* Gives the button an elegant shape */
+                padding: 0.6rem 2rem !important; 
+                width: 75% !important; /* Stretches the button elegantly across the box center */
+                min-width: 280px !important;
                 margin: 0 auto !important; 
                 background-color: #28a745 !important; /* Vibrant green */
                 color: #ffffff !important;
