@@ -185,7 +185,7 @@ allocated_df = df_teams[df_teams['StakeHolder'] != ""]
 remaining_count = 48 - len(allocated_df)
 
 if remaining_count > 0:
-    # --- STYLING GLOBAL BUTTON CONVERSION ---
+    # --- STYLING BUTTONS (EXPLICIT INDEPENDENT TARGETING) ---
     st.markdown(
         """
         <style>
@@ -203,7 +203,9 @@ if remaining_count > 0:
             }
             div[data-testid="InputInstructions"] { display: none !important; }
             
-            /* Big Main Toggle Button Rules */
+            /* ========================================================
+               1. MAIN DRAW TOGGLE BUTTON STYLE (STAYS BIG AND WHITE)
+               ======================================================== */
             button[key="draw_toggle_btn"] {
                 background-color: #ffffff !important;
                 border: 1px solid #dee2e6 !important;
@@ -216,6 +218,7 @@ if remaining_count > 0:
                 box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15) !important;
                 transition: background-color 0.25s ease !important;
                 display: block !important;
+                margin: 0 0 !important;
             }
             
             button[key="draw_toggle_btn"] p {
@@ -237,9 +240,10 @@ if remaining_count > 0:
                 color: #ffffff !important;
             }
 
-            /* --- CUSTOM REFRESH BUTTON WRAPPER --- */
-            div[data-testid="stVerticalBlockBorderWrapper"]:has(button[key="refresh_data_btn"]),
-            div.element-container:has(button[key="refresh_data_btn"]) {
+            /* ========================================================
+               2. REFRESH BUTTON STYLE (SMALL, DARK, LOW-PROFILE, CENTER)
+               ======================================================== */
+            div[data-testid="stElementContainer"]:has(button[key="refresh_data_btn"]) {
                 display: flex !important;
                 justify-content: center !important;
                 align-items: center !important;
@@ -258,7 +262,9 @@ if remaining_count > 0:
                 box-shadow: none !important;
                 transition: background-color 0.15s ease, color 0.15s ease !important;
                 margin: 0 auto !important;
-                display: inline-block !important;
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
             }
             
             button[key="refresh_data_btn"] p {
@@ -279,6 +285,7 @@ if remaining_count > 0:
                 color: #fafafa !important;
             }
 
+            /* Refresh Light Mode Adaptive overrides */
             @media (prefers-color-scheme: light) {
                 button[key="refresh_data_btn"] {
                     background-color: #f1f3f5 !important;
@@ -423,7 +430,7 @@ with m_col3:
 st.write("")
 st.write("")
 
-# --- FIXED AND CENTERED REFRESH BUTTON ---
+# --- DEFINITIVELY CENTERED REFRESH BUTTON ---
 if st.button("🔄 Refresh Data", key="refresh_data_btn"):
     st.rerun()
 
@@ -435,10 +442,9 @@ html, body {
     margin: 0; padding: 0; 
     background-color: transparent; 
     font-family: sans-serif; 
-    overflow: hidden; /* Lock the primary iframe element body container to freeze headers safely */
+    overflow: hidden; 
 }
 
-/* Enforce continuous height scrolling viewport bounding context */
 .table-container { 
     width: 100%; 
     height: 98vh; 
@@ -455,12 +461,11 @@ html, body {
     table-layout: auto; 
 }
 
-/* Absolute Sticky Header Anchor Directives */
 .sweepstake-table thead th {
     position: sticky !important;
     top: 0px !important;
     z-index: 999 !important;
-    background-color: #0e1117 !important; /* Solid matte backplane stops underlying text bleedthrough */
+    background-color: #0e1117 !important; 
     color: #ffffff !important;
     text-align: center;
     padding: 12px 6px;
@@ -484,7 +489,7 @@ html, body {
 /* --- ADAPTIVE LIGHT MODE ANCHORS --- */
 @media (prefers-color-scheme: light) {
     .sweepstake-table thead th { 
-        background-color: #f8f9fa !important; /* Pure solid crisp light grey block background */
+        background-color: #f8f9fa !important; 
         color: #111111 !important; 
         border-bottom: 2px solid #ced4da !important;
     }
