@@ -13,11 +13,9 @@ st.set_page_config(page_title="2026 World Cup Sweepstake", page_icon="icon.png",
 st.markdown(
     """
     <script>
-        // Force Streamlit's theme settings to dark mode in the local storage
         window.localStorage.setItem('stLocalStorageSyncv1-theme', '{"theme":"dark"}');
     </script>
     <style>
-        /* Fallback CSS to force dark background variables just in case */
         :root {
             --st-theme-primary: #ff4b4b;
             --st-theme-backgroundColor: #0e1117;
@@ -145,24 +143,29 @@ if remaining_count > 0:
                 background-color: #ffffff !important;
                 border: 1px solid #ffffff !important;
                 border-radius: 12px !important;
-                padding: 1.2rem 1.5rem !important;
+                padding: 0px !important;
+                height: 70px !important; /* Fixed baseline height to guarantee single line spacing */
                 
-                /* CRITICAL SQUARED ALIGNMENT FIX: Turn entire header row into a centered item block */
                 display: flex !important;
                 justify-content: center !important; 
                 align-items: center !important;
+                position: relative !important;
                 box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15) !important;
                 transition: background-color 0.25s ease, border-color 0.25s ease !important;
             }
 
-            /* Hide the native little arrow on the far edge that ruins symmetry */
+            /* Completely remove the native chevron toggle graphic to save space */
             div[data-testid="stExpander"] summary svg {
                 display: none !important;
             }
 
-            /* Strip out layout constraints on Streamlit's inner block containers */
-            div[data-testid="stExpander"] summary > div,
-            div[data-testid="stExpander"] summary > div > div {
+            /* Absolute alignment centering override layer */
+            div[data-testid="stExpander"] summary > div {
+                position: absolute !important;
+                left: 0px !important;
+                right: 0px !important;
+                top: 0px !important;
+                bottom: 0px !important;
                 display: flex !important;
                 justify-content: center !important;
                 align-items: center !important;
@@ -171,17 +174,27 @@ if remaining_count > 0:
                 margin: 0px !important;
                 padding: 0px !important;
             }
+            
+            div[data-testid="stExpander"] summary > div > div {
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+                width: 100% !important;
+            }
 
-            /* Text Formatting: Locks header contents down the absolute dead-center */
+            /* Header Content Row Custom Sizing Rules */
             div[data-testid="stExpander"] summary p,
             div[data-testid="stExpander"] summary span {
-                font-size: 24px !important;
+                font-size: 22px !important; /* Slightly optimized point size to ensure 100% line lock */
                 font-weight: 800 !important;
                 color: #111111 !important;
                 margin: 0px !important;
+                padding: 0px !important;
                 text-align: center !important; 
-                width: auto !important;
-                display: inline-block !important;
+                white-space: nowrap !important; /* ABSOLUTE FORCE: Prevents line breaks */
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
                 transition: color 0.25s ease !important;
             }
 
@@ -194,7 +207,7 @@ if remaining_count > 0:
             
             div[data-testid="stExpander"] summary:hover p,
             div[data-testid="stExpander"] summary:hover span {
-                color: #ffffff !important; /* Text turns white */
+                color: #ffffff !important;
             }
             
             div[data-testid="InputInstructions"] {
@@ -228,8 +241,8 @@ if remaining_count > 0:
         unsafe_allow_html=True
     )
     
-    # --- THE BIG DRAW EXPANDER (Perfectly Centered Alignment) ---
-    with st.expander("▶ Click here to enter your PIN & draw a team! ◀", expanded=False):
+    # --- THE BIG DRAW EXPANDER (Perfect Center + Guaranteed 1 Line) ---
+    with st.expander("👋 Click here to enter your PIN & draw a team!", expanded=False):
         with st.form(key="sweepstake_form", clear_on_submit=False):
             form_col1, form_col2 = st.columns([1.2, 1])
             
