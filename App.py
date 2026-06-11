@@ -7,7 +7,7 @@ import time
 import re
 
 # Page config
-st.set_page_config(page_title="2026 World Cup Sweepstake", page_icon="🏆", layout="centered")
+st.set_page_config(page_title="2026 World Cup Sweepstake", page_icon="⚽", layout="centered")
 
 # --- CENTERING THE LOGO ---
 col1, col2, col3 = st.columns([1, 2, 1])
@@ -51,32 +51,33 @@ allocated_df = df_teams[df_teams['StakeHolder'] != ""]
 remaining_count = 48 - len(allocated_df)
 
 if remaining_count > 0:
-    # --- STYLING REGIME FOR COMBINED COMPACT PANEL ---
+    # --- STYLING ENGINE FOR ZERO GAP AND FLUSH DIALOG ATTACHMENT ---
     st.markdown(
         """
         <style>
-            /* Kill default layout padding/gaps inside container rows completely */
-            div[data-testid="stVerticalBlock"] > div {
-                gap: 0rem !important;
-                margin-bottom: 0px !important;
+            /* Completely destroy gaps and margins between blocks inside layout wrappers */
+            [data-testid="stVerticalBlock"] {
+                gap: 0px !important;
+            }
+            [data-testid="stVerticalBlock"] > div {
                 padding-bottom: 0px !important;
+                margin-bottom: 0px !important;
+                gap: 0px !important;
             }
 
-            /* Custom secondary button layout override (Header Toggle Box) */
+            /* Main light interactive header configuration styling */
             div.element-container button[kind="secondary"] {
                 background-color: #f8f9fa !important;
                 color: #111111 !important;
                 border: 1px solid #e0e0e0 !important;
-                border-top-left-radius: 8px !important;
-                border-top-right-radius: 8px !important;
-                border-bottom-left-radius: 8px !important;
-                border-bottom-right-radius: 8px !important;
+                border-radius: 8px !important;
                 font-size: 26px !important;
                 font-weight: 700 !important;
                 padding: 0.75rem 1rem !important;
                 text-align: center !important;
                 display: block !important;
                 margin-bottom: 0px !important;
+                transition: border-radius 0s, background-color 0.2s;
             }
             
             div.element-container button[kind="secondary"]:hover {
@@ -84,14 +85,14 @@ if remaining_count > 0:
                 border-color: #cccccc !important;
             }
 
-            /* Modify borders to attach instantly below when panel state is true */
+            /* Smoothly attach layout if panel state context is active */
             .panel-attached button[kind="secondary"] {
                 border-bottom-left-radius: 0px !important;
                 border-bottom-right-radius: 0px !important;
                 border-bottom: none !important;
             }
 
-            /* Seamless dark input panel body container */
+            /* Custom input block body panel layout shell overrides */
             .custom-form-container {
                 background-color: rgba(255, 255, 255, 0.03) !important;
                 border: 1px solid rgba(255, 255, 255, 0.1) !important;
@@ -101,22 +102,23 @@ if remaining_count > 0:
                 margin-top: 0px !important;
             }
 
-            /* Format the standard form card container parameters */
-            div[data-testid="stForm"] {
+            /* Wipe the generic Streamlit native card styling framework completely */
+            div[data-testid="stForm"], div.stForm {
                 border: none !important;
                 background: transparent !important;
                 padding: 0px !important;
                 margin: 0px !important;
+                box-shadow: none !important;
             }
 
-            /* Text fields sizing */
+            /* Compact text field properties resizing configuration */
             div[data-testid="stTextInput"] input {
                 padding: 6px 10px !important;
                 height: 38px !important;
                 font-size: 14px !important;
             }
 
-            /* Fit the visibility icon tightly inside the text area border frame */
+            /* Position password eye button completely flush inside right margin border */
             div[data-testid="stTextInput"] button[aria-label="View password text"] {
                 transform: scale(0.75) !important;
                 right: 0px !important;
@@ -124,7 +126,7 @@ if remaining_count > 0:
                 background: transparent !important;
             }
 
-            /* Wipe hint entry prompts entirely */
+            /* Clear hints */
             div[data-testid="InputInstructions"] {
                 display: none !important;
             }
@@ -142,7 +144,7 @@ if remaining_count > 0:
     is_open = st.query_params.get("expanded", "false") == "true"
     toggle_label = "🔽 Click here to enter your PIN & draw a team!" if is_open else "👋 Click here to enter your PIN & draw a team!"
 
-    # Use HTML wrapping wrapper classes to pass explicit style states down to the components
+    # Use specific class wrappers to force-remove structural padding
     if is_open:
         st.markdown('<div class="panel-attached">', unsafe_allow_html=True)
     else:
@@ -156,8 +158,10 @@ if remaining_count > 0:
 
     # Render attached container section block cleanly without separation spacing gaps
     if is_open:
+        # Wrap everything in a localized single block context to bypass layout spacing
         st.markdown('<div class="custom-form-container">', unsafe_allow_html=True)
         
+        # We handle action validation cleanly within a form execution context
         with st.form(key="sweepstake_form", clear_on_submit=False):
             form_col1, form_col2 = st.columns([1.2, 1])
             
