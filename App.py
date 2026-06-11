@@ -20,96 +20,65 @@ with col2:
 # --- TITLE WITHOUT MARKDOWN HOVER ANCHORS ---
 st.markdown("<div style='text-align: center; font-size: 40px; font-weight: bold; color: white; margin-bottom: 25px;'>2026 World Cup Sweepstake</div>", unsafe_allow_html=True)
 
-# --- CLEAN CUSTOM CSS INJECTION ---
+
+# --- 1. RAW NATIVE HTML INFO DROP DOWN (Significantly smaller, dark, and isolated) ---
 st.markdown(
     """
     <style>
-        /* ABSOLUTE FORCE: Hide every single native hover anchor link on the screen globally */
-        a {
-            display: none !important;
+        .custom-info-dropdown {
+            background-color: #15171c;
+            border: 1px solid #2d3139;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-family: sans-serif;
         }
-        .stMarkdown a, button a, div[data-testid="stMarkdownContainer"] a {
-            display: none !important;
+        .custom-info-dropdown summary {
+            padding: 8px 12px;
+            font-size: 13px;
+            color: #cccccc;
+            cursor: pointer;
+            font-weight: 500;
+            user-select: none;
+            outline: none;
         }
-        svg.css-6q9sum, svg.e1tzwq550, .st-emotion-cache-b698xo a {
-            display: none !important;
+        .custom-info-dropdown summary:hover {
+            color: #ffffff;
         }
-
-        /* --------------------------------------------------------------------------------- */
-        /* --- SURGICAL OVERRIDE: STYLES ONLY THE VERY FIRST EXPANDER CONTAINER (INFO TAB) --- */
-        /* --------------------------------------------------------------------------------- */
-        div[data-testid="stExpanderWithHeader"]:first-of-type summary {
-            background-color: #15171c !important; /* Inverted dark background look */
-            border: 1px solid #2d3139 !important;
-            border-radius: 6px !important;
-            padding: 0.25rem 0.75rem !important; /* Makes it significantly shorter/smaller */
-            min-height: auto !important;
-            max-height: 38px !important; 
+        .custom-info-content {
+            padding: 15px;
+            font-size: 14px;
+            color: #e0e0e0;
+            border-top: 1px solid #2d3139;
+            line-height: 1.6;
         }
-
-        div[data-testid="stExpanderWithHeader"]:first-of-type summary p {
-            font-size: 13px !important; /* Noticeably smaller text */
-            font-weight: 500 !important;
-            color: #cccccc !important; /* Light text font swap */
+        .custom-info-content ul {
+            margin: 0;
+            padding-left: 20px;
         }
-
-        /* Shrunk chevron icon tracking inside the first container block */
-        div[data-testid="stExpanderWithHeader"]:first-of-type summary svg {
-            color: #cccccc !important;
-            fill: #cccccc !important;
-            width: 14px !important;
-            height: 14px !important;
-        }
-        
-        /* Remove instructions hint */
-        div[data-testid="InputInstructions"] {
-            display: none !important;
-        }
-
-        /* Style the green submission button without breaking parent layout constraints */
-        div[data-testid="stForm"] button[kind="primary"],
-        div[data-testid="stForm"] button[type="submit"],
-        .stFormSubmitButton > button {
-            font-size: 15px !important; 
-            font-weight: 600 !important;
-            padding: 0.5rem 2.5rem !important; 
-            background-color: #28a745 !important; 
-            color: #ffffff !important;
-            border: 1px solid #218838 !important;
-            border-radius: 6px !important;
-            box-shadow: none !important;
-            transition: background-color 0.2s ease, border-color 0.2s ease !important;
-        }
-
-        div[data-testid="stForm"] button[kind="primary"]:hover,
-        div[data-testid="stForm"] button[type="submit"]:hover,
-        .stFormSubmitButton > button:hover {
-            background-color: #218838 !important; 
-            border-color: #1e7e34 !important;
-            color: #ffffff !important;
+        .custom-info-content li {
+            margin-bottom: 8px;
         }
     </style>
-    """, 
+    
+    <details class="custom-info-dropdown">
+        <summary>ℹ️ How the Sweepstake Works (Rules & Entry Details)</summary>
+        <div class="custom-info-content">
+            <p>Welcome to the <strong>2026 World Cup Sweepstake</strong>! Here is everything you need to know to get started:</p>
+            <ul>
+                <li><strong>Entry Fee:</strong> Join the sweepstake by paying <strong>$5 per entry</strong> via cash or PayID to <strong>benjoy@up.me</strong>.</li>
+                <li><strong>Prize Pool:</strong> 100% of the entry fees go directly into the competitive prize pool.</li>
+                <li><strong>Entry Limit:</strong> You can purchase a <strong>maximum of 5 entries</strong> per person.</li>
+                <li><strong>How to Draw:</strong> For each entry paid, you will receive a <strong>unique 5-digit PIN</strong>. Enter your PIN below to trigger the automated shuffling system and draw a random country.</li>
+                <li><strong>Exclusivity:</strong> Once you draw a country, it is permanently allocated to you and locked so no other player can claim it.</li>
+                <li><strong>Winning the Pool:</strong> If your allocated country wins the World Cup final on <strong>July 20th</strong>, you take home the <strong>entire cash prize pool</strong>!</li>
+                <li><strong>The Safety Net:</strong> If the tournament is won by a country that was left unassigned/undrawn by the end of the sweepstake, <strong>all entry fees will be fully refunded</strong> to the players.</li>
+            </ul>
+            <p style="margin-top: 10px; font-style: italic; color: #aaa;">Good luck! Ensure your entry fees are sent before drawing your team.</p>
+        </div>
+    </details>
+    """,
     unsafe_allow_html=True
 )
-
-# --- 1. INFORMATION SWEEPSTAKE TAB ---
-with st.expander("ℹ️ How the Sweepstake Works (Rules & Entry Details)", expanded=False):
-    st.markdown(
-        """
-        Welcome to the **2026 World Cup Sweepstake**! Here is everything you need to know to get started:
-        
-        * **Entry Fee:** Join the sweepstake by paying **$5 per entry** via cash or PayID to **benjoy@up.me**. 
-        * **Prize Pool:** 100% of the entry fees go directly into the competitive prize pool.
-        * **Entry Limit:** You can purchase a **maximum of 5 entries** per person.
-        * **How to Draw:** For each entry paid, you will receive a **unique 5-digit PIN**. Enter your PIN below to trigger the automated shuffling system and draw a random country.
-        * **Exclusivity:** Once you draw a country, it is permanently allocated to you and locked so no other player can claim it.
-        * **Winning the Pool:** If your allocated country wins the World Cup final on **July 20th**, you take home the **entire cash prize pool**!
-        * **The Safety Net:** If the tournament is won by a country that was left unassigned/undrawn by the end of the sweepstake, **all entry fees will be fully refunded** to the players.
-        
-        *Good luck! Ensure your entry fees are sent before drawing your team.*
-        """
-    )
 
 st.write("")
 
@@ -144,7 +113,54 @@ allocated_df = df_teams[df_teams['StakeHolder'] != ""]
 remaining_count = 48 - len(allocated_df)
 
 if remaining_count > 0:
-    # --- 2. ENTRY TICKET DRAW TAB ---
+    # --- GLOBAL UI STYLING RULES (Leaves expander completely vanilla/default native layout) ---
+    st.markdown(
+        """
+        <style>
+            /* ABSOLUTE FORCE: Hide every single native hover anchor link on the screen globally */
+            a {
+                display: none !important;
+            }
+            .stMarkdown a, button a, div[data-testid="stMarkdownContainer"] a {
+                display: none !important;
+            }
+            svg.css-6q9sum, svg.e1tzwq550, .st-emotion-cache-b698xo a {
+                display: none !important;
+            }
+            
+            /* Remove instructions hint */
+            div[data-testid="InputInstructions"] {
+                display: none !important;
+            }
+
+            /* Style the green submission button without breaking parent layout constraints */
+            div[data-testid="stForm"] button[kind="primary"],
+            div[data-testid="stForm"] button[type="submit"],
+            .stFormSubmitButton > button {
+                font-size: 15px !important; 
+                font-weight: 600 !important;
+                padding: 0.5rem 2.5rem !important; 
+                background-color: #28a745 !important; 
+                color: #ffffff !important;
+                border: 1px solid #218838 !important;
+                border-radius: 6px !important;
+                box-shadow: none !important;
+                transition: background-color 0.2s ease, border-color 0.2s ease !important;
+            }
+
+            div[data-testid="stForm"] button[kind="primary"]:hover,
+            div[data-testid="stForm"] button[type="submit"]:hover,
+            .stFormSubmitButton > button:hover {
+                background-color: #218838 !important; 
+                border-color: #1e7e34 !important;
+                color: #ffffff !important;
+            }
+        </style>
+        """, 
+        unsafe_allow_html=True
+    )
+    
+    # --- 2. NATIVE UNTOUCHED DRAW A TEAM TAB ---
     with st.expander("👋 Click here to enter your PIN & draw a team!", expanded=False):
         with st.form(key="sweepstake_form", clear_on_submit=False):
             form_col1, form_col2 = st.columns([1.2, 1])
