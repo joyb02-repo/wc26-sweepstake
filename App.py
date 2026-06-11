@@ -202,10 +202,9 @@ if remaining_count > 0:
                 margin-top: 15px !important;
             }
             div[data-testid="InputInstructions"] { display: none !important; }
-            .stButton { width: 100% !important; }
             
-            /* Toggle Button Rules */
-            button[key="draw_toggle_btn"], .stButton > button {
+            /* Big Main Toggle Button Rules */
+            button[key="draw_toggle_btn"] {
                 background-color: #ffffff !important;
                 border: 1px solid #dee2e6 !important;
                 outline: none !important;
@@ -219,7 +218,7 @@ if remaining_count > 0:
                 display: block !important;
             }
             
-            button[key="draw_toggle_btn"] p, .stButton > button p {
+            button[key="draw_toggle_btn"] p {
                 font-size: clamp(15px, 4.5vw, 22px) !important; 
                 font-weight: 800 !important;
                 color: #111111 !important;
@@ -231,11 +230,67 @@ if remaining_count > 0:
                 width: 100% !important;
             }
 
-            button[key="draw_toggle_btn"]:hover, .stButton > button:hover {
+            button[key="draw_toggle_btn"]:hover {
                 background-color: #e6c619 !important;
             }
-            button[key="draw_toggle_btn"]:hover p, .stButton > button:hover p {
+            button[key="draw_toggle_btn"]:hover p {
                 color: #ffffff !important;
+            }
+
+            /* --- CUSTOM REFRESH BUTTON OVERRIDES --- */
+            div.element-container:has(button[key="refresh_data_btn"]) {
+                display: flex !important;
+                justify-content: center !important;
+                width: 100% !important;
+            }
+            
+            button[key="refresh_data_btn"] {
+                background-color: #1f232b !important;
+                border: 1px solid #343a46 !important;
+                color: #a0aec0 !important;
+                border-radius: 6px !important;
+                padding: 6px 16px !important;
+                min-height: unset !important;
+                height: 34px !important;
+                width: auto !important;
+                box-shadow: none !important;
+                transition: background-color 0.15s ease, color 0.15s ease !important;
+            }
+            
+            button[key="refresh_data_btn"] p {
+                color: #a0aec0 !important;
+                font-size: 13px !important;
+                font-weight: 500 !important;
+                margin: 0 !important;
+                line-height: 1 !important;
+            }
+            
+            button[key="refresh_data_btn"]:hover {
+                background-color: #2d333f !important;
+                color: #fafafa !important;
+                border-color: #4a5568 !important;
+            }
+            button[key="refresh_data_btn"]:hover p {
+                color: #fafafa !important;
+            }
+
+            /* Light Mode Adaptive Tweaks for Refresh Button */
+            @media (prefers-color-scheme: light) {
+                button[key="refresh_data_btn"] {
+                    background-color: #f1f3f5 !important;
+                    border: 1px solid #ced4da !important;
+                    color: #495057 !important;
+                }
+                button[key="refresh_data_btn"] p {
+                    color: #495057 !important;
+                }
+                button[key="refresh_data_btn"]:hover {
+                    background-color: #e9ecef !important;
+                    color: #111111 !important;
+                }
+                button[key="refresh_data_btn"]:hover p {
+                    color: #111111 !important;
+                }
             }
 
             /* Submit Button Configuration */
@@ -265,7 +320,7 @@ if remaining_count > 0:
         unsafe_allow_html=True
     )
     
-    if st.button("👋 Click here to enter your PIN & draw a team!", key="draw_toggle_btn", use_container_width=True):
+    if st.button("👋 Click here to enter your PIN & draw a team!", key="draw_toggle_btn"):
         st.session_state.show_draw_form = not st.session_state.show_draw_form
         st.rerun()
 
@@ -369,10 +424,9 @@ with m_col3:
 st.write("")
 st.write("")
 
-c_btn1, c_btn2, c_btn3 = st.columns([2, 1, 2])
-with c_btn2:
-    if st.button("🔄 Refresh", use_container_width=True):
-        st.rerun()
+# --- FIXED REFRESH PLACEMENT ---
+if st.button("🔄 Refresh Data", key="refresh_data_btn"):
+    st.rerun()
 
 st.write("")
 
@@ -386,12 +440,12 @@ html, body { margin: 0; padding: 0; background-color: transparent; font-family: 
 .table-container { width: 100%; overflow-x: hidden; box-sizing: border-box; }
 .sweepstake-table { width: 100%; border-collapse: collapse; margin-top: 5px; table-layout: auto; }
 
-/* --- CRITICAL CRITERIA: FREEZE TABLE HEADER ROW --- */
+/* Freeze Table Header Row styling */
 .sweepstake-table th { 
     position: sticky !important; 
     top: 0 !important; 
     z-index: 100 !important; 
-    background-color: #171a21 !important; /* Pure uniform solid backfill to prevent layout bleedthrough */
+    background-color: #171a21 !important; 
     color: #ffffff !important; 
     text-align: center; 
     padding: 10px 6px; 
@@ -415,7 +469,7 @@ html, body { margin: 0; padding: 0; background-color: transparent; font-family: 
 /* --- COMPREHENSIVE LIGHT MODE OVERRIDES --- */
 @media (prefers-color-scheme: light) {
     .sweepstake-table th { 
-        background-color: #e9ecef !important; /* Solid light grey row backfill */
+        background-color: #e9ecef !important; 
         color: #212529 !important; 
         border-bottom: 2px solid #dee2e6 !important;
     }
