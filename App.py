@@ -6,35 +6,30 @@ import random
 import time
 import re
 
-# Page config (Kept the tab icon clean)
+# Page config
 st.set_page_config(page_title="2026 World Cup Sweepstake", page_icon="⚽", layout="centered")
 
 # --- CENTERING THE LOGO ---
-# Creating 3 columns with a wide middle column acts as an automatic centering tool
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
     try:
-        # Pulls 'wclogo.png' directly from your GitHub repository folder root
         st.image("wclogo.png", use_container_width=True)
     except Exception:
-        # Safe fallback layout if the image path encounters a localized hiccup
         st.write("") 
 
-# Centered Title (Without the soccer ball emoji)
 st.markdown("<h1 style='text-align: center;'>2026 World Cup Sweepstake</h1>", unsafe_allow_html=True)
-st.write("") # Clean spacing element
+st.write("") 
 
-# --- USER CONFIGURATION (PASTE YOUR COPIED CONFIGS HERE) ---
+# --- USER CONFIGURATION ---
 SPREADSHEET_ID = "17PNVdOezXPwPmhV3vM1uWmeKsY9lJhFHKM3mBCyUJqU"
 FORM_ID = "1FAIpQLScZsUCEPlh6YqzhGTb5JfLNA_oNeb6wGksMejlrMlWnjPUYoQ"
 
-# Update these with your exact Entry numbers from Step 2
 ENTRY_ACTION = "entry.1179688956"  
 ENTRY_ROW = "entry.870831797"     
 ENTRY_VALUE = "entry.931377367"    
 # -----------------------------------------------------------
 
-# Read data anonymously using basic web endpoints (Bypasses Google API limitations completely)
+# Read data anonymously using basic web endpoints
 try:
     url_teams = f"https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=Sheet1"
     url_pins = f"https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=Pins"
@@ -56,75 +51,81 @@ allocated_df = df_teams[df_teams['StakeHolder'] != ""]
 remaining_count = 48 - len(allocated_df)
 
 if remaining_count > 0:
-    with st.expander("👋 Click here to enter your PIN & Draw!", expanded=False):
+    with st.expander("👋 Click here to enter your PIN & draw a team!", expanded=False):
         with st.form(key="sweepstake_form", clear_on_submit=True):
             user_name = st.text_input("Enter Your Full Name:", placeholder="e.g., Jane Doe").strip()
             user_pin = st.text_input("Enter Your Unique 5-Digit PIN:", type="password", placeholder="xxxx").strip()
-            submit_button = st.form_submit_button(label="🎲 Verify & Draw My Country!")
+            submit_button = st.form_submit_button(label="Verify & Draw My Country!")
 
         if submit_button:
             if not user_name or not user_pin:
                 st.warning("Please fill out both details.")
-            elif user_name.lower() in [name.lower() for name in df_teams['StakeHolder'].values]:
-                already_drawn = df_teams[df_teams['StakeHolder'].str.lower() == user_name.lower()].iloc[0]
-                st.error(f"🚨 {user_name}, you have already drawn: {already_drawn['Emoji']} **{already_drawn['Country']}**!")
             else:
-                pin_match = df_pins[df_pins['PIN'] == user_pin]
+                # --- NEW COUNT-BASED MAXIMUM CHECK ---
+                # Check how many times this specific name appears in the sheet (case-insensitive)
+                existing_draws = df_teams[df_teams['StakeHolder'].str.lower() == user_name.lower()]
+                draw_count = len(existing_draws)
                 
-                if pin_match.empty:
-                    st.error("❌ Invalid PIN.")
-                elif pin_match.iloc[0]['Status'] == "Used":
-                    st.error("❌ This PIN has already been used!")
+                if draw_count >= 5:
+                    drawn_countries = ", ".join([f"{row['Emoji']} {row['Country']}" for _, row in existing_draws.iterrows()])
+                    st.error(f"🚨 **{user_name}**, you have reached the maximum limit of 5 entries! You already own: {drawn_countries}")
                 else:
-                    available_teams = df_teams[df_teams['StakeHolder'] == ""]
+                    # Target pin lookup row
+                    pin_match = df_pins[df_pins['PIN'] == user_pin]
                     
-                    if not available_teams.empty:
-                        chosen_team_row = available_teams.sample(n=1)
-                        chosen_country = chosen_team_row['Country'].values[0]
-                        chosen_emoji = chosen_team_row['Emoji'].values[0]
+                    if pin_match.empty:
+                        st.error("❌ Invalid PIN.")
+                    elif pin_match.iloc[0]['Status'] == "Used":
+                        st.error("❌ This PIN has already been used!")
+                    else:
+                        available_teams = df_teams[df_teams['StakeHolder'] == ""]
                         
-                        team_sheet_row = int(chosen_team_row.index[0]) + 2
-                        pin_sheet_row = int(pin_match.index[0]) + 2
-                        
-                        # Animation Sequence
-                        animation_placeholder = st.empty()
-                        all_emojis = df_teams['Emoji'].tolist()
-                        for i in range(25):
-                            animation_placeholder.markdown(f"<h1 style='text-align: center; font-size: 100px;'>{random.choice(all_emojis)}</h1>", unsafe_allow_html=True)
-                            time.sleep(0.04 + (i * 0.01))
-                        
-                        animation_placeholder.markdown(f"<h1 style='text-align: center; font-size: 120px;'>{chosen_emoji}</h1>", unsafe_allow_html=True)
-                        
-                        # Trigger Form Submissions to update the sheets via Web Requests
-                        form_url = f"https://docs.google.com/forms/d/e/{FORM_ID}/formResponse"
-                        
-                        try:
-                            # 1. Update Team Allocation
-                            data_team = {ENTRY_ACTION: "CLAIM_TEAM", ENTRY_ROW: str(team_sheet_row), ENTRY_VALUE: user_name}
-                            req_team = urllib.request.Request(form_url, data=urllib.parse.urlencode(data_team).encode())
-                            urllib.request.urlopen(req_team)
+                        if not available_teams.empty:
+                            chosen_team_row = available_teams.sample(n=1)
+                            chosen_country = chosen_team_row['Country'].values[0]
+                            chosen_emoji = chosen_team_row['Emoji'].values[0]
                             
-                            # 2. Burn PIN
-                            data_pin = {ENTRY_ACTION: "USE_PIN", ENTRY_ROW: str(pin_sheet_row), ENTRY_VALUE: "Used"}
-                            req_pin = urllib.request.Request(form_url, data=urllib.parse.urlencode(data_pin).encode())
-                            urllib.request.urlopen(req_pin)
+                            team_sheet_row = int(chosen_team_row.index[0]) + 2
+                            pin_sheet_row = int(pin_match.index[0]) + 2
                             
-                            st.balloons()
-                            st.success(f"🎉 **Congratulations {user_name}!**")
-                            st.subheader(f"Your country: **{chosen_country}**")
-                            time.sleep(4)
-                            st.rerun()
-                        except Exception:
-                            st.error("Submission failed. Connection issue.")
+                            # Animation Sequence
+                            animation_placeholder = st.empty()
+                            all_emojis = df_teams['Emoji'].tolist()
+                            for i in range(25):
+                                animation_placeholder.markdown(f"<h1 style='text-align: center; font-size: 100px;'>{random.choice(all_emojis)}</h1>", unsafe_allow_html=True)
+                                time.sleep(0.04 + (i * 0.01))
+                            
+                            animation_placeholder.markdown(f"<h1 style='text-align: center; font-size: 120px;'>{chosen_emoji}</h1>", unsafe_allow_html=True)
+                            
+                            # Trigger Form Submissions to update the sheets via Web Requests
+                            form_url = f"https://docs.google.com/forms/d/e/{FORM_ID}/formResponse"
+                            
+                            try:
+                                # 1. Update Team Allocation
+                                data_team = {ENTRY_ACTION: "CLAIM_TEAM", ENTRY_ROW: str(team_sheet_row), ENTRY_VALUE: user_name}
+                                req_team = urllib.request.Request(form_url, data=urllib.parse.urlencode(data_team).encode())
+                                urllib.request.urlopen(req_team)
+                                
+                                # 2. Burn PIN
+                                data_pin = {ENTRY_ACTION: "USE_PIN", ENTRY_ROW: str(pin_sheet_row), ENTRY_VALUE: "Used"}
+                                req_pin = urllib.request.Request(form_url, data=urllib.parse.urlencode(data_pin).encode())
+                                urllib.request.urlopen(req_pin)
+                                
+                                st.balloons()
+                                st.success(f"🎉 **Congratulations {user_name}!** (Draw {draw_count + 1}/5)")
+                                st.subheader(f"Your country: **{chosen_country}**")
+                                time.sleep(4)
+                                st.rerun()
+                            except Exception:
+                                st.error("Submission failed. Connection issue.")
 else:
     st.info("🎉 All 48 countries have been claimed!")
 
 # --- SCOREBOARD VIEW ---
 st.write("---")
-st.markdown("<h3 style='text-align: center;'>📊 Live Sweepstake Scoreboard</h3>", unsafe_allow_html=True)
+st.markdown("<h3 style='text-align: center;'>Live Sweepstake Scoreboard</h3>", unsafe_allow_html=True)
 st.write("")
 
-# Create 4 columns to squeeze the metrics into the center of the screen
 m_col1, m_col2, m_col3, m_col4 = st.columns([1, 2, 2, 1])
 
 with m_col2:
@@ -152,7 +153,6 @@ with m_col3:
 st.write("")
 st.write("")
 
-# Center the refresh button right below the metrics
 c_btn1, c_btn2, c_btn3 = st.columns([2, 1, 2])
 with c_btn2:
     if st.button("🔄 Refresh", use_container_width=True):
@@ -161,7 +161,6 @@ with c_btn2:
 st.write("")
 
 # --- STYLED LIVE DATA TABLE ---
-# Build a clean, custom HTML Table to allow centering and custom emoji sizing
 table_html = """
 <style>
     .sweepstake-table {
@@ -181,11 +180,11 @@ table_html = """
     .sweepstake-table td {
         padding: 16px;
         text-align: center;
-        vertical-align: middle; /* Keeps everything perfectly centered vertically */
+        vertical-align: middle;
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
     .emoji-cell {
-        font-size: 38px; /* Makes your country flags nice and big */
+        font-size: 38px;
         line-height: 1;
         display: block;
     }
@@ -206,13 +205,11 @@ table_html = """
     </tr>
 """
 
-# Dynamic generation of table rows from your live dataframe
 for _, row in df_teams.iterrows():
     country = row['Country']
     emoji = row['Emoji']
     owner = row['StakeHolder']
     
-    # Assign specific styling classes based on availability status
     if owner == "":
         owner_display = "<span class='status-available'>⏳ Available</span>"
     else:
@@ -227,6 +224,4 @@ for _, row in df_teams.iterrows():
     """
 
 table_html += "</table>"
-
-# Render the beautifully custom-styled table directly into the layout dashboard
 st.markdown(table_html, unsafe_allow_html=True)
