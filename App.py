@@ -20,8 +20,27 @@ with col2:
 # --- TITLE WITHOUT MARKDOWN HOVER ANCHORS ---
 st.markdown("<div style='text-align: center; font-size: 40px; font-weight: bold; color: white; margin-bottom: 25px;'>2026 World Cup Sweepstake</div>", unsafe_allow_html=True)
 
+# --- NEW COLLAPSABLE INFORMATION TAB ---
+with st.expander("ℹ️ How the Sweepstake Works (Rules & Entry Details)", expanded=False):
+    st.markdown(
+        """
+        Welcome to the **2026 World Cup Sweepstake**! Here is everything you need to know to get started:
+        
+        * **Entry Fee:** Join the sweepstake by paying **$5 per entry** via cash or PayID to **benjoy@up.me**. 
+        * **Prize Pool:** 100% of the entry fees go directly into the competitive prize pool.
+        * **Entry Limit:** You can purchase a **maximum of 5 entries** per person.
+        * **How to Draw:** For each entry paid, you will receive a **unique 5-digit PIN**. Enter your PIN below to trigger the automated shuffling system and draw a random country.
+        * **Exclusivity:** Once you draw a country, it is permanently allocated to you and locked so no other player can claim it.
+        * **Winning the Pool:** If your allocated country wins the World Cup final on **July 20th**, you take home the **entire cash prize pool**!
+        * **The Safety Net:** If the tournament is won by a country that was left unassigned/undrawn by the end of the sweepstake, **all entry fees will be fully refunded** to the players.
+        
+        *Good luck! Ensure your entry fees are sent before drawing your team.*
+        """
+    )
+
+st.write("")
+
 # --- SECURE USER CONFIGURATION VIA STREAMLIT SECRETS ---
-# The raw IDs are completely removed from the code. They are now safely fetched from your environment.
 SPREADSHEET_ID = st.secrets["SPREADSHEET_ID"]
 FORM_ID = st.secrets["FORM_ID"]
 
@@ -79,7 +98,7 @@ if remaining_count > 0:
             }
 
             div[data-testid="stExpander"] summary p {
-                font-size: 26px !important;
+                font-size: 22px !important; /* Slightly optimized text dynamic to accommodate two clean bars */
                 font-weight: bold !important;
                 color: #111111 !important; 
                 margin: 0px !important;
