@@ -161,32 +161,36 @@ with c_btn2:
 st.write("")
 
 # --- STYLED LIVE DATA TABLE ---
+# Build a single, fully encapsulated HTML block to fix rendering breaks
 table_html = """
 <style>
     .sweepstake-table {
         width: 100%;
         border-collapse: collapse;
-        margin-top: 10px;
-        font-family: sans-serif;
+        margin-top: 15px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background-color: transparent;
     }
     .sweepstake-table th {
-        background-color: rgba(255, 255, 255, 0.1);
-        color: white;
+        background-color: rgba(255, 255, 255, 0.08);
+        color: #ffffff !important;
         text-align: center;
-        padding: 12px;
-        font-weight: bold;
-        border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        padding: 14px;
+        font-weight: 600;
+        font-size: 15px;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.15);
     }
     .sweepstake-table td {
         padding: 16px;
         text-align: center;
-        vertical-align: middle;
+        vertical-align: middle !important;
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
     .emoji-cell {
         font-size: 38px;
         line-height: 1;
-        display: block;
+        display: inline-block;
+        vertical-align: middle;
     }
     .status-available {
         color: #888888;
@@ -198,13 +202,17 @@ table_html = """
     }
 </style>
 <table class="sweepstake-table">
-    <tr>
-        <th>Flag</th>
-        <th>Country Qualified</th>
-        <th>Owner Account</th>
-    </tr>
+    <thead>
+        <tr>
+            <th style="width: 20%;">Flag</th>
+            <th style="width: 40%;">Country Qualified</th>
+            <th style="width: 40%;">Owner Account</th>
+        </tr>
+    </thead>
+    <tbody>
 """
 
+# Dynamically construct each row with perfect spacing closures
 for _, row in df_teams.iterrows():
     country = row['Country']
     emoji = row['Emoji']
@@ -216,12 +224,18 @@ for _, row in df_teams.iterrows():
         owner_display = f"<span class='status-owned'>👤 {owner}</span>"
         
     table_html += f"""
-    <tr>
-        <td><span class="emoji-cell">{emoji}</span></td>
-        <td style="font-size: 16px; font-weight: 500;">{country}</td>
-        <td style="font-size: 16px;">{owner_display}</td>
-    </tr>
+        <tr>
+            <td><span class="emoji-cell">{emoji}</span></td>
+            <td style="font-size: 16px; font-weight: 500; color: white;">{country}</td>
+            <td style="font-size: 16px;">{owner_display}</td>
+        </tr>
     """
 
-table_html += "</table>"
+# Properly seal off the table markup framework
+table_html += """
+    </tbody>
+</table>
+"""
+
+# Render the single structural component cleanly
 st.markdown(table_html, unsafe_allow_html=True)
