@@ -4,7 +4,8 @@ import urllib.parse
 import urllib.request
 import random
 import time
-import re
+import base64
+import os
 
 # Page config
 st.set_page_config(page_title="2026 World Cup Sweepstake", page_icon="icon.png", layout="centered")
@@ -27,9 +28,27 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# --- UNIFIED BRANDING HEADER (LOCKED RATIO & NO LINE WRAPPING) ---
+# --- SAFE BASE64 IMAGE PROCESSING FOR THE UNIFIED HEADER ---
+logo_html_element = ""
+try:
+    # Try local or common deployment directory structures safely
+    possible_paths = ["wclogo.png", "app/static/wclogo.png", "static/wclogo.png"]
+    found_path = None
+    for path in possible_paths:
+        if os.path.exists(path):
+            found_path = path
+            break
+            
+    if found_path:
+        with open(found_path, "rb") as image_file:
+            encoded_string = base64.b64encode(image_file.read()).decode()
+            logo_html_element = f'<img src="data:image/png;base64,{encoded_string}" style="width: 35vw; max-width: 220px; min-width: 110px; height: auto; margin-bottom: 12px;">'
+except Exception:
+    logo_html_element = "" # Fallback gracefully if file read errors out
+
+# --- RENDER IMMUTABLE PROPORTIONAL BRANDING HEADER ---
 st.markdown(
-    """
+    f"""
     <div style="
         display: flex; 
         flex-direction: column; 
@@ -39,16 +58,10 @@ st.markdown(
         margin-bottom: 25px;
         box-sizing: border-box;
     ">
-        <img src="app/static/wclogo.png" style="
-            width: 35vw; 
-            max-width: 240px; 
-            min-width: 120px; 
-            height: auto; 
-            margin-bottom: 15px;
-        " onerror="this.style.display='none';">
+        {logo_html_element}
         
         <div style="
-            font-size: clamp(22px, 5.2vw, 40px); 
+            font-size: clamp(20px, 5.2vw, 40px); 
             font-weight: bold; 
             color: white; 
             text-align: center;
