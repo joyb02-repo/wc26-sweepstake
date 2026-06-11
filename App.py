@@ -17,8 +17,8 @@ with col2:
     except Exception:
         st.write("") 
 
-st.markdown("<div style='text-align: center; font-size: 40px; font-weight: bold; color: white; margin-bottom: 10px;'>2026 World Cup Sweepstake</div>", unsafe_allow_html=True)
-st.write("") 
+# --- TITLE WITHOUT MARKDOWN HOVER ANCHORS ---
+st.markdown("<div style='text-align: center; font-size: 40px; font-weight: bold; color: white; margin-bottom: 25px;'>2026 World Cup Sweepstake</div>", unsafe_allow_html=True)
 
 # --- USER CONFIGURATION ---
 SPREADSHEET_ID = "17PNVdOezXPwPmhV3vM1uWmeKsY9lJhFHKM3mBCyUJqU"
@@ -51,41 +51,84 @@ allocated_df = df_teams[df_teams['StakeHolder'] != ""]
 remaining_count = 48 - len(allocated_df)
 
 if remaining_count > 0:
-    # --- UNIVERSAL STYLING FOR FORM ELEMENTS & BUTTONS ---
+    # --- STYLING REGIME FOR COMBINED COMPACT PANEL ---
     st.markdown(
         """
         <style>
-            /* Make text input fields smaller and more compact */
+            /* Kill default layout padding/gaps inside container rows completely */
+            div[data-testid="stVerticalBlock"] > div {
+                gap: 0rem !important;
+                margin-bottom: 0px !important;
+                padding-bottom: 0px !important;
+            }
+
+            /* Custom secondary button layout override (Header Toggle Box) */
+            div.element-container button[kind="secondary"] {
+                background-color: #f8f9fa !important;
+                color: #111111 !important;
+                border: 1px solid #e0e0e0 !important;
+                border-top-left-radius: 8px !important;
+                border-top-right-radius: 8px !important;
+                border-bottom-left-radius: 8px !important;
+                border-bottom-right-radius: 8px !important;
+                font-size: 26px !important;
+                font-weight: 700 !important;
+                padding: 0.75rem 1rem !important;
+                text-align: center !important;
+                display: block !important;
+                margin-bottom: 0px !important;
+            }
+            
+            div.element-container button[kind="secondary"]:hover {
+                background-color: #eaeaea !important;
+                border-color: #cccccc !important;
+            }
+
+            /* Modify borders to attach instantly below when panel state is true */
+            .panel-attached button[kind="secondary"] {
+                border-bottom-left-radius: 0px !important;
+                border-bottom-right-radius: 0px !important;
+                border-bottom: none !important;
+            }
+
+            /* Seamless dark input panel body container */
+            .custom-form-container {
+                background-color: rgba(255, 255, 255, 0.03) !important;
+                border: 1px solid rgba(255, 255, 255, 0.1) !important;
+                border-bottom-left-radius: 8px !important;
+                border-bottom-right-radius: 8px !important;
+                padding: 24px !important;
+                margin-top: 0px !important;
+            }
+
+            /* Format the standard form card container parameters */
+            div[data-testid="stForm"] {
+                border: none !important;
+                background: transparent !important;
+                padding: 0px !important;
+                margin: 0px !important;
+            }
+
+            /* Text fields sizing */
             div[data-testid="stTextInput"] input {
                 padding: 6px 10px !important;
                 height: 38px !important;
                 font-size: 14px !important;
             }
 
-            /* Shrink password visibility eye icon container and snap right */
+            /* Fit the visibility icon tightly inside the text area border frame */
             div[data-testid="stTextInput"] button[aria-label="View password text"] {
                 transform: scale(0.75) !important;
                 right: 0px !important;
                 top: 2px !important;
                 background: transparent !important;
             }
-            
-            /* Completely wipe the "Press Enter to submit" prompt */
+
+            /* Wipe hint entry prompts entirely */
             div[data-testid="InputInstructions"] {
                 display: none !important;
             }
 
-            /* Custom Styling for the Container Form area */
-            .custom-form-container {
-                background-color: rgba(255, 255, 255, 0.03) !important;
-                border: 1px solid rgba(255, 255, 255, 0.1) !important;
-                border-bottom-left-radius: 8px;
-                border-bottom-right-radius: 8px;
-                padding: 20px 24px !important;
-                margin-top: -8px; /* Tightly couples form underneath header */
-            }
-
-            /* Style white label text explicitly */
             .custom-form-container label p {
                 color: #ffffff !important;
                 font-size: 14px !important;
@@ -96,46 +139,26 @@ if remaining_count > 0:
         unsafe_allow_html=True
     )
 
-    # Maintain expander toggle state completely native using query parameters
     is_open = st.query_params.get("expanded", "false") == "true"
     toggle_label = "🔽 Click here to enter your PIN & draw a team!" if is_open else "👋 Click here to enter your PIN & draw a team!"
 
-    # 1. CRISP INVERTED, LARGE, PERFECTLY CENTERED HEADER BAR BUTTON
+    # Use HTML wrapping wrapper classes to pass explicit style states down to the components
+    if is_open:
+        st.markdown('<div class="panel-attached">', unsafe_allow_html=True)
+    else:
+        st.markdown('<div>', unsafe_allow_html=True)
+
     if st.button(toggle_label, use_container_width=True, type="secondary"):
         st.query_params["expanded"] = "false" if is_open else "true"
         st.rerun()
 
-    # Injecting precise button styling properties directly onto the wrapper
-    st.markdown(
-        """
-        <style>
-            /* Force secondary action buttons to adapt light inverse styles */
-            div.element-container button[kind="secondary"] {
-                background-color: #f8f9fa !important;
-                color: #111111 !important;
-                border: 1px solid #e0e0e0 !important;
-                border-radius: 8px !important;
-                font-size: 26px !important; /* Prominent clean large text */
-                font-weight: 700 !important;
-                padding: 0.75rem 1rem !important;
-                text-align: center !important;
-                display: block !important;
-            }
-            div.element-container button[kind="secondary"]:hover {
-                background-color: #eaeaea !important;
-                border-color: #cccccc !important;
-            }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
+    st.markdown('</div>', unsafe_allow_html=True)
 
-    # 2. RENDER THE DARK SECTION CONTAINER IF OPENED
+    # Render attached container section block cleanly without separation spacing gaps
     if is_open:
         st.markdown('<div class="custom-form-container">', unsafe_allow_html=True)
         
         with st.form(key="sweepstake_form", clear_on_submit=False):
-            # Dynamic side-by-side arrangement
             form_col1, form_col2 = st.columns([1.2, 1])
             
             with form_col1:
@@ -145,7 +168,6 @@ if remaining_count > 0:
                 
             st.write("")
             
-            # Form submission layouts
             btn_space1, btn_space2, btn_space3 = st.columns([1, 1.5, 1])
             with btn_space2:
                 submit_button = st.form_submit_button(label="Verify & Draw My Country!", use_container_width=True)
