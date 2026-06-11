@@ -20,105 +20,8 @@ with col2:
 # --- TITLE WITHOUT MARKDOWN HOVER ANCHORS ---
 st.markdown("<div style='text-align: center; font-size: 40px; font-weight: bold; color: white; margin-bottom: 25px;'>2026 World Cup Sweepstake</div>", unsafe_allow_html=True)
 
-# --- CLEAN CUSTOM CSS INJECTION FOR THE TEXT SIZES & CENTERING ---
-st.markdown(
-    """
-    <style>
-        /* ABSOLUTE FORCE: Hide every single native hover anchor link on the screen globally */
-        a {
-            display: none !important;
-        }
-        .stMarkdown a, button a, div[data-testid="stMarkdownContainer"] a {
-            display: none !important;
-        }
-        svg.css-6q9sum, svg.e1tzwq550, .st-emotion-cache-b698xo a {
-            display: none !important;
-        }
-
-        /* Base centering behavior for all expanders */
-        div[data-testid="stExpander"] summary {
-            display: flex !important;
-            justify-content: center !important; 
-            align-items: center !important;
-            border-radius: 8px !important;
-        }
-        div[data-testid="stExpander"] summary p {
-            margin: 0px !important;
-            text-align: center !important;
-        }
-
-        /* --- STYLE 1: SMALL & DARK INFO TAB --- */
-        /* Targets the expander containing our unique info-text-marker class */
-        div[data-testid="stExpander"]:has(.info-text-marker) summary {
-            background-color: #1e1e1e !important;
-            border: 1px solid #333333 !important;
-            padding: 0.3rem 1rem !important;
-        }
-        div[data-testid="stExpander"]:has(.info-text-marker) summary p {
-            font-size: 14px !important;
-            font-weight: normal !important;
-            color: #ffffff !important;
-        }
-        div[data-testid="stExpander"]:has(.info-text-marker) summary svg {
-            color: #ffffff !important;
-            fill: #ffffff !important;
-            width: 14px !important;
-            height: 14px !important;
-        }
-
-        /* --- STYLE 2: BIG & WHITE DRAW TAB --- */
-        /* Targets the expander containing our unique draw-text-marker class */
-        div[data-testid="stExpander"]:has(.draw-text-marker) summary {
-            background-color: #f8f9fa !important;
-            border: 1px solid #e0e0e0 !important;
-            padding: 0.5rem 1rem !important;
-        }
-        div[data-testid="stExpander"]:has(.draw-text-marker) summary p {
-            font-size: 22px !important;
-            font-weight: bold !important;
-            color: #111111 !important;
-        }
-        div[data-testid="stExpander"]:has(.draw-text-marker) summary svg {
-            color: #111111 !important;
-            fill: #111111 !important;
-            width: 22px !important;
-            height: 22px !important;
-        }
-        
-        /* Remove instructions hint */
-        div[data-testid="InputInstructions"] {
-            display: none !important;
-        }
-
-        /* Style the green submission button without breaking parent layout constraints */
-        div[data-testid="stForm"] button[kind="primary"],
-        div[data-testid="stForm"] button[type="submit"],
-        .stFormSubmitButton > button {
-            font-size: 15px !important; 
-            font-weight: 600 !important;
-            padding: 0.5rem 2.5rem !important; 
-            background-color: #28a745 !important; 
-            color: #ffffff !important;
-            border: 1px solid #218838 !important;
-            border-radius: 6px !important;
-            box-shadow: none !important;
-            transition: background-color 0.2s ease, border-color 0.2s ease !important;
-        }
-
-        div[data-testid="stForm"] button[kind="primary"]:hover,
-        div[data-testid="stForm"] button[type="submit"]:hover,
-        .stFormSubmitButton > button:hover {
-            background-color: #218838 !important; 
-            border-color: #1e7e34 !important;
-            color: #ffffff !important;
-        }
-    </style>
-    """, 
-    unsafe_allow_html=True
-)
-
-# --- COLLAPSABLE INFORMATION TAB (SMALL & DARK) ---
-with st.expander("<span class='info-text-marker'>ℹ️ How the Sweepstake Works (Rules & Entry Details)</span>", expanded=False):
+# --- NEW COLLAPSABLE INFORMATION TAB ---
+with st.expander("ℹ️ How the Sweepstake Works (Rules & Entry Details)", expanded=False):
     st.markdown(
         """
         Welcome to the **2026 World Cup Sweepstake**! Here is everything you need to know to get started:
@@ -168,8 +71,79 @@ allocated_df = df_teams[df_teams['StakeHolder'] != ""]
 remaining_count = 48 - len(allocated_df)
 
 if remaining_count > 0:
-    # --- REGISTRATION PIN TAB (BIG & WHITE) ---
-    with st.expander("<span class='draw-text-marker'>👋 Click here to enter your PIN & draw a team!</span>", expanded=False):
+    # --- CLEAN CUSTOM CSS INJECTION FOR THE TEXT SIZES & CENTERING ---
+    st.markdown(
+        """
+        <style>
+            /* ABSOLUTE FORCE: Hide every single native hover anchor link on the screen globally */
+            a {
+                display: none !important;
+            }
+            .stMarkdown a, button a, div[data-testid="stMarkdownContainer"] a {
+                display: none !important;
+            }
+            svg.css-6q9sum, svg.e1tzwq550, .st-emotion-cache-b698xo a {
+                display: none !important;
+            }
+
+            /* 1. Boost text size, invert header to a light fill, and center text alignment */
+            div[data-testid="stExpander"] summary {
+                background-color: #f8f9fa !important;
+                border: 1px solid #e0e0e0 !important;
+                border-radius: 8px !important;
+                padding: 0.5rem 1rem !important;
+                display: flex !important;
+                justify-content: center !important; 
+                align-items: center !important;
+            }
+
+            div[data-testid="stExpander"] summary p {
+                font-size: 22px !important; /* Slightly optimized text dynamic to accommodate two clean bars */
+                font-weight: bold !important;
+                color: #111111 !important; 
+                margin: 0px !important;
+                text-align: center !important;
+            }
+
+            /* Force the native expander arrow icon fill to match dark text color */
+            div[data-testid="stExpander"] summary svg {
+                color: #111111 !important;
+                fill: #111111 !important;
+            }
+            
+            /* Remove instructions hint */
+            div[data-testid="InputInstructions"] {
+                display: none !important;
+            }
+
+            /* 2. Style the green submission button without breaking parent layout constraints */
+            div[data-testid="stForm"] button[kind="primary"],
+            div[data-testid="stForm"] button[type="submit"],
+            .stFormSubmitButton > button {
+                font-size: 15px !important; 
+                font-weight: 600 !important;
+                padding: 0.5rem 2.5rem !important; 
+                background-color: #28a745 !important; 
+                color: #ffffff !important;
+                border: 1px solid #218838 !important;
+                border-radius: 6px !important;
+                box-shadow: none !important;
+                transition: background-color 0.2s ease, border-color 0.2s ease !important;
+            }
+
+            div[data-testid="stForm"] button[kind="primary"]:hover,
+            div[data-testid="stForm"] button[type="submit"]:hover,
+            .stFormSubmitButton > button:hover {
+                background-color: #218838 !important; 
+                border-color: #1e7e34 !important;
+                color: #ffffff !important;
+            }
+        </style>
+        """, 
+        unsafe_allow_html=True
+    )
+    
+    with st.expander("👋 Click here to enter your PIN & draw a team!", expanded=False):
         with st.form(key="sweepstake_form", clear_on_submit=False):
             form_col1, form_col2 = st.columns([1.2, 1])
             
