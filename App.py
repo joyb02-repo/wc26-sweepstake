@@ -29,9 +29,7 @@ st.markdown(
 )
 
 # --- SAFE BASE64 IMAGE PROCESSING FOR THE UNIFIED HEADER ---
-logo_html_element = ""
 try:
-    # Try local or common deployment directory structures safely
     possible_paths = ["wclogo.png", "app/static/wclogo.png", "static/wclogo.png"]
     found_path = None
     for path in possible_paths:
@@ -42,24 +40,30 @@ try:
     if found_path:
         with open(found_path, "rb") as image_file:
             encoded_string = base64.b64encode(image_file.read()).decode()
-            logo_html_element = f'<img src="data:image/png;base64,{encoded_string}" style="width: 35vw; max-width: 220px; min-width: 110px; height: auto; margin-bottom: 12px;">'
+            
+        # Render the logo container separately to prevent markdown string parsing interference
+        st.markdown(
+            f"""
+            <div style="display: flex; justify-content: center; align-items: center; width: 100%; margin-bottom: 12px;">
+                <img src="data:image/png;base64,{encoded_string}" style="width: 35vw; max-width: 220px; min-width: 110px; height: auto;">
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 except Exception:
-    logo_html_element = "" # Fallback gracefully if file read errors out
+    pass
 
-# --- RENDER IMMUTABLE PROPORTIONAL BRANDING HEADER ---
+# --- RENDER LOCKED, NON-WRAPPING TITLE DIRECTLY ---
 st.markdown(
-    f"""
+    """
     <div style="
         display: flex; 
-        flex-direction: column; 
-        align-items: center; 
         justify-content: center; 
+        align-items: center; 
         width: 100%; 
         margin-bottom: 25px;
         box-sizing: border-box;
     ">
-        {logo_html_element}
-        
         <div style="
             font-size: clamp(20px, 5.2vw, 40px); 
             font-weight: bold; 
