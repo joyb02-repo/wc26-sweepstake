@@ -1,25 +1,39 @@
 import streamlit as st
 import pandas as pd
+import gspread
 import random
 import time
+import re
 
 st.set_page_config(page_title="2026 World Cup Sweepstake", page_icon="⚽", layout="centered")
 st.title("⚽ 2026 World Cup Sweepstake")
 
-# --- FOOLPROOF ALTERNATIVE SYNTAX ---
-conn = st.connection("gsheets", type="gsheets")
-
-# ... (rest of your app.py code stays exactly the same)
-
-# Read both sheets fresh (ttl=0 avoids local caching)
+# 1. Extract Spreadsheet ID from your Streamlit Secrets URL
 try:
-    df_teams = conn.read(worksheet="Sheet1", ttl=0)
-    df_pins = conn.read(worksheet="Pins", ttl=0)
-except Exception as e:
-    st.error("Failed to fetch data from Google Sheets. Ensure your sharing link is set to Public Editor.")
+    secret_url = st.secrets["connections"]["gsheets"]["spreadsheet"]
+    # Regular expression to safely grab the unique ID between /d/ and /edit
+    sheet_id = re.search(r"/d/([a-zA-Z0-9-_]+)", secret_url).group(1)
+except Exception:
+    st.error("Missing or malformed Google Sheet URL in Streamlit Advanced Secrets!")
     st.stop()
 
-# Format column names and contents cleanly
+# 2. Connect to Google Sheets anonymously using the public edit link
+try:
+    gc = gspread.public_api_client()
+    sh = gc.open_by_key(sheet_id)
+    
+    # Open both individual worksheets
+    worksheet_teams = sh.worksheet("Sheet1")
+    worksheet_pins = sh.worksheet("Pins")
+    
+    # Read data into Pandas DataFrames
+    df_teams = pd.DataFrame(worksheet_teams.get_all_records())
+    df_pins = pd.DataFrame(worksheet_pins.get_all_records())
+except Exception as e:
+    st.error("Failed to connect to Google Sheets. Double-check that your spreadsheet's Share settings are set to 'Anyone with the link can EDIT'.")
+    st.stop()
+
+# Clean up column data strings
 df_teams.columns = df_teams.columns.str.strip()
 df_pins.columns = df_pins.columns.str.strip()
 
@@ -27,7 +41,7 @@ df_teams['StakeHolder'] = df_teams['StakeHolder'].fillna("").astype(str).str.str
 df_pins['PIN'] = df_pins['PIN'].astype(str).str.strip()
 df_pins['Status'] = df_pins['Status'].fillna("Active").astype(str).str.strip()
 
-# Calculate scoreboard metrics
+# Calculate statistics
 allocated_df = df_teams[df_teams['StakeHolder'] != ""]
 remaining_count = 48 - len(allocated_df)
 
@@ -42,35 +56,33 @@ if remaining_count > 0:
         if submit_button:
             if not user_name or not user_pin:
                 st.warning("Please fill out both your name and your unique security PIN.")
-            
-            # Check if name already exists in drawing dashboard
             elif user_name.lower() in [name.lower() for name in df_teams['StakeHolder'].values]:
                 already_drawn = df_teams[df_teams['StakeHolder'].str.lower() == user_name.lower()].iloc[0]
                 st.error(f"🚨 {user_name}, you have already drawn: {already_drawn['Emoji']} **{already_drawn['Country']}**!")
-            
             else:
-                # Security Level: Validate PIN from the 'Pins' sheet
-                pin_row_match = df_pins[df_pins['PIN'] == user_pin]
+                # Target pin lookup row
+                pin_match = df_pins[df_pins['PIN'] == user_pin]
                 
-                if pin_row_match.empty:
+                if pin_match.empty:
                     st.error("❌ Invalid PIN. Please check your credentials or contact the administrator.")
-                elif pin_row_match.iloc[0]['Status'] == "Used":
+                elif pin_match.iloc[0]['Status'] == "Used":
                     st.error("❌ This PIN has already been used for a draw!")
                 else:
-                    # Valid unpaid PIN identified. Fetch available countries
                     available_teams = df_teams[df_teams['StakeHolder'] == ""]
                     
                     if available_teams.empty:
                         st.info("🎉 All countries have been allocated!")
                     else:
-                        # 1. Lock in random pick instantly to prevent race conditions
+                        # Lock in choice
                         chosen_team_row = available_teams.sample(n=1)
                         chosen_country = chosen_team_row['Country'].values[0]
                         chosen_emoji = chosen_team_row['Emoji'].values[0]
-                        team_index = chosen_team_row.index[0]
-                        pin_index = pin_row_match.index[0]
                         
-                        # 2. Run Shuffling Animation Visual
+                        # Calculate exact Google Sheets row offsets (Index 0 is Row 2 in Sheet)
+                        team_sheet_row = int(chosen_team_row.index[0]) + 2
+                        pin_sheet_row = int(pin_match.index[0]) + 2
+                        
+                        # Run Shuffling Animation
                         animation_placeholder = st.empty()
                         all_emojis = df_teams['Emoji'].tolist()
                         
@@ -88,14 +100,12 @@ if remaining_count > 0:
                             unsafe_allow_html=True
                         )
                         
-                        # 3. Commit state changes locally
-                        df_teams.at[team_index, 'StakeHolder'] = user_name
-                        df_pins.at[pin_index, 'Status'] = "Used"
-                        
-                        # 4. Write data updates back to Google Sheet
+                        # Write directly to specific cells in Google Sheets
                         try:
-                            conn.update(worksheet="Sheet1", data=df_teams)
-                            conn.update(worksheet="Pins", data=df_pins)
+                            # Update Stakeholder in Sheet1 (Column C is 3)
+                            worksheet_teams.update_cell(team_sheet_row, 3, user_name)
+                            # Update PIN status in Pins (Column B is 2)
+                            worksheet_pins.update_cell(pin_sheet_row, 2, "Used")
                             
                             st.balloons()
                             st.success(f"🎉 **Congratulations {user_name}!**")
@@ -103,7 +113,7 @@ if remaining_count > 0:
                             time.sleep(3)
                             st.rerun()
                         except Exception as write_error:
-                            st.error("Database conflict. Someone hit the submit button at the exact same millisecond. Please try again.")
+                            st.error("Database sync issue. Please try again.")
 else:
     st.info("🎉 All 48 countries have been claimed! Check the final tournament dashboard below.")
 
@@ -118,7 +128,6 @@ col2.metric(label="Total Confirmed Entries", value=len(allocated_df))
 if st.button("🔄 Refresh Standings"):
     st.rerun()
 
-# Build and display dashboard table
 display_df = df_teams[['Country', 'Emoji', 'StakeHolder']].copy()
 display_df['StakeHolder'] = display_df['StakeHolder'].apply(lambda x: "⏳ Available" if x == "" else x)
 
