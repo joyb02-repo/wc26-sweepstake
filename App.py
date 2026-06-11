@@ -29,7 +29,7 @@ st.markdown(
             background-color: #1a1c23;
             border: 1px solid #2d3139;
             border-radius: 6px;
-            margin-bottom: 5px; /* Shrunk from 20px to bring the tabs tight together */
+            margin-bottom: 5px; /* Tight distance gap */
             font-family: sans-serif;
         }
         .rules-dropdown summary {
@@ -134,9 +134,16 @@ if remaining_count > 0:
                 border-radius: 12px !important;
                 padding: 1.2rem 1.5rem !important; /* Thick, chunkier padding */
                 display: flex !important;
-                justify-content: center !important; 
+                justify-content: center !important; /* Force layouts components to dead center */
                 align-items: center !important;
                 box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15) !important;
+            }
+
+            /* Surgical check on the inner header block */
+            div[data-testid="stExpander"] summary > div:first-child {
+                display: flex !important;
+                justify-content: center !important;
+                width: 100% !important;
             }
 
             div[data-testid="stExpander"] summary p {
@@ -144,8 +151,8 @@ if remaining_count > 0:
                 font-weight: 800 !important; /* Ultra bold */
                 color: #111111 !important; /* Deep contrast dark color text */
                 margin: 0px !important;
-                text-align: center !important; /* Forces layout centering alignment */
-                width: 100% !important; /* Ensures it utilizes the full tab width to center */
+                text-align: center !important; 
+                width: 100% !important; 
             }
 
             /* Forces layout expander arrow icon to render dark color to match text */
