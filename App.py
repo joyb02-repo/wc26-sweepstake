@@ -17,8 +17,8 @@ with col2:
     except Exception:
         st.write("") 
 
-# --- TITLE WITHOUT MARKDOWN HOVER ANCHORS ---
-st.markdown("<div style='text-align: center; font-size: 40px; font-weight: bold; color: white; margin-bottom: 25px;'>2026 World Cup Sweepstake</div>", unsafe_allow_html=True)
+# --- TITLE WITH ANCHORS DISABLED ---
+st.title("2026 World Cup Sweepstake", anchor=False)
 
 # --- USER CONFIGURATION ---
 SPREADSHEET_ID = "17PNVdOezXPwPmhV3vM1uWmeKsY9lJhFHKM3mBCyUJqU"
@@ -55,6 +55,20 @@ if remaining_count > 0:
     st.markdown(
         """
         <style>
+            /* Center application title text cleanly */
+            h1 {
+                text-align: center !important;
+                font-size: 40px !important;
+                font-weight: bold !important;
+                color: white !important;
+                margin-bottom: 25px !important;
+            }
+            
+            /* Remove all native heading link icons globally */
+            .css-6q9sum.e1tzwq550, .st-emotion-cache-b698xo a {
+                display: none !important;
+            }
+
             /* 1. Boost text size, invert header to a light fill, and center text alignment */
             div[data-testid="stExpander"] summary {
                 background-color: #f8f9fa !important;
@@ -85,13 +99,14 @@ if remaining_count > 0:
                 display: none !important;
             }
 
-            /* 2. Center the form button container and make the button text smaller */
+            /* 2. Center button container and tighten spacing to make it symmetric */
             div[data-testid="stExpander"] div.stFormSubmitButton {
                 text-align: center !important;
                 display: flex !important;
                 justify-content: center !important;
                 width: 100% !important;
-                margin-top: 15px !important;
+                margin-top: -5px !important; /* Pulls button up closer to fields */
+                margin-bottom: 5px !important;
             }
 
             /* Catch-all global selector mapping to force the button green */
@@ -199,7 +214,7 @@ else:
 
 # --- SCOREBOARD VIEW ---
 st.write("---")
-st.markdown("<h3 style='text-align: center;'>Live Sweepstake Scoreboard</h3>", unsafe_allow_html=True)
+st.header("Live Sweepstake Scoreboard", anchor=False)
 st.write("")
 
 m_col1, m_col2, m_col3, m_col4 = st.columns([1, 2, 2, 1])
