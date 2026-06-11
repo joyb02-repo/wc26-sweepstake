@@ -138,13 +138,13 @@ if remaining_count > 0:
             .stMarkdown a, button a, div[data-testid="stMarkdownContainer"] a { display: none !important; }
             svg.css-6q9sum, svg.e1tzwq550, .st-emotion-cache-b698xo a { display: none !important; }
 
-            /* --- REMOVE OUTER BOX STROKE / BORDER WHEN EXPANDER IS OPEN --- */
+            /* --- TARGET ONLY THE LOWER WRAPPER BOX STROKE --- */
             div[data-testid="stExpander"] {
                 border: none !important;
-                box-shadow: none !important;
                 background-color: transparent !important;
             }
             
+            /* Removes the fine gray outline and shadow around form content details */
             div[data-testid="stExpanderDetails"] {
                 border: none !important;
                 box-shadow: none !important;
@@ -306,7 +306,7 @@ if remaining_count > 0:
                             form_url = f"https://docs.google.com/forms/d/e/{FORM_ID}/formResponse"
                             
                             try:
-                                data_team = {ENTRY_ACTION: "CLAIM_TEAM", ENTRY_ROW: str(team_sheet_row), ENTRY_VALUE: user_name}
+                                data_team = {ENTRY_ACTION: "CLAIM_TEAM", ENTRY_ROW: str(team_sheet_row), ENTRY_VALUE: "Used"}
                                 req_team = urllib.request.Request(form_url, data=urllib.parse.urlencode(data_team).encode())
                                 urllib.request.urlopen(req_team)
                                 
