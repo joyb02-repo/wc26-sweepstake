@@ -129,7 +129,7 @@ allocated_df = df_teams[df_teams['StakeHolder'] != ""]
 remaining_count = 48 - len(allocated_df)
 
 if remaining_count > 0:
-    # --- FIXED EXPANDER STYLE INJECTION ---
+    # --- EXPANDER STYLE INJECTION ---
     st.markdown(
         """
         <style>
@@ -138,13 +138,27 @@ if remaining_count > 0:
             .stMarkdown a, button a, div[data-testid="stMarkdownContainer"] a { display: none !important; }
             svg.css-6q9sum, svg.e1tzwq550, .st-emotion-cache-b698xo a { display: none !important; }
 
+            /* --- REMOVE OUTER BOX STROKE / BORDER WHEN EXPANDER IS OPEN --- */
+            div[data-testid="stExpander"] {
+                border: none !important;
+                box-shadow: none !important;
+                background-color: transparent !important;
+            }
+            
+            div[data-testid="stExpanderDetails"] {
+                border: none !important;
+                box-shadow: none !important;
+                padding-left: 0px !important;
+                padding-right: 0px !important;
+            }
+
             /* --- THE BIG WHITE CONTAINER BUTTON --- */
             div[data-testid="stExpander"] summary {
                 background-color: #ffffff !important;
                 border: 1px solid #ffffff !important;
                 border-radius: 12px !important;
                 padding: 0px !important;
-                height: 70px !important; /* Fixed baseline height to guarantee single line spacing */
+                height: 70px !important; 
                 
                 display: flex !important;
                 justify-content: center !important; 
@@ -154,7 +168,7 @@ if remaining_count > 0:
                 transition: background-color 0.25s ease, border-color 0.25s ease !important;
             }
 
-            /* Completely remove the native chevron toggle graphic to save space */
+            /* Completely remove the native chevron toggle graphic */
             div[data-testid="stExpander"] summary svg {
                 display: none !important;
             }
@@ -182,16 +196,16 @@ if remaining_count > 0:
                 width: 100% !important;
             }
 
-            /* Header Content Row Custom Sizing Rules */
+            /* Header Content Row Formatting */
             div[data-testid="stExpander"] summary p,
             div[data-testid="stExpander"] summary span {
-                font-size: 22px !important; /* Slightly optimized point size to ensure 100% line lock */
+                font-size: 22px !important; 
                 font-weight: 800 !important;
                 color: #111111 !important;
                 margin: 0px !important;
                 padding: 0px !important;
                 text-align: center !important; 
-                white-space: nowrap !important; /* ABSOLUTE FORCE: Prevents line breaks */
+                white-space: nowrap !important; 
                 display: flex !important;
                 justify-content: center !important;
                 align-items: center !important;
@@ -241,7 +255,7 @@ if remaining_count > 0:
         unsafe_allow_html=True
     )
     
-    # --- THE BIG DRAW EXPANDER (Perfect Center + Guaranteed 1 Line) ---
+    # --- THE BIG DRAW EXPANDER ---
     with st.expander("👋 Click here to enter your PIN & draw a team!", expanded=False):
         with st.form(key="sweepstake_form", clear_on_submit=False):
             form_col1, form_col2 = st.columns([1.2, 1])
