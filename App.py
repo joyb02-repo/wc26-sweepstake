@@ -55,11 +55,24 @@ if remaining_count > 0:
     st.markdown(
         """
         <style>
-            /* 1. Boost the text size inside the expander header */
+            /* 1. Boost text size & invert header to a light fill background with dark text */
+            div[data-testid="stExpander"] summary {
+                background-color: #f8f9fa !important;
+                border: 1px solid #e0e0e0 !important;
+                border-radius: 8px !important;
+                padding: 0.5rem 1rem !important;
+            }
+
             div[data-testid="stExpander"] summary p {
                 font-size: 26px !important;
                 font-weight: bold !important;
-                color: #ffffff !important;
+                color: #111111 !important; /* Dark Text */
+            }
+
+            /* Force the native expander arrow icon fill to match dark text color */
+            div[data-testid="stExpander"] summary svg {
+                color: #111111 !important;
+                fill: #111111 !important;
             }
             
             /* Remove instructions hint */
