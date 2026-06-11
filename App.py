@@ -20,7 +20,9 @@ with col2:
 # --- TITLE WITHOUT MARKDOWN HOVER ANCHORS ---
 st.markdown("<div style='text-align: center; font-size: 40px; font-weight: bold; color: white; margin-bottom: 25px;'>2026 World Cup Sweepstake</div>", unsafe_allow_html=True)
 
-# --- NEW COLLAPSABLE INFORMATION TAB ---
+
+# --- 1. SMALL & INVERTED INFO TAB (WRAPPED IN UNIQUE ID) ---
+st.markdown('<div id="mini-dark-info-tab">', unsafe_allow_html=True)
 with st.expander("ℹ️ How the Sweepstake Works (Rules & Entry Details)", expanded=False):
     st.markdown(
         """
@@ -37,6 +39,7 @@ with st.expander("ℹ️ How the Sweepstake Works (Rules & Entry Details)", expa
         *Good luck! Ensure your entry fees are sent before drawing your team.*
         """
     )
+st.markdown('</div>', unsafe_allow_html=True)
 
 st.write("")
 
@@ -86,8 +89,8 @@ if remaining_count > 0:
                 display: none !important;
             }
 
-            /* --- SCOPED OVERRIDE: ONLY TARGET THE SECOND TAB (DRAW A TEAM) TO BE LARGE & WHITE --- */
-            div[data-testid="stExpander"]:nth-of-type(2) summary {
+            /* --- NATIVE/GLOBAL STYLE (This styles your 2nd Draw tab back to big, white, and bold) --- */
+            div[data-testid="stExpander"] summary {
                 background-color: #f8f9fa !important;
                 border: 1px solid #e0e0e0 !important;
                 border-radius: 8px !important;
@@ -97,7 +100,7 @@ if remaining_count > 0:
                 align-items: center !important;
             }
 
-            div[data-testid="stExpander"]:nth-of-type(2) summary p {
+            div[data-testid="stExpander"] summary p {
                 font-size: 22px !important; 
                 font-weight: bold !important;
                 color: #111111 !important; 
@@ -105,32 +108,27 @@ if remaining_count > 0:
                 text-align: center !important;
             }
 
-            div[data-testid="stExpander"]:nth-of-type(2) summary svg {
+            div[data-testid="stExpander"] summary svg {
                 color: #111111 !important;
                 fill: #111111 !important;
             }
 
-            /* --- SCOPED OVERRIDE: ONLY TARGET THE FIRST TAB (INFO SWEEPSTAKE) TO BE SMALL & DARK --- */
-            div[data-testid="stExpander"]:nth-of-type(1) summary {
-                background-color: #15171c !important; /* Dark theme contrast background */
+            /* --- STRICT TARGETED ISOLATION: Style ONLY the info tab wrapper --- */
+            div#mini-dark-info-tab div[data-testid="stExpander"] summary {
+                background-color: #15171c !important; /* Inverted dark look */
                 border: 1px solid #2d3139 !important;
                 border-radius: 6px !important;
-                padding: 0.25rem 0.75rem !important; /* Makes container significantly shorter */
+                padding: 0.25rem 0.75rem !important; /* Significantly smaller container height */
                 min-height: auto !important;
-                display: flex !important;
-                justify-content: center !important;
-                align-items: center !important;
             }
 
-            div[data-testid="stExpander"]:nth-of-type(1) summary p {
-                font-size: 13px !important; /* Noticeably smaller typography size */
+            div#mini-dark-info-tab div[data-testid="stExpander"] summary p {
+                font-size: 13px !important; /* Significantly smaller text */
                 font-weight: 500 !important;
-                color: #cccccc !important; /* Lighter/soft font color replacement */
-                text-align: center !important;
+                color: #cccccc !important; /* Light text color */
             }
 
-            /* Force dropdown chevron icon inside the info container to match style changes */
-            div[data-testid="stExpander"]:nth-of-type(1) summary svg {
+            div#mini-dark-info-tab div[data-testid="stExpander"] summary svg {
                 color: #cccccc !important;
                 fill: #cccccc !important;
                 width: 14px !important;
@@ -142,7 +140,7 @@ if remaining_count > 0:
                 display: none !important;
             }
 
-            /* 2. Style the green submission button without breaking parent layout constraints */
+            /* Style the green submission button without breaking parent layout constraints */
             div[data-testid="stForm"] button[kind="primary"],
             div[data-testid="stForm"] button[type="submit"],
             .stFormSubmitButton > button {
@@ -169,6 +167,7 @@ if remaining_count > 0:
         unsafe_allow_html=True
     )
     
+    # --- 2. RESTORED NATIVE DRAW A TEAM TAB ---
     with st.expander("👋 Click here to enter your PIN & draw a team!", expanded=False):
         with st.form(key="sweepstake_form", clear_on_submit=False):
             form_col1, form_col2 = st.columns([1.2, 1])
