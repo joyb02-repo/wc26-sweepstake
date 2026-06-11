@@ -237,10 +237,12 @@ if remaining_count > 0:
                 color: #ffffff !important;
             }
 
-            /* --- CUSTOM REFRESH BUTTON OVERRIDES --- */
+            /* --- CUSTOM REFRESH BUTTON WRAPPER --- */
+            div[data-testid="stVerticalBlockBorderWrapper"]:has(button[key="refresh_data_btn"]),
             div.element-container:has(button[key="refresh_data_btn"]) {
                 display: flex !important;
                 justify-content: center !important;
+                align-items: center !important;
                 width: 100% !important;
             }
             
@@ -249,12 +251,14 @@ if remaining_count > 0:
                 border: 1px solid #343a46 !important;
                 color: #a0aec0 !important;
                 border-radius: 6px !important;
-                padding: 6px 16px !important;
+                padding: 6px 18px !important;
                 min-height: unset !important;
                 height: 34px !important;
                 width: auto !important;
                 box-shadow: none !important;
                 transition: background-color 0.15s ease, color 0.15s ease !important;
+                margin: 0 auto !important;
+                display: inline-block !important;
             }
             
             button[key="refresh_data_btn"] p {
@@ -263,6 +267,7 @@ if remaining_count > 0:
                 font-weight: 500 !important;
                 margin: 0 !important;
                 line-height: 1 !important;
+                text-align: center !important;
             }
             
             button[key="refresh_data_btn"]:hover {
@@ -274,23 +279,18 @@ if remaining_count > 0:
                 color: #fafafa !important;
             }
 
-            /* Light Mode Adaptive Tweaks for Refresh Button */
             @media (prefers-color-scheme: light) {
                 button[key="refresh_data_btn"] {
                     background-color: #f1f3f5 !important;
                     border: 1px solid #ced4da !important;
                     color: #495057 !important;
                 }
-                button[key="refresh_data_btn"] p {
-                    color: #495057 !important;
-                }
+                button[key="refresh_data_btn"] p { color: #495057 !important; }
                 button[key="refresh_data_btn"]:hover {
                     background-color: #e9ecef !important;
                     color: #111111 !important;
                 }
-                button[key="refresh_data_btn"]:hover p {
-                    color: #111111 !important;
-                }
+                button[key="refresh_data_btn"]:hover p { color: #111111 !important; }
             }
 
             /* Submit Button Configuration */
@@ -305,7 +305,6 @@ if remaining_count > 0:
                 color: #ffffff !important; font-size: 15px !important; font-weight: 600 !important;
             }
 
-            /* --- LIGHT MODE FORM THEME ADJUSTMENT --- */
             @media (prefers-color-scheme: light) {
                 div[data-testid="stForm"] {
                     background-color: #fdfdfd !important;
@@ -424,35 +423,51 @@ with m_col3:
 st.write("")
 st.write("")
 
-# --- FIXED REFRESH PLACEMENT ---
+# --- FIXED AND CENTERED REFRESH BUTTON ---
 if st.button("🔄 Refresh Data", key="refresh_data_btn"):
     st.rerun()
 
 st.write("")
 
-# --- ADAPTIVE TABLE VIEW WITH FROZEN/STICKY HEADERS ---
+# --- BULLETPROOF FIXED HEADERS VIA IN-VIEW SCROLL WRAPPER ---
 table_head = """<style>
-html, body { margin: 0; padding: 0; background-color: transparent; font-family: sans-serif; overflow-x: hidden; }
-::-webkit-scrollbar { width: 6px !important; height: 6px !important; }
-::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05) !important; }
-::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2) !important; }
+html, body { 
+    margin: 0; padding: 0; 
+    background-color: transparent; 
+    font-family: sans-serif; 
+    overflow: hidden; /* Lock the primary iframe element body container to freeze headers safely */
+}
 
-.table-container { width: 100%; overflow-x: hidden; box-sizing: border-box; }
-.sweepstake-table { width: 100%; border-collapse: collapse; margin-top: 5px; table-layout: auto; }
+/* Enforce continuous height scrolling viewport bounding context */
+.table-container { 
+    width: 100%; 
+    height: 98vh; 
+    overflow-y: auto !important; 
+    overflow-x: hidden; 
+    box-sizing: border-box; 
+    position: relative;
+}
 
-/* Freeze Table Header Row styling */
-.sweepstake-table th { 
-    position: sticky !important; 
-    top: 0 !important; 
-    z-index: 100 !important; 
-    background-color: #171a21 !important; 
-    color: #ffffff !important; 
-    text-align: center; 
-    padding: 10px 6px; 
-    font-weight: 600; 
-    font-size: 13px; 
-    border-bottom: 2px solid rgba(255, 255, 255, 0.15); 
-    white-space: nowrap; 
+.sweepstake-table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    margin-top: 0px; 
+    table-layout: auto; 
+}
+
+/* Absolute Sticky Header Anchor Directives */
+.sweepstake-table thead th {
+    position: sticky !important;
+    top: 0px !important;
+    z-index: 999 !important;
+    background-color: #0e1117 !important; /* Solid matte backplane stops underlying text bleedthrough */
+    color: #ffffff !important;
+    text-align: center;
+    padding: 12px 6px;
+    font-weight: 600;
+    font-size: 13px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+    white-space: nowrap;
 }
 
 .sweepstake-table td { padding: 10px 4px; text-align: center; vertical-align: middle !important; border-bottom: 1px solid rgba(255, 255, 255, 0.05); box-sizing: border-box; }
@@ -466,17 +481,17 @@ html, body { margin: 0; padding: 0; background-color: transparent; font-family: 
 .row-taken { background-color: rgba(255, 75, 75, 0.12) !important; } 
 .row-available { background-color: rgba(40, 167, 69, 0.12) !important; } 
 
-/* --- COMPREHENSIVE LIGHT MODE OVERRIDES --- */
+/* --- ADAPTIVE LIGHT MODE ANCHORS --- */
 @media (prefers-color-scheme: light) {
-    .sweepstake-table th { 
-        background-color: #e9ecef !important; 
-        color: #212529 !important; 
-        border-bottom: 2px solid #dee2e6 !important;
+    .sweepstake-table thead th { 
+        background-color: #f8f9fa !important; /* Pure solid crisp light grey block background */
+        color: #111111 !important; 
+        border-bottom: 2px solid #ced4da !important;
     }
     .sweepstake-table td { 
         border-bottom: 1px solid #dee2e6 !important; 
     }
-    .country-text { color: #212529 !important; }
+    .country-text { color: #111111 !important; }
     .player-text { color: #495057 !important; }
     
     .row-taken { background-color: #f8d7da !important; }
@@ -487,7 +502,7 @@ html, body { margin: 0; padding: 0; background-color: transparent; font-family: 
 }
 
 @media (max-width: 480px) {
-    .sweepstake-table th { font-size: 11px; padding: 8px 4px; }
+    .sweepstake-table th { font-size: 11px; padding: 10px 4px; }
     .sweepstake-table td { font-size: 12px; padding: 8px 2px; }
     .emoji-cell { font-size: 22px; }
     .hide-mobile { display: none !important; }
@@ -535,4 +550,4 @@ for _, row in df_teams.iterrows():
 
 table_foot = "</tbody></table></div>"
 complete_table_html = table_head + table_rows + table_foot
-st.components.v1.html(complete_table_html, height=700, scrolling=True)
+st.components.v1.html(complete_table_html, height=720, scrolling=False)
