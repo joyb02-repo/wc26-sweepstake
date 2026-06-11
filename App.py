@@ -10,6 +10,10 @@ import os
 # Page config
 st.set_page_config(page_title="2026 World Cup Sweepstake", page_icon="icon.png", layout="centered")
 
+# Initialize session state for our custom toggle button
+if "show_draw_form" not in st.session_state:
+    st.session_state.show_draw_form = False
+
 # --- FORCE DARK MODE GLOBALLY ---
 st.markdown(
     """
@@ -171,134 +175,66 @@ allocated_df = df_teams[df_teams['StakeHolder'] != ""]
 remaining_count = 48 - len(allocated_df)
 
 if remaining_count > 0:
-    # --- EXPANDER & FORM STYLE INJECTION ---
+    # --- STYLING GLOBAL BUTTON CONVERSION ---
     st.markdown(
         """
         <style>
-            /* Hide every single native hover anchor link on the screen globally */
+            /* Hide generic markdown anchors */
             a { display: none !important; }
             .stMarkdown a, button a, div[data-testid="stMarkdownContainer"] a { display: none !important; }
-            svg.css-6q9sum, svg.e1tzwq550, .st-emotion-cache-b698xo a { display: none !important; }
-
-            /* --- REMOVE EXPANDER OUTLINE STROKES & NATIVE BORDERS --- */
-            div[data-testid="stExpander"], 
-            div[data-testid="stExpander"] * {
-                border: none !important;
-                border-color: transparent !important;
-                box-shadow: none !important;
-                outline: none !important;
-            }
             
-            div[data-testid="stExpanderDetails"] {
-                padding-left: 0px !important;
-                padding-right: 0px !important;
-            }
-
-            /* --- TARGET AND REMOVE THE PERSISTENT NATIVE FORM CONTAINER BORDER --- */
+            /* --- ELIMINATE REMNANT CONTAINER LINES AND LABELS --- */
             div[data-testid="stForm"] {
                 border: none !important;
                 box-shadow: none !important;
-                padding: 10px 0px 0px 0px !important;
+                padding: 15px 0px 0px 0px !important;
+                background-color: transparent !important;
+            }
+            div[data-testid="InputInstructions"] {
+                display: none !important;
             }
 
-            /* --- THE BIG WHITE CONTAINER BUTTON (RESPONSIVE) --- */
-            div[data-testid="stExpander"] summary {
+            /* --- CUSTOM PILL TOGGLE BUTTON INJECTION --- */
+            div.element-container:has(button[key="draw_toggle_btn"]) {
+                display: flex !important;
+                justify-content: center !important;
+                width: 100% !important;
+            }
+            
+            button[key="draw_toggle_btn"] {
                 background-color: #ffffff !important;
                 border: none !important;
                 outline: none !important;
                 border-radius: 12px !important;
                 padding: 8px 16px !important; 
                 min-height: 70px !important; 
-                height: auto !important; 
-                
-                display: flex !important;
-                justify-content: center !important; 
-                align-items: center !important;
-                position: relative !important;
+                height: auto !important;
+                width: 100% !important;
                 box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15) !important;
                 transition: background-color 0.25s ease !important;
-                list-style: none !important; /* Removes list marker styling */
-            }
-
-            /* --- TOTAL ELIMINATION OF ALL NATIVE CHEVRONS AND SVG ICONS --- */
-            div[data-testid="stExpander"] summary::-webkit-details-marker,
-            div[data-testid="stExpander"] summary::marker,
-            div[data-testid="stExpander"] summary svg,
-            div[data-testid="stExpander"] summary div svg,
-            div[data-testid="stExpander"] summary [data-testid="stExpanderToggleIcon"],
-            div[data-testid="stExpander"] [data-testid="stExpanderToggleIcon"] {
-                display: none !important;
-                visibility: hidden !important;
-                opacity: 0 !important;
-                width: 0px !important;
-                height: 0px !important;
-            }
-
-            /* Force layout centering properties back onto structural summary blocks */
-            div[data-testid="stExpander"] summary > div {
-                position: relative !important;
-                left: unset !important;
-                right: unset !important;
-                top: unset !important;
-                bottom: unset !important;
-                display: flex !important;
-                justify-content: center !important;
-                align-items: center !important;
-                width: 100% !important;
-                max-width: 100% !important;
-                margin: 0px !important;
-                padding: 0px !important;
             }
             
-            div[data-testid="stExpander"] summary > div > div {
-                display: flex !important;
-                justify-content: center !important;
-                align-items: center !important;
-                width: 100% !important;
-            }
-
-            /* Fluid Typography Header Row Formatting */
-            div[data-testid="stExpander"] summary p,
-            div[data-testid="stExpander"] summary span {
+            button[key="draw_toggle_btn"] p {
                 font-size: clamp(15px, 4.5vw, 22px) !important; 
                 font-weight: 800 !important;
                 color: #111111 !important;
+                text-align: center !important;
                 margin: 0px !important;
-                padding: 0px !important;
-                text-align: center !important; 
-                white-space: normal !important; 
+                line-height: 1.3 !important;
+                white-space: normal !important;
                 word-wrap: break-word !important;
-                display: block !important;
-                width: 100% !important;
                 transition: color 0.25s ease !important;
             }
 
-            /* --- HOVER INTERACTION --- */
-            div[data-testid="stExpander"] summary:hover {
-                background-color: #e6c619 !important; /* Light Golden */
-                cursor: pointer;
+            /* Hover states explicitly tracked */
+            button[key="draw_toggle_btn"]:hover {
+                background-color: #e6c619 !important; /* Golden state */
             }
-            
-            div[data-testid="stExpander"] summary:hover p,
-            div[data-testid="stExpander"] summary:hover span {
+            button[key="draw_toggle_btn"]:hover p {
                 color: #ffffff !important;
             }
-            
-            div[data-testid="InputInstructions"] {
-                display: none !important;
-            }
 
-            /* Responsive tweaks for form field blocks */
-            @media (max-width: 640px) {
-                div[data-testid="stForm"] {
-                    padding: 5px 0px !important;
-                }
-                div[data-testid="element-container"] {
-                    width: 100% !important;
-                }
-            }
-
-            /* Submission Form Button Elements */
+            /* Submission Form Internal Buttons */
             div[data-testid="stForm"] button[kind="primary"],
             div[data-testid="stForm"] button[type="submit"],
             .stFormSubmitButton > button {
@@ -334,8 +270,13 @@ if remaining_count > 0:
         unsafe_allow_html=True
     )
     
-    # --- THE BIG DRAW EXPANDER (NATIVE COLLAPSE ENGINE) ---
-    with st.expander("👋 Click here to enter your PIN & draw a team!", expanded=False):
+    # Render the custom text button that stores state layout
+    if st.button("👋 Click here to enter your PIN & draw a team!", key="draw_toggle_btn"):
+        st.session_state.show_draw_form = not st.session_state.show_draw_form
+        st.rerun()
+
+    # If active, display the configuration inputs dynamically underneath it
+    if st.session_state.show_draw_form:
         with st.form(key="sweepstake_form", clear_on_submit=False):
             form_col1, form_col2 = st.columns([1.2, 1])
             
