@@ -51,18 +51,38 @@ allocated_df = df_teams[df_teams['StakeHolder'] != ""]
 remaining_count = 48 - len(allocated_df)
 
 if remaining_count > 0:
+    # --- CHANGE 3: STYLED EXPANDER TO MAKE IT POP OUT ---
+    # Custom CSS to inject styling directly into Streamlit's expander widget label
+    st.markdown(
+        """
+        <style>
+            /* Targets the text inside the expander header */
+            .stExpander p {
+                font-size: 19px !important; /* Makes it slightly bigger */
+                font-weight: 600 !important;
+                color: #ff4b4b !important; /* Vibrant Red/Coral color to make it pop */
+            }
+            /* Adds a subtle border highlight to draw the eye */
+            .stExpander {
+                border: 1px solid rgba(255, 75, 75, 0.3) !important;
+                border-radius: 8px !important;
+            }
+        </style>
+        """, 
+        unsafe_allow_html=True
+    )
+    
     with st.expander("👋 Click here to enter your PIN & draw a team!", expanded=False):
         with st.form(key="sweepstake_form", clear_on_submit=True):
             user_name = st.text_input("Enter Your Full Name:", placeholder="e.g., Jane Doe").strip()
-            user_pin = st.text_input("Enter Your Unique 5-Digit PIN:", type="password", placeholder="xxxx").strip()
+            user_pin = st.text_input("Enter Your Unique 5-Digit PIN:", type="password", placeholder="xxxxx").strip()
             submit_button = st.form_submit_button(label="Verify & Draw My Country!")
 
         if submit_button:
             if not user_name or not user_pin:
                 st.warning("Please fill out both details.")
             else:
-                # --- NEW COUNT-BASED MAXIMUM CHECK ---
-                # Check how many times this specific name appears in the sheet (case-insensitive)
+                # --- COUNT-BASED MAXIMUM CHECK (UP TO 5) ---
                 existing_draws = df_teams[df_teams['StakeHolder'].str.lower() == user_name.lower()]
                 draw_count = len(existing_draws)
                 
@@ -70,7 +90,6 @@ if remaining_count > 0:
                     drawn_countries = ", ".join([f"{row['Emoji']} {row['Country']}" for _, row in existing_draws.iterrows()])
                     st.error(f"🚨 **{user_name}**, you have reached the maximum limit of 5 entries! You already own: {drawn_countries}")
                 else:
-                    # Target pin lookup row
                     pin_match = df_pins[df_pins['PIN'] == user_pin]
                     
                     if pin_match.empty:
@@ -97,7 +116,6 @@ if remaining_count > 0:
                             
                             animation_placeholder.markdown(f"<h1 style='text-align: center; font-size: 120px;'>{chosen_emoji}</h1>", unsafe_allow_html=True)
                             
-                            # Trigger Form Submissions to update the sheets via Web Requests
                             form_url = f"https://docs.google.com/forms/d/e/{FORM_ID}/formResponse"
                             
                             try:
@@ -160,7 +178,7 @@ with c_btn2:
 
 st.write("")
 
-# --- STYLED LIVE DATA TABLE ---
+# --- STYLED LIVE DATA TABLE WITH HIGHLIGHTS ---
 table_head = """<style>
 .sweepstake-table {width: 100%; border-collapse: collapse; margin-top: 15px; font-family: sans-serif;}
 .sweepstake-table th {background-color: rgba(255, 255, 255, 0.08); color: #ffffff !important; text-align: center; padding: 14px; font-weight: 600; font-size: 15px; border-bottom: 2px solid rgba(255, 255, 255, 0.15);}
@@ -168,6 +186,8 @@ table_head = """<style>
 .emoji-cell {font-size: 38px; line-height: 1; display: inline-block; vertical-align: middle;}
 .status-available {color: #888888; font-style: italic;}
 .status-owned {font-weight: bold; color: #29b5e8;}
+/* CHANGE 2: Styling for rows that are already claimed */
+.row-taken {background-color: rgba(255, 75, 75, 0.12) !important;} 
 </style>
 <table class="sweepstake-table">
 <thead>
@@ -187,35 +207,31 @@ for _, row in df_teams.iterrows():
     emoji = row['Emoji']
     owner = row['StakeHolder']
     
-    # Extract the new columns from your Google Sheet data frame safely
-    # Using .get() or fillna ensures the app doesn't crash if a row is missing data
     rating = str(row.get('Rating', '')).replace('nan', '').strip()
     star_player = str(row.get('Star Player', '')).replace('nan', '').strip()
     
-    # Handle fallbacks for empty rows
     if not star_player:
         star_player = "-"
     if not rating:
         rating = "-"
+
+    # CHANGE 2: Determine if row needs a light red background class applied
+    row_class = "class='row-taken'" if owner != "" else ""
 
     if owner == "":
         owner_display = "<span class='status-available'>⏳ Available</span>"
     else:
         owner_display = f"<span class='status-owned'>👤 {owner}</span>"
         
-    # Append the row with the two new cells injected in the middle
-    table_rows += f"""<tr>
+    # CHANGE 1: Font size modified to 13px (smaller) and the star emoji has been removed
+    table_rows += f"""<tr {row_class}>
         <td><span class='emoji-cell'>{emoji}</span></td>
         <td style='font-size: 16px; font-weight: 500; color: white;'>{country}</td>
         <td style='font-size: 15px; color: #ffbf00; font-weight: bold;'>{rating}</td>
-        <td style='font-size: 15px; color: #ffffff;'>⭐ {star_player}</td>
+        <td style='font-size: 13px; color: #cccccc;'>{star_player}</td>
         <td style='font-size: 16px;'>{owner_display}</td>
     </tr>"""
 
 table_foot = "</tbody></table>"
-
-# Assemble the pieces seamlessly
 complete_table_html = table_head + table_rows + table_foot
-
-# Render inside the sandboxed HTML component to keep formatting locked in
 st.components.v1.html(complete_table_html, height=700, scrolling=True)
