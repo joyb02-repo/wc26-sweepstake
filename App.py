@@ -280,7 +280,7 @@ if remaining_count > 0:
         unsafe_allow_html=True
     )
     
-    if st.button("👋 Click here to enter your PIN & draw a Country!"):
+    if st.button("👋 Click here to enter your PIN & draw a team!"):
         st.session_state.show_draw_form = not st.session_state.show_draw_form
         st.rerun()
 
@@ -352,17 +352,24 @@ if remaining_count > 0:
 else:
     st.info("🎉 All 48 countries have been claimed!")
 
-# --- VIBRANT PRIZE POOL SECTION ---
+# --- VIBRANT PATTERNED PRIZE POOL SECTION ---
 st.write("---")
 st.markdown(
     f"""
     <div style="
-        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        background-color: #11141a;
+        background-image: 
+            linear-gradient(30deg, #161a22 12%, transparent 12.5%, transparent 87%, #161a22 87.5%, #161a22),
+            linear-gradient(150deg, #161a22 12%, transparent 12.5%, transparent 87%, #161a22 87.5%, #161a22),
+            linear-gradient(300deg, #161a22 25%, transparent 25.5%, transparent 75%, #161a22 75.5%, #161a22),
+            linear-gradient(60deg, #161a22 25%, transparent 25.5%, transparent 75%, #161a22 75.5%, #161a22);
+        background-size: 20px 35px;
+        background-position: 0 0, 0 0, 10px 17.5px, 10px 17.5px;
         border: 2px solid #e6c619;
         border-radius: 14px;
-        padding: 22px;
+        padding: 24px;
         text-align: center;
-        box-shadow: 0px 6px 20px rgba(230, 198, 25, 0.15);
+        box-shadow: 0px 6px 22px rgba(230, 198, 25, 0.12);
         margin-top: 10px;
         margin-bottom: -10px;
         width: 100%;
@@ -371,32 +378,34 @@ st.markdown(
         <span style="
             font-size: clamp(12px, 3.5vw, 15px);
             text-transform: uppercase;
-            letter-spacing: 2px;
-            color: #cbd5e1;
-            font-weight: 600;
+            letter-spacing: 2.5px;
+            color: #94a3b8;
+            font-weight: 700;
             display: block;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         ">
-            🏆 Current Total Prize Pool 🏆
+            🏆 Total Prize Pool Fund 🏆
         </span>
         <span style="
-            font-size: clamp(34px, 8.5vw, 54px);
+            font-size: clamp(36px, 9vw, 56px);
             font-weight: 900;
             color: #e6c619;
             line-height: 1.1;
             display: block;
-            text-shadow: 0px 2px 10px rgba(230, 198, 25, 0.3);
+            text-shadow: 0px 3px 12px rgba(230, 198, 25, 0.45);
         ">
-            ${prize_pool_total:,.2f} <span style="font-size: clamp(16px, 4vw, 24px); font-weight: 700; color: #94a3b8;">AUD</span>
+            ${prize_pool_total:,.2f} <span style="font-size: clamp(16px, 4vw, 24px); font-weight: 800; color: #cbd5e1; text-shadow: none;">AUD</span>
         </span>
         <span style="
             font-size: clamp(11px, 3vw, 13px);
-            color: #94a3b8;
+            color: #64748b;
             display: block;
-            margin-top: 6px;
-            font-style: italic;
+            margin-top: 8px;
+            font-style: normal;
+            font-weight: 500;
+            letter-spacing: 0.5px;
         ">
-            Winner takes home 100% of the pool! ({total_entries} active entries)
+            100% of entries allocated directly to the winner • ({total_entries} active entries)
         </span>
     </div>
     """,
