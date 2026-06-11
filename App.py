@@ -51,19 +51,19 @@ allocated_df = df_teams[df_teams['StakeHolder'] != ""]
 remaining_count = 48 - len(allocated_df)
 
 if remaining_count > 0:
-    # --- STYLED COLLAPSED HEADER (INVERSE, CENTERED & BIGGER) ---
+    # --- STYLED COLLAPSED HEADER & INPUT COMPRESSION ---
     st.markdown(
         """
         <style>
-            /* Target the collapsed header bar button container */
+            /* 1. Target the collapsed header bar button container */
             div[data-testid="stExpander"] button {
                 background-color: #f8f9fa !important;
                 border: 1px solid #e0e0e0 !important;
                 border-radius: 8px !important;
-                padding: 0.75rem 1rem !important;
+                padding: 0.85rem 1rem !important;
                 transition: background-color 0.2s ease;
                 display: flex !important;
-                justify-content: center !important; /* Centers contents horizontally */
+                justify-content: center !important; 
                 align-items: center !important;
                 width: 100% !important;
             }
@@ -91,7 +91,7 @@ if remaining_count > 0:
             
             /* Make text significantly bigger, bold, and center aligned */
             div[data-testid="stExpander"] button p {
-                font-size: 22px !important; /* Slightly bigger text */
+                font-size: 24px !important; /* Scaled up header text */
                 font-weight: 700 !important;
                 text-align: center !important;
                 margin: 0 auto !important;
@@ -105,13 +105,30 @@ if remaining_count > 0:
                 border-bottom-right-radius: 8px !important;
                 border: 1px solid rgba(255, 255, 255, 0.1) !important;
                 border-top: none !important;
-                padding: 24px !important;
+                padding: 20px !important;
             }
 
             /* Ensure input labels remain white inside the expansion block */
             div[data-testid="stExpanderDetails"] label p {
                 color: #ffffff !important;
-                font-size: 15px !important;
+                font-size: 14px !important;
+            }
+            
+            /* Compress the height of the input fields to make them smaller */
+            div[data-testid="stExpanderDetails"] input {
+                padding-top: 6px !important;
+                padding-bottom: 6px !important;
+                height: 38px !important;
+                font-size: 14px !important;
+            }
+
+            /* Make the password visibility toggle eye button a lot smaller */
+            div[data-testid="stExpanderDetails"] button[aria-label="View password text"] {
+                transform: scale(0.75) !important; /* Scales down the eye button button */
+                right: 2px !important; /* Snaps it flush to the very right edge */
+                height: 34px !important;
+                width: 34px !important;
+                background: transparent !important;
             }
             
             /* Hide input entry instruction hints ("Press Enter to submit") to fix clutter */
