@@ -185,7 +185,7 @@ allocated_df = df_teams[df_teams['StakeHolder'] != ""]
 remaining_count = 48 - len(allocated_df)
 
 if remaining_count > 0:
-    # --- STYLING NATIVE DRAW BUTTONS AND OVERRIDES ---
+    # --- GLOBAL AND ABSOLUTE OVERRIDES FOR NATIVE DRAW BUTTON ---
     st.markdown(
         """
         <style>
@@ -204,14 +204,16 @@ if remaining_count > 0:
             div[data-testid="InputInstructions"] { display: none !important; }
             
             /* ========================================================
-               AGGRESSIVE LAYOUT OVERRIDE: TARGETING MAIN DRAW BUTTON
+               ABSOLUTE GLOBAL SELECTORS TO KEEP BUTTON AT 100% WIDTH
                ======================================================== */
-            /* Break out of any flex containers to guarantee 100% full viewport width */
-            .element-container:has(button[key="draw_toggle_btn"]),
+            /* Force every conceivable wrapping div ancestor to respect full width sizing */
+            div[data-testid="stButton"]:has(button[key="draw_toggle_btn"]),
             div[data-testid="stVerticalBlockBorderWrapper"]:has(button[key="draw_toggle_btn"]),
-            div[data-testid="stVerticalBlock"]:has(button[key="draw_toggle_btn"]) {
+            div[data-testid="stVerticalBlock"]:has(button[key="draw_toggle_btn"]),
+            div.element-container:has(button[key="draw_toggle_btn"]) {
                 width: 100% !important;
                 max-width: 100% !important;
+                min-width: 100% !important;
                 display: block !important;
             }
 
