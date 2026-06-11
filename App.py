@@ -17,8 +17,8 @@ with col2:
     except Exception:
         st.write("") 
 
-# --- TITLE WITH ANCHORS DISABLED ---
-st.title("2026 World Cup Sweepstake", anchor=False)
+# --- TITLE WITHOUT MARKDOWN HOVER ANCHORS ---
+st.markdown("<div style='text-align: center; font-size: 40px; font-weight: bold; color: white; margin-bottom: 25px;'>2026 World Cup Sweepstake</div>", unsafe_allow_html=True)
 
 # --- USER CONFIGURATION ---
 SPREADSHEET_ID = "17PNVdOezXPwPmhV3vM1uWmeKsY9lJhFHKM3mBCyUJqU"
@@ -55,17 +55,14 @@ if remaining_count > 0:
     st.markdown(
         """
         <style>
-            /* Center application title text cleanly */
-            h1 {
-                text-align: center !important;
-                font-size: 40px !important;
-                font-weight: bold !important;
-                color: white !important;
-                margin-bottom: 25px !important;
+            /* ABSOLUTE FORCE: Hide every single native hover anchor link on the screen globally */
+            a {
+                display: none !important;
             }
-            
-            /* Remove all native heading link icons globally */
-            .css-6q9sum.e1tzwq550, .st-emotion-cache-b698xo a {
+            .stMarkdown a, button a, div[data-testid="stMarkdownContainer"] a {
+                display: none !important;
+            }
+            svg.css-6q9sum, svg.e1tzwq550, .st-emotion-cache-b698xo a {
                 display: none !important;
             }
 
@@ -99,14 +96,18 @@ if remaining_count > 0:
                 display: none !important;
             }
 
-            /* 2. Center button container and tighten spacing to make it symmetric */
+            /* 2. Symmetrical tightening: Reduce internal space between fields and button */
+            div[data-testid="stForm"] {
+                padding-bottom: 10px !important;
+            }
+            
             div[data-testid="stExpander"] div.stFormSubmitButton {
                 text-align: center !important;
                 display: flex !important;
                 justify-content: center !important;
                 width: 100% !important;
-                margin-top: -5px !important; /* Pulls button up closer to fields */
-                margin-bottom: 5px !important;
+                margin-top: -10px !important; /* Pull button up slightly for perfect symmetry */
+                margin-bottom: 2px !important;
             }
 
             /* Catch-all global selector mapping to force the button green */
@@ -180,14 +181,14 @@ if remaining_count > 0:
                             team_sheet_row = int(chosen_team_row.index[0]) + 2
                             pin_sheet_row = int(pin_match.index[0]) + 2
                             
-                            # Animation Sequence
+                            # Animation Sequence - Using raw safe wrapper divs to prevent Markdown anchors completely
                             animation_placeholder = st.empty()
                             all_emojis = df_teams['Emoji'].tolist()
                             for i in range(25):
-                                animation_placeholder.markdown(f"<h1 style='text-align: center; font-size: 100px;'>{random.choice(all_emojis)}</h1>", unsafe_allow_html=True)
+                                animation_placeholder.markdown(f"<div style='text-align: center; font-size: 100px;'>{random.choice(all_emojis)}</div>", unsafe_allow_html=True)
                                 time.sleep(0.04 + (i * 0.01))
                             
-                            animation_placeholder.markdown(f"<h1 style='text-align: center; font-size: 120px;'>{chosen_emoji}</h1>", unsafe_allow_html=True)
+                            animation_placeholder.markdown(f"<div style='text-align: center; font-size: 120px;'>{chosen_emoji}</div>", unsafe_allow_html=True)
                             
                             form_url = f"https://docs.google.com/forms/d/e/{FORM_ID}/formResponse"
                             
@@ -214,7 +215,7 @@ else:
 
 # --- SCOREBOARD VIEW ---
 st.write("---")
-st.header("Live Sweepstake Scoreboard", anchor=False)
+st.markdown("<h3 style='text-align: center;'>Live Sweepstake Scoreboard</h3>", unsafe_allow_html=True)
 st.write("")
 
 m_col1, m_col2, m_col3, m_col4 = st.columns([1, 2, 2, 1])
