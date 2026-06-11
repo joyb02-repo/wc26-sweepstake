@@ -204,17 +204,19 @@ if remaining_count > 0:
             div[data-testid="InputInstructions"] { display: none !important; }
 
             /* ========================================================
-               FORCE STREAMLIT'S NATIVE BUTTON TO BE BIG AND WHITE
+               FORCE FULL EXTENSION UP TO THE EDGES OF THE WRAPPERS
                ======================================================== */
-            /* Force layout blocks to break open to 100% full width */
+            /* Target Streamlit's element wrappers and force block expansion */
             div[data-testid="stMainBlockContainer"] div[data-testid="stButton"],
-            div[data-testid="stMainBlockContainer"] div[data-testid="stButton"] button {
+            div[data-testid="stMainBlockContainer"] div[data-testid="stButton"] > div,
+            .element-container:has(button:not([type="submit"])) {
                 width: 100% !important;
                 max-width: 100% !important;
+                min-width: 100% !important;
                 display: block !important;
             }
 
-            /* Style the button directly */
+            /* Apply aggressive full-bleed width styling on the native button */
             div[data-testid="stButton"] button:not([type="submit"]) {
                 background-color: #ffffff !important;
                 border: 1px solid #dee2e6 !important;
@@ -222,11 +224,17 @@ if remaining_count > 0:
                 padding: 14px 20px !important; 
                 min-height: 74px !important;
                 height: auto !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: 100% !important;
                 box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.18) !important;
                 transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease !important;
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
             }
 
-            /* Style the text inside the button */
+            /* Explicit text centering constraint overrides */
             div[data-testid="stButton"] button:not([type="submit"]) p {
                 font-size: clamp(16px, 4.6vw, 22px) !important; 
                 font-weight: 800 !important;
@@ -234,6 +242,7 @@ if remaining_count > 0:
                 text-align: center !important;
                 line-height: 1.3 !important;
                 margin: 0px !important;
+                width: 100% !important;
             }
 
             /* Hover states */
@@ -271,7 +280,7 @@ if remaining_count > 0:
         unsafe_allow_html=True
     )
     
-    # Clean native streamlit execution path
+    # Render native button safely
     if st.button("👋 Click here to enter your PIN & draw a team!"):
         st.session_state.show_draw_form = not st.session_state.show_draw_form
         st.rerun()
