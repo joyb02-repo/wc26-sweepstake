@@ -139,7 +139,6 @@ if remaining_count > 0:
             svg.css-6q9sum, svg.e1tzwq550, .st-emotion-cache-b698xo a { display: none !important; }
 
             /* --- REMOVE EXPANDER OUTLINE STROKES & NATIVE BORDERS --- */
-            /* Aggressively strips all nested structural containers created by Streamlit for the expander block */
             div[data-testid="stExpander"], 
             div[data-testid="stExpander"] * {
                 border: none !important;
@@ -160,14 +159,15 @@ if remaining_count > 0:
                 padding: 10px 0px 0px 0px !important;
             }
 
-            /* --- THE BIG WHITE CONTAINER BUTTON --- */
+            /* --- THE BIG WHITE CONTAINER BUTTON (RESPONSIVE) --- */
             div[data-testid="stExpander"] summary {
                 background-color: #ffffff !important;
                 border: none !important;
                 outline: none !important;
                 border-radius: 12px !important;
-                padding: 0px !important;
-                height: 70px !important; 
+                padding: 8px 16px !important; /* Added side padding for mobile text breathing room */
+                min-height: 70px !important; 
+                height: auto !important; /* Allow expansion if text breaks onto two lines on very narrow screens */
                 
                 display: flex !important;
                 justify-content: center !important; 
@@ -182,13 +182,8 @@ if remaining_count > 0:
                 display: none !important;
             }
 
-            /* Absolute alignment centering override layer */
+            /* Absolute alignment layer adjusted to handle flex text flow safely on screens */
             div[data-testid="stExpander"] summary > div {
-                position: absolute !important;
-                left: 0px !important;
-                right: 0px !important;
-                top: 0px !important;
-                bottom: 0px !important;
                 display: flex !important;
                 justify-content: center !important;
                 align-items: center !important;
@@ -205,19 +200,20 @@ if remaining_count > 0:
                 width: 100% !important;
             }
 
-            /* Header Content Row Formatting */
+            /* Fluid Typography Header Row Formatting */
             div[data-testid="stExpander"] summary p,
             div[data-testid="stExpander"] summary span {
-                font-size: 22px !important; 
+                /* Dynamically scales text down seamlessly based on viewport size */
+                font-size: clamp(15px, 4.5vw, 22px) !important; 
                 font-weight: 800 !important;
                 color: #111111 !important;
                 margin: 0px !important;
                 padding: 0px !important;
                 text-align: center !important; 
-                white-space: nowrap !important; 
-                display: flex !important;
-                justify-content: center !important;
-                align-items: center !important;
+                white-space: normal !important; /* Allows safe word wrapping instead of breaking out layout widths */
+                word-wrap: break-word !important;
+                display: block !important;
+                width: 100% !important;
                 transition: color 0.25s ease !important;
             }
 
@@ -236,6 +232,17 @@ if remaining_count > 0:
                 display: none !important;
             }
 
+            /* Responsive tweaks for form field blocks */
+            @media (max-width: 640px) {
+                div[data-testid="stForm"] {
+                    padding: 5px 0px !important;
+                }
+                /* Ensures columns stack beautifully on narrow mobile screens */
+                div[data-testid="element-container"] {
+                    width: 100% !important;
+                }
+            }
+
             /* Submission Form Button Elements */
             div[data-testid="stForm"] button[kind="primary"],
             div[data-testid="stForm"] button[type="submit"],
@@ -249,6 +256,16 @@ if remaining_count > 0:
                 border-radius: 6px !important;
                 box-shadow: none !important;
                 transition: background-color 0.2s ease, border-color 0.2s ease !important;
+                width: auto !important;
+            }
+
+            /* Force verified form submit buttons to spread full-width cleanly on phone panels */
+            @media (max-width: 480px) {
+                div[data-testid="stForm"] button[kind="primary"],
+                div[data-testid="stForm"] button[type="submit"],
+                .stFormSubmitButton > button {
+                    width: 100% !important;
+                }
             }
 
             div[data-testid="stForm"] button[kind="primary"]:hover,
