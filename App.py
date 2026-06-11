@@ -9,6 +9,26 @@ import re
 # Page config
 st.set_page_config(page_title="2026 World Cup Sweepstake", page_icon="icon.png", layout="centered")
 
+# --- FORCE DARK MODE GLOBALLY ---
+st.markdown(
+    """
+    <script>
+        // Force Streamlit's theme settings to dark mode in the local storage
+        window.localStorage.setItem('stLocalStorageSyncv1-theme', '{"theme":"dark"}');
+    </script>
+    <style>
+        /* Fallback CSS to force dark background variables just in case */
+        :root {
+            --st-theme-primary: #ff4b4b;
+            --st-theme-backgroundColor: #0e1117;
+            --st-theme-secondaryBackgroundColor: #262730;
+            --st-theme-textColor: #fafafa;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 # --- CENTERING THE LOGO ---
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
@@ -21,7 +41,7 @@ with col2:
 st.markdown("<div style='text-align: center; font-size: 40px; font-weight: bold; color: white; margin-bottom: 25px;'>2026 World Cup Sweepstake</div>", unsafe_allow_html=True)
 
 
-# --- 1. NEW CUSTOM INFO DROP-DOWN (Small, dark, non-vibrant) ---
+# --- 1. RULES DROP-DOWN ---
 st.markdown(
     """
     <style>
@@ -29,13 +49,13 @@ st.markdown(
             background-color: #1a1c23;
             border: 1px solid #2d3139;
             border-radius: 6px;
-            margin-bottom: 5px; /* Tight distance gap */
+            margin-bottom: 5px;
             font-family: sans-serif;
         }
         .rules-dropdown summary {
             padding: 10px 15px;
             font-size: 14px;
-            color: #8a92a6; /* Subdued, non-vibrant color */
+            color: #8a92a6;
             cursor: pointer;
             font-weight: 500;
             user-select: none;
@@ -90,7 +110,6 @@ ENTRY_ROW = st.secrets["ENTRY_ROW"]
 ENTRY_VALUE = st.secrets["ENTRY_VALUE"]    
 # -----------------------------------------------------------
 
-# Read data anonymously using basic web endpoints
 try:
     url_teams = f"https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=Sheet1"
     url_pins = f"https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=Pins"
@@ -112,27 +131,23 @@ allocated_df = df_teams[df_teams['StakeHolder'] != ""]
 remaining_count = 48 - len(allocated_df)
 
 if remaining_count > 0:
-    # --- STYLE INJECTION FOR THE DRAW A TEAM TAB ---
+    # --- FIXED EXPANDER STYLE INJECTION ---
     st.markdown(
         """
         <style>
-            /* ABSOLUTE FORCE: Hide every single native hover anchor link on the screen globally */
-            a {
-                display: none !important;
-            }
-            .stMarkdown a, button a, div[data-testid="stMarkdownContainer"] a {
-                display: none !important;
-            }
-            svg.css-6q9sum, svg.e1tzwq550, .st-emotion-cache-b698xo a {
-                display: none !important;
-            }
+            /* Hide every single native hover anchor link on the screen globally */
+            a { display: none !important; }
+            .stMarkdown a, button a, div[data-testid="stMarkdownContainer"] a { display: none !important; }
+            svg.css-6q9sum, svg.e1tzwq550, .st-emotion-cache-b698xo a { display: none !important; }
 
-            /* --- 2. HUGE WHITE CONTAINER (REVERTED DIMENSIONS) --- */
+            /* --- THE BIG WHITE CONTAINER BUTTON --- */
             div[data-testid="stExpander"] summary {
                 background-color: #ffffff !important;
                 border: 1px solid #ffffff !important;
                 border-radius: 12px !important;
                 padding: 1.2rem 1.5rem !important;
+                
+                /* CRITICAL SQUARED ALIGNMENT FIX: Turn entire header row into a centered item block */
                 display: flex !important;
                 justify-content: center !important; 
                 align-items: center !important;
@@ -140,59 +155,53 @@ if remaining_count > 0:
                 transition: background-color 0.25s ease, border-color 0.25s ease !important;
             }
 
-            /* Overrides layout offset constraints caused by the hidden chevron icon */
-            div[data-testid="stExpander"] summary > div {
+            /* Hide the native little arrow on the far edge that ruins symmetry */
+            div[data-testid="stExpander"] summary svg {
+                display: none !important;
+            }
+
+            /* Strip out layout constraints on Streamlit's inner block containers */
+            div[data-testid="stExpander"] summary > div,
+            div[data-testid="stExpander"] summary > div > div {
                 display: flex !important;
                 justify-content: center !important;
                 align-items: center !important;
                 width: 100% !important;
-                text-align: center !important;
-                margin-left: -24px !important; /* Counteracts the hidden native layout arrow width */
+                max-width: 100% !important;
+                margin: 0px !important;
+                padding: 0px !important;
             }
 
-            /* Text Styling (Symmetrical Center Align) */
-            div[data-testid="stExpander"] summary p {
+            /* Text Formatting: Locks header contents down the absolute dead-center */
+            div[data-testid="stExpander"] summary p,
+            div[data-testid="stExpander"] summary span {
                 font-size: 24px !important;
                 font-weight: 800 !important;
                 color: #111111 !important;
                 margin: 0px !important;
                 text-align: center !important; 
-                width: 100% !important;
-                display: block !important;
+                width: auto !important;
+                display: inline-block !important;
                 transition: color 0.25s ease !important;
             }
 
-            /* Native Chevron Color Match */
-            div[data-testid="stExpander"] summary svg {
-                color: #111111 !important;
-                fill: #111111 !important;
-                width: 22px !important;
-                height: 22px !important;
-                transition: color 0.25s ease, fill 0.25s ease !important;
-            }
-            
-            /* --- HOVER INTERACTION: LIGHT GOLDEN BACKGROUND + WHITE TEXT --- */
+            /* --- HOVER INTERACTION --- */
             div[data-testid="stExpander"] summary:hover {
-                background-color: #e6c619 !important; /* Light golden tone */
+                background-color: #e6c619 !important; /* Light Golden */
                 border-color: #e6c619 !important;
                 cursor: pointer;
             }
             
-            div[data-testid="stExpander"] summary:hover p {
-                color: #ffffff !important; /* Flips text font to white */
+            div[data-testid="stExpander"] summary:hover p,
+            div[data-testid="stExpander"] summary:hover span {
+                color: #ffffff !important; /* Text turns white */
             }
             
-            div[data-testid="stExpander"] summary:hover svg {
-                color: #ffffff !important; /* Flips toggle arrow icon to white */
-                fill: #ffffff !important;
-            }
-            
-            /* Remove instructions hint */
             div[data-testid="InputInstructions"] {
                 display: none !important;
             }
 
-            /* Style the green submission button without breaking parent layout constraints */
+            /* Submission Form Button Elements */
             div[data-testid="stForm"] button[kind="primary"],
             div[data-testid="stForm"] button[type="submit"],
             .stFormSubmitButton > button {
@@ -219,7 +228,7 @@ if remaining_count > 0:
         unsafe_allow_html=True
     )
     
-    # --- THE BIG DRAW EXPANDER ---
+    # --- THE BIG DRAW EXPANDER (Perfectly Centered Alignment) ---
     with st.expander("▶ Click here to enter your PIN & draw a team! ◀", expanded=False):
         with st.form(key="sweepstake_form", clear_on_submit=False):
             form_col1, form_col2 = st.columns([1.2, 1])
@@ -235,7 +244,6 @@ if remaining_count > 0:
             if not user_name or not user_pin:
                 st.warning("Please fill out both details.")
             else:
-                # --- COUNT-BASED MAXIMUM CHECK (UP TO 5) ---
                 existing_draws = df_teams[df_teams['StakeHolder'].str.lower() == user_name.lower()]
                 draw_count = len(existing_draws)
                 
@@ -260,7 +268,6 @@ if remaining_count > 0:
                             team_sheet_row = int(chosen_team_row.index[0]) + 2
                             pin_sheet_row = int(pin_match.index[0]) + 2
                             
-                            # Animation Sequence
                             animation_placeholder = st.empty()
                             all_emojis = df_teams['Emoji'].tolist()
                             for i in range(25):
@@ -272,12 +279,10 @@ if remaining_count > 0:
                             form_url = f"https://docs.google.com/forms/d/e/{FORM_ID}/formResponse"
                             
                             try:
-                                # 1. Update Team Allocation
                                 data_team = {ENTRY_ACTION: "CLAIM_TEAM", ENTRY_ROW: str(team_sheet_row), ENTRY_VALUE: user_name}
                                 req_team = urllib.request.Request(form_url, data=urllib.parse.urlencode(data_team).encode())
                                 urllib.request.urlopen(req_team)
                                 
-                                # 2. Burn PIN
                                 data_pin = {ENTRY_ACTION: "USE_PIN", ENTRY_ROW: str(pin_sheet_row), ENTRY_VALUE: "Used"}
                                 req_pin = urllib.request.Request(form_url, data=urllib.parse.urlencode(data_pin).encode())
                                 urllib.request.urlopen(req_pin)
@@ -331,25 +336,12 @@ with c_btn2:
 
 st.write("")
 
-# --- STYLED LIVE DATA TABLE WITH CUSTOM HIGH-VIS SCROLLBAR ---
+# --- TABLE VIEW ---
 table_head = """<style>
-/* Custom Light Shade Webkit Scrollbar Configuration */
-::-webkit-scrollbar {
-    width: 10px !important;
-    height: 10px !important;
-}
-::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05) !important;
-    border-radius: 10px !important;
-}
-::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.4) !important; 
-    border: 2px solid rgba(0, 0, 0, 0.2) !important;
-    border-radius: 10px !important;
-}
-::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.6) !important;
-}
+::-webkit-scrollbar { width: 10px !important; height: 10px !important; }
+::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05) !important; border-radius: 10px !important; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.4) !important; border: 2px solid rgba(0, 0, 0, 0.2) !important; border-radius: 10px !important; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.6) !important; }
 
 .sweepstake-table {width: 100%; border-collapse: collapse; margin-top: 15px; font-family: sans-serif;}
 .sweepstake-table th {background-color: rgba(255, 255, 255, 0.08); color: #ffffff !important; text-align: center; padding: 14px; font-weight: 600; font-size: 15px; border-bottom: 2px solid rgba(255, 255, 255, 0.15);}
@@ -358,8 +350,6 @@ table_head = """<style>
 .status-available {color: #a8ffb2; font-weight: 500;} 
 .status-owned {font-weight: bold; color: #29b5e8;}
 .owner-cell {font-size: 13px !important;} 
-
-/* Row Highlighting States */
 .row-taken {background-color: rgba(255, 75, 75, 0.12) !important;} 
 .row-available {background-color: rgba(40, 167, 69, 0.12) !important;} 
 </style>
@@ -384,10 +374,8 @@ for _, row in df_teams.iterrows():
     rating = str(row.get('Rating', '')).replace('nan', '').strip()
     star_player = str(row.get('Star Player', '')).replace('nan', '').strip()
     
-    if not star_player:
-        star_player = "-"
-    if not rating:
-        rating = "-"
+    if not star_player: star_player = "-"
+    if not rating: rating = "-"
 
     if owner == "":
         row_class = "class='row-available'"
