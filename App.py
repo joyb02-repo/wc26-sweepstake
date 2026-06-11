@@ -171,7 +171,7 @@ allocated_df = df_teams[df_teams['StakeHolder'] != ""]
 remaining_count = 48 - len(allocated_df)
 
 if remaining_count > 0:
-    # --- FORM & CUSTOM EXPANDER STYLE INJECTION ---
+    # --- EXPANDER & FORM STYLE INJECTION ---
     st.markdown(
         """
         <style>
@@ -180,12 +180,108 @@ if remaining_count > 0:
             .stMarkdown a, button a, div[data-testid="stMarkdownContainer"] a { display: none !important; }
             svg.css-6q9sum, svg.e1tzwq550, .st-emotion-cache-b698xo a { display: none !important; }
 
+            /* --- REMOVE EXPANDER OUTLINE STROKES & NATIVE BORDERS --- */
+            div[data-testid="stExpander"], 
+            div[data-testid="stExpander"] * {
+                border: none !important;
+                border-color: transparent !important;
+                box-shadow: none !important;
+                outline: none !important;
+            }
+            
+            div[data-testid="stExpanderDetails"] {
+                padding-left: 0px !important;
+                padding-right: 0px !important;
+            }
+
             /* --- TARGET AND REMOVE THE PERSISTENT NATIVE FORM CONTAINER BORDER --- */
             div[data-testid="stForm"] {
                 border: none !important;
                 box-shadow: none !important;
+                padding: 10px 0px 0px 0px !important;
+            }
+
+            /* --- THE BIG WHITE CONTAINER BUTTON (RESPONSIVE) --- */
+            div[data-testid="stExpander"] summary {
+                background-color: #ffffff !important;
+                border: none !important;
+                outline: none !important;
+                border-radius: 12px !important;
+                padding: 8px 16px !important; 
+                min-height: 70px !important; 
+                height: auto !important; 
+                
+                display: flex !important;
+                justify-content: center !important; 
+                align-items: center !important;
+                position: relative !important;
+                box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15) !important;
+                transition: background-color 0.25s ease !important;
+                list-style: none !important; /* Removes list marker styling */
+            }
+
+            /* --- TOTAL ELIMINATION OF ALL NATIVE CHEVRONS AND SVG ICONS --- */
+            div[data-testid="stExpander"] summary::-webkit-details-marker,
+            div[data-testid="stExpander"] summary::marker,
+            div[data-testid="stExpander"] summary svg,
+            div[data-testid="stExpander"] summary div svg,
+            div[data-testid="stExpander"] summary [data-testid="stExpanderToggleIcon"],
+            div[data-testid="stExpander"] [data-testid="stExpanderToggleIcon"] {
+                display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                width: 0px !important;
+                height: 0px !important;
+            }
+
+            /* Force layout centering properties back onto structural summary blocks */
+            div[data-testid="stExpander"] summary > div {
+                position: relative !important;
+                left: unset !important;
+                right: unset !important;
+                top: unset !important;
+                bottom: unset !important;
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0px !important;
                 padding: 0px !important;
-                background-color: transparent !important;
+            }
+            
+            div[data-testid="stExpander"] summary > div > div {
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+                width: 100% !important;
+            }
+
+            /* Fluid Typography Header Row Formatting */
+            div[data-testid="stExpander"] summary p,
+            div[data-testid="stExpander"] summary span {
+                font-size: clamp(15px, 4.5vw, 22px) !important; 
+                font-weight: 800 !important;
+                color: #111111 !important;
+                margin: 0px !important;
+                padding: 0px !important;
+                text-align: center !important; 
+                white-space: normal !important; 
+                word-wrap: break-word !important;
+                display: block !important;
+                width: 100% !important;
+                transition: color 0.25s ease !important;
+            }
+
+            /* --- HOVER INTERACTION --- */
+            div[data-testid="stExpander"] summary:hover {
+                background-color: #e6c619 !important; /* Light Golden */
+                cursor: pointer;
+            }
+            
+            div[data-testid="stExpander"] summary:hover p,
+            div[data-testid="stExpander"] summary:hover span {
+                color: #ffffff !important;
             }
             
             div[data-testid="InputInstructions"] {
@@ -194,6 +290,9 @@ if remaining_count > 0:
 
             /* Responsive tweaks for form field blocks */
             @media (max-width: 640px) {
+                div[data-testid="stForm"] {
+                    padding: 5px 0px !important;
+                }
                 div[data-testid="element-container"] {
                     width: 100% !important;
                 }
@@ -230,136 +329,77 @@ if remaining_count > 0:
                 border-color: #1e7e34 !important;
                 color: #ffffff !important;
             }
-            
-            /* --- CUSTOM ARROWLESS CLICKABLE EXPANDER CONTAINER --- */
-            .clickable-draw-container {
-                display: block;
-                width: 100%;
-                margin-bottom: 20px;
-            }
-            
-            /* Hide default marker arrow completely on all browsers */
-            .clickable-draw-container summary {
-                list-style: none !important;
-            }
-            .clickable-draw-container summary::-webkit-details-marker {
-                display: none !important;
-            }
-            
-            /* The White Pill Header Button Style */
-            .clickable-draw-container summary .header-banner {
-                background-color: #ffffff !important;
-                border-radius: 12px !important;
-                padding: 8px 16px !important;
-                min-height: 70px !important;
-                display: flex !important;
-                justify-content: center !important;
-                align-items: center !important;
-                box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15) !important;
-                cursor: pointer;
-                user-select: none;
-                width: 100% !important;
-                box-sizing: border-box !important;
-                transition: background-color 0.25s ease !important;
-            }
-            
-            .clickable-draw-container summary .header-banner span {
-                font-size: clamp(15px, 4.5vw, 22px) !important;
-                font-weight: 800 !important;
-                color: #111111 !important;
-                text-align: center !important;
-                line-height: 1.3 !important;
-                display: block !important;
-                transition: color 0.25s ease !important;
-            }
-            
-            /* Hover interaction state */
-            .clickable-draw-container summary .header-banner:hover {
-                background-color: #e6c619 !important; /* Golden Accent */
-            }
-            .clickable-draw-container summary .header-banner:hover span {
-                color: #ffffff !important;
-            }
-            
-            /* Inner Content Area padding */
-            .draw-content-box {
-                padding: 15px 5px 0px 5px !important;
-            }
         </style>
         """, 
         unsafe_allow_html=True
     )
     
-    # --- CLICKABLE EXPANDER FORM WITHOUT ARROWS ---
-    # We use a clean HTML wrap split around the form elements so it collapses dynamically
-    st.markdown('<details class="clickable-draw-container"><summary><div class="header-banner"><span>👋 Click here to enter your PIN & draw a team!</span></div></summary><div class="draw-content-box">', unsafe_allow_html=True)
-    
-    with st.form(key="sweepstake_form", clear_on_submit=False):
-        form_col1, form_col2 = st.columns([1.2, 1])
-        
-        with form_col1:
-            user_name = st.text_input("Enter Your Full Name:", placeholder="e.g., Jane Doe", max_chars=22).strip()
-        with form_col2:
-            user_pin = st.text_input("Enter Your Unique 5-Digit PIN:", type="password", placeholder="xxxxx", max_chars=5).strip()
+    # --- THE BIG DRAW EXPANDER (NATIVE COLLAPSE ENGINE) ---
+    with st.expander("👋 Click here to enter your PIN & draw a team!", expanded=False):
+        with st.form(key="sweepstake_form", clear_on_submit=False):
+            form_col1, form_col2 = st.columns([1.2, 1])
             
-        submit_button = st.form_submit_button(label="Verify & Draw My Country!")
-
-    st.markdown('</div></details>', unsafe_allow_html=True)
-
-    if submit_button:
-        if not user_name or not user_pin:
-            st.warning("Please fill out both details.")
-        else:
-            existing_draws = df_teams[df_teams['StakeHolder'].str.lower() == user_name.lower()]
-            draw_count = len(existing_draws)
-            
-            if draw_count >= 5:
-                drawn_countries = ", ".join([f"{row['Emoji']} {row['Country']}" for _, row in existing_draws.iterrows()])
-                st.error(f"🚨 **{user_name}**, you have reached the maximum limit of 5 entries! You already own: {drawn_countries}")
-            else:
-                pin_match = df_pins[df_pins['PIN'] == user_pin]
+            with form_col1:
+                user_name = st.text_input("Enter Your Full Name:", placeholder="e.g., Jane Doe", max_chars=22).strip()
+            with form_col2:
+                user_pin = st.text_input("Enter Your Unique 5-Digit PIN:", type="password", placeholder="xxxxx", max_chars=5).strip()
                 
-                if pin_match.empty:
-                    st.error("❌ Invalid PIN.")
-                elif pin_match.iloc[0]['Status'] == "Used":
-                    st.error("❌ This PIN has already been used!")
+            submit_button = st.form_submit_button(label="Verify & Draw My Country!")
+
+        if submit_button:
+            if not user_name or not user_pin:
+                st.warning("Please fill out both details.")
+            else:
+                existing_draws = df_teams[df_teams['StakeHolder'].str.lower() == user_name.lower()]
+                draw_count = len(existing_draws)
+                
+                if draw_count >= 5:
+                    drawn_countries = ", ".join([f"{row['Emoji']} {row['Country']}" for _, row in existing_draws.iterrows()])
+                    st.error(f"🚨 **{user_name}**, you have reached the maximum limit of 5 entries! You already own: {drawn_countries}")
                 else:
-                    available_teams = df_teams[df_teams['StakeHolder'] == ""]
+                    pin_match = df_pins[df_pins['PIN'] == user_pin]
                     
-                    if not available_teams.empty:
-                        chosen_team_row = available_teams.sample(n=1)
-                        chosen_country = chosen_team_row['Country'].values[0]
-                        chosen_emoji = chosen_team_row['Emoji'].values[0]
+                    if pin_match.empty:
+                        st.error("❌ Invalid PIN.")
+                    elif pin_match.iloc[0]['Status'] == "Used":
+                        st.error("❌ This PIN has already been used!")
+                    else:
+                        available_teams = df_teams[df_teams['StakeHolder'] == ""]
                         
-                        team_sheet_row = int(chosen_team_row.index[0]) + 2
-                        pin_sheet_row = int(pin_match.index[0]) + 2
-                        
-                        animation_placeholder = st.empty()
-                        all_emojis = df_teams['Emoji'].tolist()
-                        for i in range(25):
-                            animation_placeholder.markdown(f"<div style='text-align: center; font-size: 100px;'>{random.choice(all_emojis)}</div>", unsafe_allow_html=True)
-                            time.sleep(0.04 + (i * 0.01))
-                        
-                        animation_placeholder.markdown(f"<div style='text-align: center; font-size: 120px;'>{chosen_emoji}</div>", unsafe_allow_html=True)
-                        
-                        form_url = f"https://docs.google.com/forms/d/e/{FORM_ID}/formResponse"
-                        
-                        try:
-                            data_team = {ENTRY_ACTION: "CLAIM_TEAM", ENTRY_ROW: str(team_sheet_row), ENTRY_VALUE: user_name}
-                            req_team = urllib.request.Request(form_url, data=urllib.parse.urlencode(data_team).encode())
-                            urllib.request.urlopen(req_team)
+                        if not available_teams.empty:
+                            chosen_team_row = available_teams.sample(n=1)
+                            chosen_country = chosen_team_row['Country'].values[0]
+                            chosen_emoji = chosen_team_row['Emoji'].values[0]
                             
-                            data_pin = {ENTRY_ACTION: "USE_PIN", ENTRY_ROW: str(pin_sheet_row), ENTRY_VALUE: "Used"}
-                            req_pin = urllib.request.Request(form_url, data=urllib.parse.urlencode(data_pin).encode())
-                            urllib.request.urlopen(req_pin)
+                            team_sheet_row = int(chosen_team_row.index[0]) + 2
+                            pin_sheet_row = int(pin_match.index[0]) + 2
                             
-                            st.balloons()
-                            st.success(f"🎉 **Congratulations {user_name}!** (Draw {draw_count + 1}/5)")
-                            st.subheader(f"Your country: **{chosen_country}**")
-                            time.sleep(4)
-                            st.rerun()
-                        except Exception:
-                            st.error("Submission failed. Connection issue.")
+                            animation_placeholder = st.empty()
+                            all_emojis = df_teams['Emoji'].tolist()
+                            for i in range(25):
+                                animation_placeholder.markdown(f"<div style='text-align: center; font-size: 100px;'>{random.choice(all_emojis)}</div>", unsafe_allow_html=True)
+                                time.sleep(0.04 + (i * 0.01))
+                            
+                            animation_placeholder.markdown(f"<div style='text-align: center; font-size: 120px;'>{chosen_emoji}</div>", unsafe_allow_html=True)
+                            
+                            form_url = f"https://docs.google.com/forms/d/e/{FORM_ID}/formResponse"
+                            
+                            try:
+                                data_team = {ENTRY_ACTION: "CLAIM_TEAM", ENTRY_ROW: str(team_sheet_row), ENTRY_VALUE: user_name}
+                                req_team = urllib.request.Request(form_url, data=urllib.parse.urlencode(data_team).encode())
+                                urllib.request.urlopen(req_team)
+                                
+                                data_pin = {ENTRY_ACTION: "USE_PIN", ENTRY_ROW: str(pin_sheet_row), ENTRY_VALUE: "Used"}
+                                req_pin = urllib.request.Request(form_url, data=urllib.parse.urlencode(data_pin).encode())
+                                urllib.request.urlopen(req_pin)
+                                
+                                st.balloons()
+                                st.success(f"🎉 **Congratulations {user_name}!** (Draw {draw_count + 1}/5)")
+                                st.subheader(f"Your country: **{chosen_country}**")
+                                time.sleep(4)
+                                st.rerun()
+                            except Exception:
+                                st.error("Submission failed. Connection issue.")
 else:
     st.info("🎉 All 48 countries have been claimed!")
 
