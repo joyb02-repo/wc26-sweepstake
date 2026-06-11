@@ -55,18 +55,23 @@ if remaining_count > 0:
     st.markdown(
         """
         <style>
-            /* 1. Boost text size & invert header to a light fill background with dark text */
+            /* 1. Boost text size, invert header to a light fill, and center text alignment */
             div[data-testid="stExpander"] summary {
                 background-color: #f8f9fa !important;
                 border: 1px solid #e0e0e0 !important;
                 border-radius: 8px !important;
                 padding: 0.5rem 1rem !important;
+                display: flex !important;
+                justify-content: center !important; /* Centers text horizontally */
+                align-items: center !important;
             }
 
             div[data-testid="stExpander"] summary p {
                 font-size: 26px !important;
                 font-weight: bold !important;
                 color: #111111 !important; /* Dark Text */
+                margin: 0px !important;
+                text-align: center !important;
             }
 
             /* Force the native expander arrow icon fill to match dark text color */
@@ -80,7 +85,7 @@ if remaining_count > 0:
                 display: none !important;
             }
 
-            /* 2. Center the form button container and make the button text smaller */
+            /* 2. Center the form button container and make the button vibrant green */
             div[data-testid="stExpander"] div.stFormSubmitButton {
                 text-align: center !important;
                 display: flex !important;
@@ -90,10 +95,25 @@ if remaining_count > 0:
             }
 
             div[data-testid="stExpander"] div.stFormSubmitButton button {
-                font-size: 15px !important; /* Smaller text size */
+                font-size: 15px !important; 
                 font-weight: 600 !important;
-                padding: 0.4rem 2rem !important; /* Compact styling */
-                width: auto !important; /* Prevents stretching */
+                padding: 0.4rem 2rem !important; 
+                width: auto !important; 
+                background-color: #24a0ed !important; /* Default override safety */
+                border: none !important;
+            }
+            
+            /* Target the button background specifically for the green styling frame */
+            div[data-testid="stForm"] button[type="submit"] {
+                background-color: #28a745 !important; /* Vibrant green */
+                color: white !important;
+                border-radius: 6px !important;
+                transition: background-color 0.2s ease;
+            }
+
+            div[data-testid="stForm"] button[type="submit"]:hover {
+                background-color: #218838 !important; /* Darker green on hover */
+                color: white !important;
             }
         </style>
         """, 
