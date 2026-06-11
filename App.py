@@ -129,7 +129,7 @@ allocated_df = df_teams[df_teams['StakeHolder'] != ""]
 remaining_count = 48 - len(allocated_df)
 
 if remaining_count > 0:
-    # --- EXPANDER STYLE INJECTION ---
+    # --- EXPANDER & FORM STYLE INJECTION ---
     st.markdown(
         """
         <style>
@@ -138,10 +138,11 @@ if remaining_count > 0:
             .stMarkdown a, button a, div[data-testid="stMarkdownContainer"] a { display: none !important; }
             svg.css-6q9sum, svg.e1tzwq550, .st-emotion-cache-b698xo a { display: none !important; }
 
-            /* --- TARGET ONLY THE LOWER WRAPPER BOX STROKE --- */
+            /* --- REMOVE EXPANDER OUTLINE STROKES --- */
             div[data-testid="stExpander"] {
                 border: none !important;
                 background-color: transparent !important;
+                box-shadow: none !important;
             }
             
             div[data-testid="stExpanderDetails"] {
@@ -151,10 +152,17 @@ if remaining_count > 0:
                 padding-right: 0px !important;
             }
 
+            /* --- TARGET AND REMOVE THE PERSISTENT NATIVE FORM CONTAINER BORDER --- */
+            div[data-testid="stForm"] {
+                border: none !important;
+                box-shadow: none !important;
+                padding: 10px 0px 0px 0px !important;
+            }
+
             /* --- THE BIG WHITE CONTAINER BUTTON --- */
             div[data-testid="stExpander"] summary {
                 background-color: #ffffff !important;
-                border: none !important;
+                border: 1px solid #ffffff !important;
                 border-radius: 12px !important;
                 padding: 0px !important;
                 height: 70px !important; 
@@ -236,7 +244,7 @@ if remaining_count > 0:
                 padding: 0.5rem 2.5rem !important; 
                 background-color: #28a745 !important; 
                 color: #ffffff !important;
-                border: 0px solid #218838 !important;
+                border: 1px solid #218838 !important;
                 border-radius: 6px !important;
                 box-shadow: none !important;
                 transition: background-color 0.2s ease, border-color 0.2s ease !important;
@@ -305,7 +313,7 @@ if remaining_count > 0:
                             form_url = f"https://docs.google.com/forms/d/e/{FORM_ID}/formResponse"
                             
                             try:
-                                data_team = {ENTRY_ACTION: "CLAIM_TEAM", ENTRY_ROW: str(team_sheet_row), ENTRY_VALUE: "Used"}
+                                data_team = {ENTRY_ACTION: "CLAIM_TEAM", ENTRY_ROW: str(team_sheet_row), ENTRY_VALUE: user_name}
                                 req_team = urllib.request.Request(form_url, data=urllib.parse.urlencode(data_team).encode())
                                 urllib.request.urlopen(req_team)
                                 
