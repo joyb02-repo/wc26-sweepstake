@@ -376,7 +376,7 @@ with c_btn2:
 
 st.write("")
 
-# --- ADAPTIVE TABLE VIEW (SWITCHES BG & TEXT AUTOMATICALLY FOR LIGHT MODE) ---
+# --- ADAPTIVE TABLE VIEW WITH FROZEN/STICKY HEADERS ---
 table_head = """<style>
 html, body { margin: 0; padding: 0; background-color: transparent; font-family: sans-serif; overflow-x: hidden; }
 ::-webkit-scrollbar { width: 6px !important; height: 6px !important; }
@@ -386,8 +386,21 @@ html, body { margin: 0; padding: 0; background-color: transparent; font-family: 
 .table-container { width: 100%; overflow-x: hidden; box-sizing: border-box; }
 .sweepstake-table { width: 100%; border-collapse: collapse; margin-top: 5px; table-layout: auto; }
 
-/* DARK MODE ROW BASICS (Default) */
-.sweepstake-table th { background-color: rgba(255, 255, 255, 0.08); color: #ffffff !important; text-align: center; padding: 10px 6px; font-weight: 600; font-size: 13px; border-bottom: 2px solid rgba(255, 255, 255, 0.15); white-space: nowrap; }
+/* --- CRITICAL CRITERIA: FREEZE TABLE HEADER ROW --- */
+.sweepstake-table th { 
+    position: sticky !important; 
+    top: 0 !important; 
+    z-index: 100 !important; 
+    background-color: #171a21 !important; /* Pure uniform solid backfill to prevent layout bleedthrough */
+    color: #ffffff !important; 
+    text-align: center; 
+    padding: 10px 6px; 
+    font-weight: 600; 
+    font-size: 13px; 
+    border-bottom: 2px solid rgba(255, 255, 255, 0.15); 
+    white-space: nowrap; 
+}
+
 .sweepstake-table td { padding: 10px 4px; text-align: center; vertical-align: middle !important; border-bottom: 1px solid rgba(255, 255, 255, 0.05); box-sizing: border-box; }
 .emoji-cell { font-size: 26px; line-height: 1; display: inline-block; vertical-align: middle; }
 
@@ -402,7 +415,7 @@ html, body { margin: 0; padding: 0; background-color: transparent; font-family: 
 /* --- COMPREHENSIVE LIGHT MODE OVERRIDES --- */
 @media (prefers-color-scheme: light) {
     .sweepstake-table th { 
-        background-color: #e9ecef !important; 
+        background-color: #e9ecef !important; /* Solid light grey row backfill */
         color: #212529 !important; 
         border-bottom: 2px solid #dee2e6 !important;
     }
@@ -412,8 +425,8 @@ html, body { margin: 0; padding: 0; background-color: transparent; font-family: 
     .country-text { color: #212529 !important; }
     .player-text { color: #495057 !important; }
     
-    .row-taken { background-color: #f8d7da !important; }    /* Stronger soft red */
-    .row-available { background-color: #d1e7dd !important; }/* Stronger soft green */
+    .row-taken { background-color: #f8d7da !important; }
+    .row-available { background-color: #d1e7dd !important; }
     
     .status-available { color: #0f5132 !important; }
     .status-owned { color: #0b5ed7 !important; }
