@@ -96,19 +96,32 @@ if remaining_count > 0:
                 display: none !important;
             }
 
-            /* 2. Symmetrical layout settings */
+            /* 2. Absolute Form Box Spacing Configuration */
             div[data-testid="stForm"] {
-                padding-bottom: 10px !important;
+                padding-bottom: 15px !important;
             }
 
-            /* Stretches the primary submit button cleanly across its centered column wrapper */
+            /* Target the structural form row wrapper to break standard grid alignment */
+            div[data-testid="stForm"] div.stFormSubmitButton {
+                text-align: center !important;
+                width: 100% !important;
+                display: block !important;
+                margin-top: 20px !important; /* Precise 5-space vertical break cushion below input fields */
+                margin-bottom: 5px !important;
+            }
+
+            /* Direct target configuration to align and hold the green button exactly in the center */
+            div[data-testid="stForm"] div.stFormSubmitButton button,
             div[data-testid="stForm"] button[kind="primary"],
             div[data-testid="stForm"] button[type="submit"],
             .stFormSubmitButton > button {
                 font-size: 16px !important; 
                 font-weight: 600 !important;
-                padding: 0.5rem 1rem !important; 
-                width: 100% !important; /* Fills out the center column space evenly */
+                padding: 0.5rem 2.5rem !important; 
+                width: auto !important; 
+                min-width: 280px !important; /* Stretches the button beautifully in the middle */
+                margin: 0 auto !important; /* Locks structural layout dead center */
+                display: inline-block !important;
                 background-color: #28a745 !important; /* Vibrant green */
                 color: #ffffff !important;
                 border: 1px solid #218838 !important;
@@ -117,6 +130,7 @@ if remaining_count > 0:
                 transition: background-color 0.2s ease, border-color 0.2s ease !important;
             }
 
+            div[data-testid="stForm"] div.stFormSubmitButton button:hover,
             div[data-testid="stForm"] button[kind="primary"]:hover,
             div[data-testid="stForm"] button[type="submit"]:hover,
             .stFormSubmitButton > button:hover {
@@ -138,11 +152,8 @@ if remaining_count > 0:
             with form_col2:
                 user_pin = st.text_input("Enter Your Unique 5-Digit PIN:", type="password", placeholder="xxxxx", max_chars=5).strip()
             
-            # --- CENTERING BY COLUMN WRAPPING ---
-            # Creates balanced gutters on the left and right sides to lock the button dead-center
-            btn_left, btn_center, btn_right = st.columns([1, 2, 1])
-            with btn_center:
-                submit_button = st.form_submit_button(label="Verify & Draw My Country!")
+            # Button is declared directly on the form root layout to allow the full-width alignment code to take control
+            submit_button = st.form_submit_button(label="Verify & Draw My Country!")
 
         if submit_button:
             if not user_name or not user_pin:
