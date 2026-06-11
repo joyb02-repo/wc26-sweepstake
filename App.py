@@ -142,7 +142,7 @@ st.markdown(
             <ul>
                 <li><strong>Entry Fee:</strong> Join the sweepstake by paying <strong>$5 per entry</strong> via cash or PayID to <strong>benjoy@up.me</strong>.</li>
                 <li><strong>Prize Pool:</strong> 100% of the entry fees go directly into the competitive prize pool.</li>
-                <li><strong>Entry Limit:</strong> You can purchase a <strong>maximum of 5 entries</strong> per person.</li>
+                <li><strong>Entry Limit:</strong> You can purchase a <strong>maximum of 3 entries</strong> per person.</li>
                 <li><strong>How to Draw:</strong> For each entry paid, you will receive a <strong>unique 5-digit PIN</strong>. Enter your PIN below to trigger the automated shuffling system and draw a random country.</li>
                 <li><strong>Exclusivity:</strong> Once you draw a country, it is permanently allocated to you and locked so no other player can claim it.</li>
                 <li><strong>Winning the Pool:</strong> If your allocated country wins the World Cup final on <strong>July 20th</strong>, you take home the <strong>entire cash prize pool</strong>!</li>
@@ -302,9 +302,9 @@ if remaining_count > 0:
                 existing_draws = df_teams[df_teams['StakeHolder'].str.lower() == user_name.lower()]
                 draw_count = len(existing_draws)
                 
-                if draw_count >= 5:
+                if draw_count >= 3:
                     drawn_countries = ", ".join([f"{row['Emoji']} {row['Country']}" for _, row in existing_draws.iterrows()])
-                    st.error(f"🚨 **{user_name}**, you have reached the maximum limit of 5 entries! You already own: {drawn_countries}")
+                    st.error(f"🚨 **{user_name}**, you have reached the maximum limit of 3 entries! You already own: {drawn_countries}")
                 else:
                     pin_match = df_pins[df_pins['PIN'] == user_pin]
                     
@@ -343,7 +343,7 @@ if remaining_count > 0:
                                 urllib.request.urlopen(req_pin)
                                 
                                 st.balloons()
-                                st.success(f"🎉 **Congratulations {user_name}!** (Draw {draw_count + 1}/5)")
+                                st.success(f"🎉 **Congratulations {user_name}!** (Draw {draw_count + 1}/3)")
                                 st.subheader(f"Your country: **{chosen_country}**")
                                 time.sleep(4)
                                 st.rerun()
