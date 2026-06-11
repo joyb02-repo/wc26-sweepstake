@@ -20,13 +20,14 @@ with col2:
 # --- TITLE WITHOUT MARKDOWN HOVER ANCHORS ---
 st.markdown("<div style='text-align: center; font-size: 40px; font-weight: bold; color: white; margin-bottom: 25px;'>2026 World Cup Sweepstake</div>", unsafe_allow_html=True)
 
-# --- USER CONFIGURATION ---
-SPREADSHEET_ID = "17PNVdOezXPwPmhV3vM1uWmeKsY9lJhFHKM3mBCyUJqU"
-FORM_ID = "1FAIpQLScZsUCEPlh6YqzhGTb5JfLNA_oNeb6wGksMejlrMlWnjPUYoQ"
+# --- SECURE USER CONFIGURATION VIA STREAMLIT SECRETS ---
+# The raw IDs are completely removed from the code. They are now safely fetched from your environment.
+SPREADSHEET_ID = st.secrets["SPREADSHEET_ID"]
+FORM_ID = st.secrets["FORM_ID"]
 
-ENTRY_ACTION = "entry.1179688956"  
-ENTRY_ROW = "entry.870831797"     
-ENTRY_VALUE = "entry.931377367"    
+ENTRY_ACTION = st.secrets["ENTRY_ACTION"]  
+ENTRY_ROW = st.secrets["ENTRY_ROW"]     
+ENTRY_VALUE = st.secrets["ENTRY_VALUE"]    
 # -----------------------------------------------------------
 
 # Read data anonymously using basic web endpoints
@@ -258,13 +259,13 @@ table_head = """<style>
 .sweepstake-table th {background-color: rgba(255, 255, 255, 0.08); color: #ffffff !important; text-align: center; padding: 14px; font-weight: 600; font-size: 15px; border-bottom: 2px solid rgba(255, 255, 255, 0.15);}
 .sweepstake-table td {padding: 16px; text-align: center; vertical-align: middle !important; border-bottom: 1px solid rgba(255, 255, 255, 0.05);}
 .emoji-cell {font-size: 38px; line-height: 1; display: inline-block; vertical-align: middle;}
-.status-available {color: #a8ffb2; font-weight: 500;} /* Swapped to a visible light green tone for dark UI */
+.status-available {color: #a8ffb2; font-weight: 500;} 
 .status-owned {font-weight: bold; color: #29b5e8;}
 .owner-cell {font-size: 13px !important;} 
 
 /* Row Highlighting States */
 .row-taken {background-color: rgba(255, 75, 75, 0.12) !important;} 
-.row-available {background-color: rgba(40, 167, 69, 0.12) !important;} /* Elegant transparent light green background */
+.row-available {background-color: rgba(40, 167, 69, 0.12) !important;} 
 </style>
 <table class="sweepstake-table">
 <thead>
@@ -292,7 +293,6 @@ for _, row in df_teams.iterrows():
     if not rating:
         rating = "-"
 
-    # Sift layout classes dynamically based on claim availability
     if owner == "":
         row_class = "class='row-available'"
         owner_display = "<span class='status-available'>⏳ Available</span>"
