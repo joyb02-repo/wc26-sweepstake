@@ -237,7 +237,7 @@ if remaining_count > 0:
                 padding: 0.5rem 2.5rem !important; 
                 background-color: #28a745 !important; 
                 color: #ffffff !important;
-                border: 1px solid #218838 !important;
+                border: 0px solid #218838 !important;
                 border-radius: 6px !important;
                 box-shadow: none !important;
                 transition: background-color 0.2s ease, border-color 0.2s ease !important;
