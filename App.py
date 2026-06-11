@@ -177,19 +177,18 @@ if remaining_count > 0:
                 transition: background-color 0.25s ease !important;
             }
 
-            /* --- KILL STUBBORN NATIVE INJECTED ARROWS & PSEUDO CHEVRONS COMPLETELY --- */
+            /* --- ABSOLUTE EXTERMINATION OF NATIVE CHEVRONS AND TRANSFORMS --- */
             div[data-testid="stExpander"] summary svg,
             div[data-testid="stExpander"] summary [data-testid="stExpanderToggleIcon"],
-            div[data-testid="stExpander"] summary::before,
-            div[data-testid="stExpander"] summary::after,
-            div[data-testid="stExpander"] summary *::before,
-            div[data-testid="stExpander"] summary *::after {
+            div[data-testid="stExpander"] [data-testid="stExpanderToggleIcon"] {
                 display: none !important;
-                content: none !important;
-                background: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                width: 0px !important;
+                height: 0px !important;
             }
 
-            /* Strip absolute layouts on inner containers to support clean centering */
+            /* Force standard layout centering properties back onto structural blocks */
             div[data-testid="stExpander"] summary > div {
                 position: relative !important;
                 left: unset !important;
@@ -223,8 +222,8 @@ if remaining_count > 0:
                 text-align: center !important; 
                 white-space: normal !important; 
                 word-wrap: break-word !important;
-                display: inline-block !important;
-                width: auto !important;
+                display: block !important; /* Forces block width to avoid catching inline float layout wrappers */
+                width: 100% !important;
                 transition: color 0.25s ease !important;
             }
 
@@ -290,8 +289,7 @@ if remaining_count > 0:
     )
     
     # --- THE BIG DRAW EXPANDER ---
-    # Kept the manual text arrow ' ▾' here since it is now cleanly inline next to the text.
-    with st.expander("👋 Click here to enter your PIN & draw a team! ▾", expanded=False):
+    with st.expander("👋 Click here to enter your PIN & draw a team!", expanded=False):
         with st.form(key="sweepstake_form", clear_on_submit=False):
             form_col1, form_col2 = st.columns([1.2, 1])
             
