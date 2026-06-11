@@ -155,7 +155,7 @@ if remaining_count > 0:
             /* --- THE BIG WHITE CONTAINER BUTTON --- */
             div[data-testid="stExpander"] summary {
                 background-color: #ffffff !important;
-                border: 1px solid #ffffff !important;
+                border: 0px solid #ffffff !important;
                 border-radius: 12px !important;
                 padding: 0px !important;
                 height: 70px !important; 
