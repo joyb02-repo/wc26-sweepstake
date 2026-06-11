@@ -20,85 +20,7 @@ with col2:
 # --- TITLE WITHOUT MARKDOWN HOVER ANCHORS ---
 st.markdown("<div style='text-align: center; font-size: 40px; font-weight: bold; color: white; margin-bottom: 25px;'>2026 World Cup Sweepstake</div>", unsafe_allow_html=True)
 
-# --- CLEAN CUSTOM CSS INJECTION ---
-st.markdown(
-    """
-    <style>
-        /* ABSOLUTE FORCE: Hide native hover anchor links */
-        a { display: none !important; }
-        .stMarkdown a, button a, div[data-testid="stMarkdownContainer"] a { display: none !important; }
-        svg.css-6q9sum, svg.e1tzwq550, .st-emotion-cache-b698xo a { display: none !important; }
-
-        /* General Expander Base Rule */
-        div[data-testid="stExpander"] summary {
-            display: flex !important;
-            justify-content: center !important; 
-            align-items: center !important;
-            border-radius: 8px !important;
-        }
-
-        /* --- INFO TAB STYLING (FIRST EXPANDER) --- */
-        /* Targets the first expander container on the page directly */
-        div[data-testid="stExpander"]:first-of-type summary {
-            background-color: #1e1e1e !important; /* Dark background */
-            border: 1px solid #333333 !important;
-            padding: 0.35rem 1rem !important; /* Small padding height */
-        }
-        div[data-testid="stExpander"]:first-of-type summary p {
-            font-size: 14px !important; /* Small font size */
-            color: #ffffff !important; /* Light text color */
-            font-weight: normal !important;
-            margin: 0px !important;
-        }
-        div[data-testid="stExpander"]:first-of-type summary svg {
-            fill: #ffffff !important; /* White toggle arrow */
-            width: 14px !important;
-            height: 14px !important;
-        }
-
-        /* --- DRAW/REGISTRATION TAB STYLING (SECOND EXPANDER) --- */
-        /* Targets any expander following the first one to restore large white format */
-        div[data-testid="stExpander"] ~ div[data-testid="stExpander"] summary {
-            background-color: #f8f9fa !important; /* Crisp white layout background */
-            border: 1px solid #e0e0e0 !important;
-            padding: 0.6rem 1rem !important; /* Large container padding */
-        }
-        div[data-testid="stExpander"] ~ div[data-testid="stExpander"] summary p {
-            font-size: 26px !important; /* High prominence header font */
-            font-weight: bold !important;
-            color: #111111 !important; /* Dark contrast text */
-            margin: 0px !important;
-        }
-        div[data-testid="stExpander"] ~ div[data-testid="stExpander"] summary svg {
-            fill: #111111 !important; /* Dark contrast toggle arrow */
-            width: 22px !important;
-            height: 22px !important;
-        }
-
-        /* --- FORM & SUBMIT BUTTON STYLING --- */
-        div[data-testid="InputInstructions"] { display: none !important; }
-
-        div[data-testid="stForm"] button[kind="primary"],
-        div[data-testid="stForm"] button[type="submit"],
-        .stFormSubmitButton > button {
-            font-size: 15px !important; 
-            font-weight: 600 !important;
-            padding: 0.5rem 2.5rem !important; 
-            background-color: #28a745 !important; 
-            color: #ffffff !important;
-            border: 1px solid #218838 !important;
-            border-radius: 6px !important;
-            transition: background-color 0.2s ease;
-        }
-        div[data-testid="stForm"] button:hover {
-            background-color: #218838 !important; 
-        }
-    </style>
-    """, 
-    unsafe_allow_html=True
-)
-
-# --- NEW COLLAPSABLE INFORMATION TAB (Small & Dark) ---
+# --- NEW COLLAPSABLE INFORMATION TAB ---
 with st.expander("ℹ️ How the Sweepstake Works (Rules & Entry Details)", expanded=False):
     st.markdown(
         """
@@ -111,30 +33,36 @@ with st.expander("ℹ️ How the Sweepstake Works (Rules & Entry Details)", expa
         * **Exclusivity:** Once you draw a country, it is permanently allocated to you and locked so no other player can claim it.
         * **Winning the Pool:** If your allocated country wins the World Cup final on **July 20th**, you take home the **entire cash prize pool**!
         * **The Safety Net:** If the tournament is won by a country that was left unassigned/undrawn by the end of the sweepstake, **all entry fees will be fully refunded** to the players.
+        
+        *Good luck! Ensure your entry fees are sent before drawing your team.*
         """
     )
 
 st.write("")
 
-# --- SECURE USER CONFIGURATION VIA SECRETS ---
+# --- SECURE USER CONFIGURATION VIA STREAMLIT SECRETS ---
 SPREADSHEET_ID = st.secrets["SPREADSHEET_ID"]
 FORM_ID = st.secrets["FORM_ID"]
+
 ENTRY_ACTION = st.secrets["ENTRY_ACTION"]  
 ENTRY_ROW = st.secrets["ENTRY_ROW"]     
 ENTRY_VALUE = st.secrets["ENTRY_VALUE"]    
+# -----------------------------------------------------------
 
 # Read data anonymously using basic web endpoints
 try:
     url_teams = f"https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=Sheet1"
     url_pins = f"https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=Pins"
+    
     df_teams = pd.read_csv(url_teams)
     df_pins = pd.read_csv(url_pins)
 except Exception:
-    st.error("Failed to extract data.")
+    st.error("Failed to extract data. Double check that your Sheet settings are set to 'Anyone with the link can view'.")
     st.stop()
 
 df_teams.columns = df_teams.columns.str.strip()
 df_pins.columns = df_pins.columns.str.strip()
+
 df_teams['StakeHolder'] = df_teams['StakeHolder'].fillna("").astype(str).str.strip()
 df_pins['PIN'] = df_pins['PIN'].astype(str).str.strip()
 df_pins['Status'] = df_pins['Status'].fillna("Active").astype(str).str.strip()
@@ -143,60 +71,147 @@ allocated_df = df_teams[df_teams['StakeHolder'] != ""]
 remaining_count = 48 - len(allocated_df)
 
 if remaining_count > 0:
-    # --- DRAW TAB (Large & White) ---
+    # --- CLEAN CUSTOM CSS INJECTION FOR THE TEXT SIZES & CENTERING ---
+    st.markdown(
+        """
+        <style>
+            /* ABSOLUTE FORCE: Hide every single native hover anchor link on the screen globally */
+            a {
+                display: none !important;
+            }
+            .stMarkdown a, button a, div[data-testid="stMarkdownContainer"] a {
+                display: none !important;
+            }
+            svg.css-6q9sum, svg.e1tzwq550, .st-emotion-cache-b698xo a {
+                display: none !important;
+            }
+
+            /* 1. Boost text size, invert header to a light fill, and center text alignment */
+            div[data-testid="stExpander"] summary {
+                background-color: #f8f9fa !important;
+                border: 1px solid #e0e0e0 !important;
+                border-radius: 8px !important;
+                padding: 0.5rem 1rem !important;
+                display: flex !important;
+                justify-content: center !important; 
+                align-items: center !important;
+            }
+
+            div[data-testid="stExpander"] summary p {
+                font-size: 22px !important; /* Slightly optimized text dynamic to accommodate two clean bars */
+                font-weight: bold !important;
+                color: #111111 !important; 
+                margin: 0px !important;
+                text-align: center !important;
+            }
+
+            /* Force the native expander arrow icon fill to match dark text color */
+            div[data-testid="stExpander"] summary svg {
+                color: #111111 !important;
+                fill: #111111 !important;
+            }
+            
+            /* Remove instructions hint */
+            div[data-testid="InputInstructions"] {
+                display: none !important;
+            }
+
+            /* 2. Style the green submission button without breaking parent layout constraints */
+            div[data-testid="stForm"] button[kind="primary"],
+            div[data-testid="stForm"] button[type="submit"],
+            .stFormSubmitButton > button {
+                font-size: 15px !important; 
+                font-weight: 600 !important;
+                padding: 0.5rem 2.5rem !important; 
+                background-color: #28a745 !important; 
+                color: #ffffff !important;
+                border: 1px solid #218838 !important;
+                border-radius: 6px !important;
+                box-shadow: none !important;
+                transition: background-color 0.2s ease, border-color 0.2s ease !important;
+            }
+
+            div[data-testid="stForm"] button[kind="primary"]:hover,
+            div[data-testid="stForm"] button[type="submit"]:hover,
+            .stFormSubmitButton > button:hover {
+                background-color: #218838 !important; 
+                border-color: #1e7e34 !important;
+                color: #ffffff !important;
+            }
+        </style>
+        """, 
+        unsafe_allow_html=True
+    )
+    
     with st.expander("👋 Click here to enter your PIN & draw a team!", expanded=False):
         with st.form(key="sweepstake_form", clear_on_submit=False):
             form_col1, form_col2 = st.columns([1.2, 1])
+            
             with form_col1:
                 user_name = st.text_input("Enter Your Full Name:", placeholder="e.g., Jane Doe", max_chars=22).strip()
             with form_col2:
                 user_pin = st.text_input("Enter Your Unique 5-Digit PIN:", type="password", placeholder="xxxxx", max_chars=5).strip()
+                
             submit_button = st.form_submit_button(label="Verify & Draw My Country!")
 
         if submit_button:
             if not user_name or not user_pin:
                 st.warning("Please fill out both details.")
             else:
+                # --- COUNT-BASED MAXIMUM CHECK (UP TO 5) ---
                 existing_draws = df_teams[df_teams['StakeHolder'].str.lower() == user_name.lower()]
                 draw_count = len(existing_draws)
+                
                 if draw_count >= 5:
                     drawn_countries = ", ".join([f"{row['Emoji']} {row['Country']}" for _, row in existing_draws.iterrows()])
-                    st.error(f"🚨 **{user_name}**, you have reached the maximum limit of 5 entries!")
+                    st.error(f"🚨 **{user_name}**, you have reached the maximum limit of 5 entries! You already own: {drawn_countries}")
                 else:
                     pin_match = df_pins[df_pins['PIN'] == user_pin]
+                    
                     if pin_match.empty:
                         st.error("❌ Invalid PIN.")
                     elif pin_match.iloc[0]['Status'] == "Used":
                         st.error("❌ This PIN has already been used!")
                     else:
                         available_teams = df_teams[df_teams['StakeHolder'] == ""]
+                        
                         if not available_teams.empty:
                             chosen_team_row = available_teams.sample(n=1)
                             chosen_country = chosen_team_row['Country'].values[0]
                             chosen_emoji = chosen_team_row['Emoji'].values[0]
+                            
                             team_sheet_row = int(chosen_team_row.index[0]) + 2
                             pin_sheet_row = int(pin_match.index[0]) + 2
                             
+                            # Animation Sequence
                             animation_placeholder = st.empty()
                             all_emojis = df_teams['Emoji'].tolist()
                             for i in range(25):
                                 animation_placeholder.markdown(f"<div style='text-align: center; font-size: 100px;'>{random.choice(all_emojis)}</div>", unsafe_allow_html=True)
                                 time.sleep(0.04 + (i * 0.01))
+                            
                             animation_placeholder.markdown(f"<div style='text-align: center; font-size: 120px;'>{chosen_emoji}</div>", unsafe_allow_html=True)
                             
                             form_url = f"https://docs.google.com/forms/d/e/{FORM_ID}/formResponse"
+                            
                             try:
+                                # 1. Update Team Allocation
                                 data_team = {ENTRY_ACTION: "CLAIM_TEAM", ENTRY_ROW: str(team_sheet_row), ENTRY_VALUE: user_name}
-                                urllib.request.urlopen(urllib.request.Request(form_url, data=urllib.parse.urlencode(data_team).encode()))
+                                req_team = urllib.request.Request(form_url, data=urllib.parse.urlencode(data_team).encode())
+                                urllib.request.urlopen(req_team)
+                                
+                                # 2. Burn PIN
                                 data_pin = {ENTRY_ACTION: "USE_PIN", ENTRY_ROW: str(pin_sheet_row), ENTRY_VALUE: "Used"}
-                                urllib.request.urlopen(urllib.request.Request(form_url, data=urllib.parse.urlencode(data_pin).encode()))
+                                req_pin = urllib.request.Request(form_url, data=urllib.parse.urlencode(data_pin).encode())
+                                urllib.request.urlopen(req_pin)
+                                
                                 st.balloons()
-                                st.success(f"🎉 **Congratulations {user_name}!**")
+                                st.success(f"🎉 **Congratulations {user_name}!** (Draw {draw_count + 1}/5)")
                                 st.subheader(f"Your country: **{chosen_country}**")
                                 time.sleep(4)
                                 st.rerun()
                             except Exception:
-                                st.error("Submission failed.")
+                                st.error("Submission failed. Connection issue.")
 else:
     st.info("🎉 All 48 countries have been claimed!")
 
@@ -206,40 +221,112 @@ st.markdown("<h3 style='text-align: center;'>Live Sweepstake Scoreboard</h3>", u
 st.write("")
 
 m_col1, m_col2, m_col3, m_col4 = st.columns([1, 2, 2, 1])
+
 with m_col2:
-    st.markdown(f'<div style="text-align: center; background-color: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px;"><p style="font-size: 14px; margin-bottom: 5px; color: gray;">Countries Remaining</p><span style="font-size: 32px; font-weight: bold; color: #ff4b4b; display: block; margin-top: 5px;">{remaining_count} / 48</span></div>', unsafe_allow_html=True)
+    st.markdown(
+        f"""
+        <div style="text-align: center; background-color: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px;">
+            <p style="font-size: 14px; margin-bottom: 5px; color: gray;">Countries Remaining</p>
+            <span style="font-size: 32px; font-weight: bold; color: #ff4b4b; display: block; margin-top: 5px;">{remaining_count} / 48</span>
+        </div>
+        """, 
+        unsafe_allow_html=True
+    )
+
 with m_col3:
-    st.markdown(f'<div style="text-align: center; background-color: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px;"><p style="font-size: 14px; margin-bottom: 5px; color: gray;">Total Confirmed Entries</p><span style="font-size: 32px; font-weight: bold; color: #29b5e8; display: block; margin-top: 5px;">{len(allocated_df)}</span></div>', unsafe_allow_html=True)
+    st.markdown(
+        f"""
+        <div style="text-align: center; background-color: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px;">
+            <p style="font-size: 14px; margin-bottom: 5px; color: gray;">Total Confirmed Entries</p>
+            <span style="font-size: 32px; font-weight: bold; color: #29b5e8; display: block; margin-top: 5px;">{len(allocated_df)}</span>
+        </div>
+        """, 
+        unsafe_allow_html=True
+    )
 
 st.write("")
-if st.button("🔄 Refresh", use_container_width=True):
-    st.rerun()
+st.write("")
 
-# --- LIVE DATA TABLE VIEW ---
+c_btn1, c_btn2, c_btn3 = st.columns([2, 1, 2])
+with c_btn2:
+    if st.button("🔄 Refresh", use_container_width=True):
+        st.rerun()
+
+st.write("")
+
+# --- STYLED LIVE DATA TABLE WITH CUSTOM HIGH-VIS SCROLLBAR ---
 table_head = """<style>
-::-webkit-scrollbar { width: 10px; }
-::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.4); border-radius: 10px; }
-.sweepstake-table {width: 100%; border-collapse: collapse; margin-top: 15px;}
-.sweepstake-table th {background-color: rgba(255, 255, 255, 0.08); color: white; padding: 14px; font-size: 15px; border-bottom: 2px solid rgba(255, 255, 255, 0.15);}
-.sweepstake-table td {padding: 16px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.05);}
-.emoji-cell {font-size: 38px;}
+/* Custom Light Shade Webkit Scrollbar Configuration */
+::-webkit-scrollbar {
+    width: 10px !important;
+    height: 10px !important;
+}
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-radius: 10px !important;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.4) !important; 
+    border: 2px solid rgba(0, 0, 0, 0.2) !important;
+    border-radius: 10px !important;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.6) !important;
+}
+
+.sweepstake-table {width: 100%; border-collapse: collapse; margin-top: 15px; font-family: sans-serif;}
+.sweepstake-table th {background-color: rgba(255, 255, 255, 0.08); color: #ffffff !important; text-align: center; padding: 14px; font-weight: 600; font-size: 15px; border-bottom: 2px solid rgba(255, 255, 255, 0.15);}
+.sweepstake-table td {padding: 16px; text-align: center; vertical-align: middle !important; border-bottom: 1px solid rgba(255, 255, 255, 0.05);}
+.emoji-cell {font-size: 38px; line-height: 1; display: inline-block; vertical-align: middle;}
 .status-available {color: #a8ffb2; font-weight: 500;} 
 .status-owned {font-weight: bold; color: #29b5e8;}
-.owner-cell {font-size: 13px;} 
+.owner-cell {font-size: 13px !important;} 
+
+/* Row Highlighting States */
 .row-taken {background-color: rgba(255, 75, 75, 0.12) !important;} 
 .row-available {background-color: rgba(40, 167, 69, 0.12) !important;} 
 </style>
 <table class="sweepstake-table">
-<thead><tr><th>Flag</th><th>Country</th><th>Rating</th><th>Star Player</th><th>Owner Account</th></tr></thead><tbody>"""
+<thead>
+    <tr>
+        <th style="width: 12%;">Flag</th>
+        <th style="width: 25%;">Country</th>
+        <th style="width: 13%;">Rating</th>
+        <th style="width: 25%;">Star Player</th>
+        <th style="width: 25%;">Owner Account</th>
+    </tr>
+</thead>
+<tbody>"""
 
 table_rows = ""
 for _, row in df_teams.iterrows():
-    rating = str(row.get('Rating', '')).replace('nan', '') or "-"
-    star = str(row.get('Star Player', '')).replace('nan', '') or "-"
-    if row['StakeHolder'] == "":
-        r_cls, o_disp = "row-available", "<span class='status-available'>⏳ Available</span>"
-    else:
-        r_cls, o_disp = "row-taken", f"<span class='status-owned'>👤 {row['StakeHolder']}</span>"
-    table_rows += f"<tr class='{r_cls}'><td><span class='emoji-cell'>{row['Emoji']}</span></td><td style='color: white;'>{row['Country']}</td><td style='color: #ffbf00; font-weight: bold;'>{rating}</td><td style='color: #cccccc; font-size: 13px;'>{star}</td><td class='owner-cell'>{o_disp}</td></tr>"
+    country = row['Country']
+    emoji = row['Emoji']
+    owner = row['StakeHolder']
+    
+    rating = str(row.get('Rating', '')).replace('nan', '').strip()
+    star_player = str(row.get('Star Player', '')).replace('nan', '').strip()
+    
+    if not star_player:
+        star_player = "-"
+    if not rating:
+        rating = "-"
 
-st.components.v1.html(table_head + table_rows + "</tbody></table>", height=700, scrolling=True)
+    if owner == "":
+        row_class = "class='row-available'"
+        owner_display = "<span class='status-available'>⏳ Available</span>"
+    else:
+        row_class = "class='row-taken'"
+        owner_display = f"<span class='status-owned'>👤 {owner}</span>"
+        
+    table_rows += f"""<tr {row_class}>
+        <td><span class='emoji-cell'>{emoji}</span></td>
+        <td style='font-size: 16px; font-weight: 500; color: white;'>{country}</td>
+        <td style='font-size: 15px; color: #ffbf00; font-weight: bold;'>{rating}</td>
+        <td style='font-size: 13px; color: #cccccc;'>{star_player}</td>
+        <td class='owner-cell'>{owner_display}</td>
+    </tr>"""
+
+table_foot = "</tbody></table>"
+complete_table_html = table_head + table_rows + table_foot
+st.components.v1.html(complete_table_html, height=700, scrolling=True)
