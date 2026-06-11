@@ -14,12 +14,6 @@ st.set_page_config(page_title="2026 World Cup Sweepstake", page_icon="icon.png",
 if "show_draw_form" not in st.session_state:
     st.session_state.show_draw_form = False
 
-# Handle toggle action from custom HTML button component
-if st.query_params.get("toggle_draw") == "true":
-    st.session_state.show_draw_form = not st.session_state.show_draw_form
-    st.query_params.clear()
-    st.rerun()
-
 # --- FORCE DARK MODE BY DEFAULT ---
 st.markdown(
     """
@@ -191,7 +185,7 @@ allocated_df = df_teams[df_teams['StakeHolder'] != ""]
 remaining_count = 48 - len(allocated_df)
 
 if remaining_count > 0:
-    # --- STYLING NATIVE DRAW FORM CONTAINER ---
+    # --- STYLING NATIVE DRAW BUTTONS AND OVERRIDES ---
     st.markdown(
         """
         <style>
@@ -208,6 +202,55 @@ if remaining_count > 0:
                 margin-top: 15px !important;
             }
             div[data-testid="InputInstructions"] { display: none !important; }
+            
+            /* ========================================================
+               AGGRESSIVE LAYOUT OVERRIDE: TARGETING MAIN DRAW BUTTON
+               ======================================================== */
+            /* Break out of any flex containers to guarantee 100% full viewport width */
+            .element-container:has(button[key="draw_toggle_btn"]),
+            div[data-testid="stVerticalBlockBorderWrapper"]:has(button[key="draw_toggle_btn"]),
+            div[data-testid="stVerticalBlock"]:has(button[key="draw_toggle_btn"]) {
+                width: 100% !important;
+                max-width: 100% !important;
+                display: block !important;
+            }
+
+            button[key="draw_toggle_btn"] {
+                background-color: #ffffff !important;
+                border: 1px solid #dee2e6 !important;
+                outline: none !important;
+                border-radius: 12px !important;
+                padding: 12px 20px !important; 
+                min-height: 74px !important; 
+                height: auto !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.18) !important;
+                transition: background-color 0.25s ease, border-color 0.25s ease !important;
+                box-sizing: border-box !important;
+                display: block !important;
+            }
+            
+            button[key="draw_toggle_btn"] p {
+                font-size: clamp(16px, 4.6vw, 22px) !important; 
+                font-weight: 800 !important;
+                color: #111111 !important;
+                text-align: center !important;
+                margin: 0px !important;
+                line-height: 1.3 !important;
+                white-space: normal !important;
+                word-wrap: break-word !important;
+                display: block !important;
+                width: 100% !important;
+            }
+
+            button[key="draw_toggle_btn"]:hover {
+                background-color: #e6c619 !important;
+                border-color: #e6c619 !important;
+            }
+            button[key="draw_toggle_btn"]:hover p {
+                color: #ffffff !important;
+            }
 
             /* Submit Button Configuration inside the form */
             div[data-testid="stForm"] button[type="submit"], .stFormSubmitButton > button {
@@ -235,50 +278,10 @@ if remaining_count > 0:
         unsafe_allow_html=True
     )
     
-    # --- BULLETPROOF RAW HTML/JS DRAW TOGGLE COMPONENT (BIG, WHITE, FULL-WIDTH, GOLD HOVER) ---
-    st.components.v1.html(
-        """
-        <style>
-            body {
-                margin: 0; padding: 0;
-                background: transparent;
-                width: 100%;
-                font-family: system-ui, -apple-system, sans-serif;
-                box-sizing: border-box;
-            }
-            .draw-btn {
-                background-color: #ffffff;
-                border: 1px solid #dee2e6;
-                outline: none;
-                border-radius: 12px;
-                padding: 12px 20px; 
-                min-height: 70px;
-                height: auto;
-                width: 100%;
-                box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.18);
-                transition: background-color 0.25s ease, border-color 0.25s ease;
-                box-sizing: border-box;
-                font-size: clamp(16px, 4.6vw, 22px); 
-                font-weight: 800;
-                color: #111111;
-                text-align: center;
-                cursor: pointer;
-                line-height: 1.3;
-                white-space: normal;
-                word-wrap: break-word;
-            }
-            .draw-btn:hover {
-                background-color: #e6c619;
-                border-color: #e6c619;
-                color: #ffffff;
-            }
-        </style>
-        <button class="draw-btn" onclick="window.parent.location.href = window.parent.location.href.split('?')[0] + '?toggle_draw=true';">
-            👋 Click here to enter your PIN & draw a team!
-        </button>
-        """,
-        height=85
-    )
+    # Render native button safely with explicit custom key targeting
+    if st.button("👋 Click here to enter your PIN & draw a team!", key="draw_toggle_btn"):
+        st.session_state.show_draw_form = not st.session_state.show_draw_form
+        st.rerun()
 
     if st.session_state.show_draw_form:
         with st.form(key="sweepstake_form", clear_on_submit=False):
