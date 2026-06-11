@@ -185,7 +185,7 @@ allocated_df = df_teams[df_teams['StakeHolder'] != ""]
 remaining_count = 48 - len(allocated_df)
 
 if remaining_count > 0:
-    # --- STYLING BUTTONS (EXPLICIT INDEPENDENT TARGETING) ---
+    # --- STYLING NATIVE DRAW BUTTON AND INTERNALS ---
     st.markdown(
         """
         <style>
@@ -203,9 +203,7 @@ if remaining_count > 0:
             }
             div[data-testid="InputInstructions"] { display: none !important; }
             
-            /* ========================================================
-               1. MAIN DRAW TOGGLE BUTTON STYLE (STAYS BIG AND WHITE)
-               ======================================================== */
+            /* MAIN DRAW TOGGLE BUTTON STYLE (STAYS BIG AND WHITE) */
             button[key="draw_toggle_btn"] {
                 background-color: #ffffff !important;
                 border: 1px solid #dee2e6 !important;
@@ -218,7 +216,7 @@ if remaining_count > 0:
                 box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15) !important;
                 transition: background-color 0.25s ease !important;
                 display: block !important;
-                margin: 0 0 !important;
+                margin: 0px !important;
             }
             
             button[key="draw_toggle_btn"] p {
@@ -238,66 +236,6 @@ if remaining_count > 0:
             }
             button[key="draw_toggle_btn"]:hover p {
                 color: #ffffff !important;
-            }
-
-            /* ========================================================
-               2. REFRESH BUTTON STYLE (SMALL, DARK, LOW-PROFILE, CENTER)
-               ======================================================== */
-            div[data-testid="stElementContainer"]:has(button[key="refresh_data_btn"]) {
-                display: flex !important;
-                justify-content: center !important;
-                align-items: center !important;
-                width: 100% !important;
-            }
-            
-            button[key="refresh_data_btn"] {
-                background-color: #1f232b !important;
-                border: 1px solid #343a46 !important;
-                color: #a0aec0 !important;
-                border-radius: 6px !important;
-                padding: 6px 18px !important;
-                min-height: unset !important;
-                height: 34px !important;
-                width: auto !important;
-                box-shadow: none !important;
-                transition: background-color 0.15s ease, color 0.15s ease !important;
-                margin: 0 auto !important;
-                display: flex !important;
-                justify-content: center !important;
-                align-items: center !important;
-            }
-            
-            button[key="refresh_data_btn"] p {
-                color: #a0aec0 !important;
-                font-size: 13px !important;
-                font-weight: 500 !important;
-                margin: 0 !important;
-                line-height: 1 !important;
-                text-align: center !important;
-            }
-            
-            button[key="refresh_data_btn"]:hover {
-                background-color: #2d333f !important;
-                color: #fafafa !important;
-                border-color: #4a5568 !important;
-            }
-            button[key="refresh_data_btn"]:hover p {
-                color: #fafafa !important;
-            }
-
-            /* Refresh Light Mode Adaptive overrides */
-            @media (prefers-color-scheme: light) {
-                button[key="refresh_data_btn"] {
-                    background-color: #f1f3f5 !important;
-                    border: 1px solid #ced4da !important;
-                    color: #495057 !important;
-                }
-                button[key="refresh_data_btn"] p { color: #495057 !important; }
-                button[key="refresh_data_btn"]:hover {
-                    background-color: #e9ecef !important;
-                    color: #111111 !important;
-                }
-                button[key="refresh_data_btn"]:hover p { color: #111111 !important; }
             }
 
             /* Submit Button Configuration */
@@ -428,11 +366,64 @@ with m_col3:
     )
 
 st.write("")
-st.write("")
 
-# --- DEFINITIVELY CENTERED REFRESH BUTTON ---
-if st.button("🔄 Refresh Data", key="refresh_data_btn"):
-    st.rerun()
+# --- DEFINITIVELY CENTERED RAW HTML/JS REFRESH COMPONENT ---
+# This guarantees true, unshakeable horizontal centering without modifying Streamlit layout spaces.
+st.components.v1.html(
+    """
+    <style>
+        body {
+            margin: 0; padding: 0;
+            background: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            overflow: hidden;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+        .refresh-btn {
+            background-color: #1f232b;
+            border: 1px solid #343a46;
+            color: #a0aec0;
+            border-radius: 6px;
+            padding: 0 18px;
+            height: 34px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+            outline: none;
+            user-select: none;
+        }
+        .refresh-btn:hover {
+            background-color: #2d333f;
+            color: #fafafa;
+            border-color: #4a5568;
+        }
+        @media (prefers-color-scheme: light) {
+            .refresh-btn {
+                background-color: #f1f3f5;
+                border: 1px solid #ced4da;
+                color: #495057;
+            }
+            .refresh-btn:hover {
+                background-color: #e9ecef;
+                color: #111111;
+                border-color: #adb5bd;
+            }
+        }
+    </style>
+    <button class="refresh-btn" onclick="window.parent.location.reload();">
+        <span>🔄</span> Refresh Data
+    </button>
+    """,
+    height=45
+)
 
 st.write("")
 
