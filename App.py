@@ -96,32 +96,19 @@ if remaining_count > 0:
                 display: none !important;
             }
 
-            /* 2. Form Box Spacing & Centered Stretched Button Configuration */
+            /* 2. Symmetrical layout settings */
             div[data-testid="stForm"] {
-                padding-bottom: 20px !important;
-            }
-            
-            /* Target the structural row component wrapper containing the form button */
-            div[data-testid="stForm"] div.stFormSubmitButton {
-                display: flex !important;
-                justify-content: center !important;
-                align-items: center !important;
-                width: 100% !important;
-                margin-top: 25px !important; /* Elegant 5-space cushioning from fields */
-                margin-bottom: 5px !important;
+                padding-bottom: 10px !important;
             }
 
-            /* Target button itself to center layout and stretch across the container space */
-            div[data-testid="stForm"] div.stFormSubmitButton button,
+            /* Stretches the primary submit button cleanly across its centered column wrapper */
             div[data-testid="stForm"] button[kind="primary"],
             div[data-testid="stForm"] button[type="submit"],
             .stFormSubmitButton > button {
                 font-size: 16px !important; 
                 font-weight: 600 !important;
-                padding: 0.6rem 2rem !important; 
-                width: 75% !important; /* Stretches the button elegantly across the box center */
-                min-width: 280px !important;
-                margin: 0 auto !important; 
+                padding: 0.5rem 1rem !important; 
+                width: 100% !important; /* Fills out the center column space evenly */
                 background-color: #28a745 !important; /* Vibrant green */
                 color: #ffffff !important;
                 border: 1px solid #218838 !important;
@@ -130,7 +117,6 @@ if remaining_count > 0:
                 transition: background-color 0.2s ease, border-color 0.2s ease !important;
             }
 
-            div[data-testid="stForm"] div.stFormSubmitButton button:hover,
             div[data-testid="stForm"] button[kind="primary"]:hover,
             div[data-testid="stForm"] button[type="submit"]:hover,
             .stFormSubmitButton > button:hover {
@@ -143,7 +129,6 @@ if remaining_count > 0:
         unsafe_allow_html=True
     )
     
-    # Reverted entirely to the clean, default native layout framework
     with st.expander("👋 Click here to enter your PIN & draw a team!", expanded=False):
         with st.form(key="sweepstake_form", clear_on_submit=False):
             form_col1, form_col2 = st.columns([1.2, 1])
@@ -152,8 +137,12 @@ if remaining_count > 0:
                 user_name = st.text_input("Enter Your Full Name:", placeholder="e.g., Jane Doe", max_chars=22).strip()
             with form_col2:
                 user_pin = st.text_input("Enter Your Unique 5-Digit PIN:", type="password", placeholder="xxxxx", max_chars=5).strip()
-                
-            submit_button = st.form_submit_button(label="Verify & Draw My Country!")
+            
+            # --- CENTERING BY COLUMN WRAPPING ---
+            # Creates balanced gutters on the left and right sides to lock the button dead-center
+            btn_left, btn_center, btn_right = st.columns([1, 2, 1])
+            with btn_center:
+                submit_button = st.form_submit_button(label="Verify & Draw My Country!")
 
         if submit_button:
             if not user_name or not user_pin:
