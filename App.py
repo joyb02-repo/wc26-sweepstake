@@ -161,55 +161,20 @@ with c_btn2:
 st.write("")
 
 # --- STYLED LIVE DATA TABLE ---
-table_html = """
-<style>
-    .sweepstake-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 15px;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-    .sweepstake-table th {
-        background-color: rgba(255, 255, 255, 0.08);
-        color: #ffffff !important;
-        text-align: center;
-        padding: 14px;
-        font-weight: 600;
-        font-size: 15px;
-        border-bottom: 2px solid rgba(255, 255, 255, 0.15);
-    }
-    .sweepstake-table td {
-        padding: 16px;
-        text-align: center;
-        vertical-align: middle !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    .emoji-cell {
-        font-size: 38px;
-        line-height: 1;
-        display: inline-block;
-        vertical-align: middle;
-    }
-    .status-available {
-        color: #888888;
-        font-style: italic;
-    }
-    .status-owned {
-        font-weight: bold;
-        color: #29b5e8;
-    }
+# Ensure the variable initialization starts flush against the left wall of your text editor!
+table_head = """<style>
+.sweepstake-table {width: 100%; border-collapse: collapse; margin-top: 15px; font-family: sans-serif;}
+.sweepstake-table th {background-color: rgba(255, 255, 255, 0.08); color: #ffffff !important; text-align: center; padding: 14px; font-weight: 600; font-size: 15px; border-bottom: 2px solid rgba(255, 255, 255, 0.15);}
+.sweepstake-table td {padding: 16px; text-align: center; vertical-align: middle !important; border-bottom: 1px solid rgba(255, 255, 255, 0.05);}
+.emoji-cell {font-size: 38px; line-height: 1; display: inline-block; vertical-align: middle;}
+.status-available {color: #888888; font-style: italic;}
+.status-owned {font-weight: bold; color: #29b5e8;}
 </style>
 <table class="sweepstake-table">
-    <thead>
-        <tr>
-            <th style="width: 20%;">Flag</th>
-            <th style="width: 40%;">Country Qualified</th>
-            <th style="width: 40%;">Owner Account</th>
-        </tr>
-    </thead>
-    <tbody>
-"""
+<thead><tr><th style="width: 20%;">Flag</th><th style="width: 40%;">Country Qualified</th><th style="width: 40%;">Owner Account</th></tr></thead>
+<tbody>"""
 
+table_rows = ""
 for _, row in df_teams.iterrows():
     country = row['Country']
     emoji = row['Emoji']
@@ -220,18 +185,13 @@ for _, row in df_teams.iterrows():
     else:
         owner_display = f"<span class='status-owned'>👤 {owner}</span>"
         
-    table_html += f"""
-        <tr>
-            <td><span class="emoji-cell">{emoji}</span></td>
-            <td style="font-size: 16px; font-weight: 500; color: white;">{country}</td>
-            <td style="font-size: 16px;">{owner_display}</td>
-        </tr>
-    """
+    # Keep this row template compacted to avoid accidental markdown code-block triggers
+    table_rows += f"<tr><td><span class='emoji-cell'>{emoji}</span></td><td style='font-size: 16px; font-weight: 500; color: white;'>{country}</td><td style='font-size: 16px;'>{owner_display}</td></tr>"
 
-table_html += """
-    </tbody>
-</table>
-"""
+table_foot = "</tbody></table>"
 
-# CRITICAL: This is the exact tool that converts the text into the real scoreboard
-st.markdown(table_html, unsafe_allow_html=True)
+# Assemble the pieces seamlessly
+complete_table_html = table_head + table_rows + table_foot
+
+# Render using raw layout insertion
+st.components.v1.html(complete_table_html, height=600, scrolling=True)
