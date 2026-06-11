@@ -203,24 +203,32 @@ if remaining_count > 0:
             }
             div[data-testid="InputInstructions"] { display: none !important; }
             
-            /* MAIN DRAW TOGGLE BUTTON STYLE (STAYS BIG AND WHITE) */
+            /* ========================================================
+               MAIN DRAW TOGGLE BUTTON STYLE (FORCE BIG, WHITE, FULL-WIDTH)
+               ======================================================== */
+            /* Target both the button and its base container parent to block compression */
+            div:has(> button[key="draw_toggle_btn"]),
+            button[key="draw_toggle_btn"] {
+                width: 100% !important;
+                max-width: 100% !important;
+                display: block !important;
+            }
+
             button[key="draw_toggle_btn"] {
                 background-color: #ffffff !important;
                 border: 1px solid #dee2e6 !important;
                 outline: none !important;
                 border-radius: 12px !important;
-                padding: 8px 16px !important; 
-                min-height: 70px !important; 
+                padding: 12px 20px !important; 
+                min-height: 74px !important; 
                 height: auto !important;
-                width: 100% !important;
-                box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15) !important;
-                transition: background-color 0.25s ease !important;
-                display: block !important;
-                margin: 0px !important;
+                box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.18) !important;
+                transition: background-color 0.25s ease, border-color 0.25s ease !important;
+                box-sizing: border-box !important;
             }
             
             button[key="draw_toggle_btn"] p {
-                font-size: clamp(15px, 4.5vw, 22px) !important; 
+                font-size: clamp(16px, 4.6vw, 22px) !important; 
                 font-weight: 800 !important;
                 color: #111111 !important;
                 text-align: center !important;
@@ -228,17 +236,19 @@ if remaining_count > 0:
                 line-height: 1.3 !important;
                 white-space: normal !important;
                 word-wrap: break-word !important;
+                display: block !important;
                 width: 100% !important;
             }
 
             button[key="draw_toggle_btn"]:hover {
                 background-color: #e6c619 !important;
+                border-color: #e6c619 !important;
             }
             button[key="draw_toggle_btn"]:hover p {
                 color: #ffffff !important;
             }
 
-            /* Submit Button Configuration */
+            /* Submit Button Configuration inside the form */
             div[data-testid="stForm"] button[type="submit"], .stFormSubmitButton > button {
                 font-size: 15px !important; font-weight: 600 !important;
                 padding: 0.5rem 2.5rem !important; 
@@ -367,8 +377,7 @@ with m_col3:
 
 st.write("")
 
-# --- DEFINITIVELY CENTERED RAW HTML/JS REFRESH COMPONENT ---
-# This guarantees true, unshakeable horizontal centering without modifying Streamlit layout spaces.
+# --- PERFECT UNTOUCHED CENTERED REFRESH COMPONENT ---
 st.components.v1.html(
     """
     <style>
