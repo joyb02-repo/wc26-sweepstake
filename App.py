@@ -177,13 +177,19 @@ if remaining_count > 0:
                 transition: background-color 0.25s ease !important;
             }
 
-            /* Completely wipe out native icons/chevron layouts */
+            /* --- KILL STUBBORN NATIVE INJECTED ARROWS & PSEUDO CHEVRONS COMPLETELY --- */
             div[data-testid="stExpander"] summary svg,
-            div[data-testid="stExpander"] summary [data-testid="stExpanderToggleIcon"] {
+            div[data-testid="stExpander"] summary [data-testid="stExpanderToggleIcon"],
+            div[data-testid="stExpander"] summary::before,
+            div[data-testid="stExpander"] summary::after,
+            div[data-testid="stExpander"] summary *::before,
+            div[data-testid="stExpander"] summary *::after {
                 display: none !important;
+                content: none !important;
+                background: none !important;
             }
 
-            /* Strip absolute positions on inner structural div blocks */
+            /* Strip absolute layouts on inner containers to support clean centering */
             div[data-testid="stExpander"] summary > div {
                 position: relative !important;
                 left: unset !important;
@@ -284,6 +290,7 @@ if remaining_count > 0:
     )
     
     # --- THE BIG DRAW EXPANDER ---
+    # Kept the manual text arrow ' ▾' here since it is now cleanly inline next to the text.
     with st.expander("👋 Click here to enter your PIN & draw a team! ▾", expanded=False):
         with st.form(key="sweepstake_form", clear_on_submit=False):
             form_col1, form_col2 = st.columns([1.2, 1])
