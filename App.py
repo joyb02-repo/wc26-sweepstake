@@ -17,7 +17,7 @@ with col2:
     except Exception:
         st.write("") 
 
-st.markdown("<h1 style='text-align: center;'>2026 World Cup Sweepstake</h1>", unsafe_allow_html=True)
+st.markdown("<div style='text-align: center; font-size: 40px; font-weight: bold; color: white; margin-bottom: 10px;'>2026 World Cup Sweepstake</div>", unsafe_allow_html=True)
 st.write("") 
 
 # --- USER CONFIGURATION ---
