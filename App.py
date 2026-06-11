@@ -165,9 +165,9 @@ if remaining_count > 0:
                 border: none !important;
                 outline: none !important;
                 border-radius: 12px !important;
-                padding: 8px 16px !important; /* Added side padding for mobile text breathing room */
+                padding: 8px 16px !important; 
                 min-height: 70px !important; 
-                height: auto !important; /* Allow expansion if text breaks onto two lines on very narrow screens */
+                height: auto !important; 
                 
                 display: flex !important;
                 justify-content: center !important; 
@@ -177,13 +177,19 @@ if remaining_count > 0:
                 transition: background-color 0.25s ease !important;
             }
 
-            /* Completely remove the native chevron toggle graphic */
-            div[data-testid="stExpander"] summary svg {
+            /* Completely wipe out native icons/chevron layouts */
+            div[data-testid="stExpander"] summary svg,
+            div[data-testid="stExpander"] summary [data-testid="stExpanderToggleIcon"] {
                 display: none !important;
             }
 
-            /* Absolute alignment layer adjusted to handle flex text flow safely on screens */
+            /* Strip absolute positions on inner structural div blocks */
             div[data-testid="stExpander"] summary > div {
+                position: relative !important;
+                left: unset !important;
+                right: unset !important;
+                top: unset !important;
+                bottom: unset !important;
                 display: flex !important;
                 justify-content: center !important;
                 align-items: center !important;
@@ -203,17 +209,16 @@ if remaining_count > 0:
             /* Fluid Typography Header Row Formatting */
             div[data-testid="stExpander"] summary p,
             div[data-testid="stExpander"] summary span {
-                /* Dynamically scales text down seamlessly based on viewport size */
                 font-size: clamp(15px, 4.5vw, 22px) !important; 
                 font-weight: 800 !important;
                 color: #111111 !important;
                 margin: 0px !important;
                 padding: 0px !important;
                 text-align: center !important; 
-                white-space: normal !important; /* Allows safe word wrapping instead of breaking out layout widths */
+                white-space: normal !important; 
                 word-wrap: break-word !important;
-                display: block !important;
-                width: 100% !important;
+                display: inline-block !important;
+                width: auto !important;
                 transition: color 0.25s ease !important;
             }
 
@@ -237,7 +242,6 @@ if remaining_count > 0:
                 div[data-testid="stForm"] {
                     padding: 5px 0px !important;
                 }
-                /* Ensures columns stack beautifully on narrow mobile screens */
                 div[data-testid="element-container"] {
                     width: 100% !important;
                 }
@@ -259,7 +263,6 @@ if remaining_count > 0:
                 width: auto !important;
             }
 
-            /* Force verified form submit buttons to spread full-width cleanly on phone panels */
             @media (max-width: 480px) {
                 div[data-testid="stForm"] button[kind="primary"],
                 div[data-testid="stForm"] button[type="submit"],
@@ -281,7 +284,7 @@ if remaining_count > 0:
     )
     
     # --- THE BIG DRAW EXPANDER ---
-    with st.expander("👋 Click here to enter your PIN & draw a team!", expanded=False):
+    with st.expander("👋 Click here to enter your PIN & draw a team! ▾", expanded=False):
         with st.form(key="sweepstake_form", clear_on_submit=False):
             form_col1, form_col2 = st.columns([1.2, 1])
             
