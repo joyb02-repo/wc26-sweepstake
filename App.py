@@ -58,29 +58,29 @@ try:
 except Exception:
     pass
 
-# --- RENDER LOCKED, NON-WRAPPING TITLE DIRECTLY ---
+# --- RENDER THE LOCKED TITLE VIA ADAPTIVE CSS VARIABLE ---
 st.markdown(
     """
-    <div style="
-        display: flex; 
-        justify-content: center; 
-        align-items: center; 
-        width: 100%; 
-        margin-bottom: 25px;
-        box-sizing: border-box;
-    ">
-        <div style="
+    <style>
+        .adaptive-title {
             font-size: clamp(20px, 5.2vw, 40px); 
             font-weight: bold; 
-            color: var(--text-color, white); 
+            color: #ffffff; /* Default Dark Mode */
             text-align: center;
             white-space: nowrap !important;
             overflow: hidden;
             text-overflow: ellipsis;
             width: 100%;
-        ">
-            2026 World Cup Sweepstake
-        </div>
+        }
+        /* Light Mode Text Override */
+        @media (prefers-color-scheme: light) {
+            .adaptive-title {
+                color: #111111 !important;
+            }
+        }
+    </style>
+    <div style="display: flex; justify-content: center; align-items: center; width: 100%; margin-bottom: 25px; box-sizing: border-box;">
+        <div class="adaptive-title">2026 World Cup Sweepstake</div>
     </div>
     """,
     unsafe_allow_html=True
@@ -92,8 +92,8 @@ st.markdown(
     """
     <style>
         .rules-dropdown {
-            background-color: var(--background-color, #1a1c23);
-            border: 1px solid var(--border-color, #2d3139);
+            background-color: #1a1c23;
+            border: 1px solid #2d3139;
             border-radius: 6px;
             margin-bottom: 5px;
             font-family: sans-serif;
@@ -101,29 +101,37 @@ st.markdown(
         .rules-dropdown summary {
             padding: 10px 15px;
             font-size: 14px;
-            color: var(--text-color, #8a92a6);
-            opacity: 0.8;
+            color: #8a92a6;
             cursor: pointer;
             font-weight: 500;
             user-select: none;
             outline: none;
         }
         .rules-dropdown summary:hover {
-            opacity: 1;
+            color: #cccccc;
         }
         .rules-content {
             padding: 15px 20px;
             font-size: 14px;
-            color: var(--text-color, #e0e0e0);
-            border-top: 1px solid var(--border-color, #2d3139);
+            color: #e0e0e0;
+            border-top: 1px solid #2d3139;
             line-height: 1.6;
         }
-        .rules-content ul {
-            margin: 0;
-            padding-left: 20px;
-        }
-        .rules-content li {
-            margin-bottom: 8px;
+        .rules-content ul { margin: 0; padding-left: 20px; }
+        .rules-content li { margin-bottom: 8px; }
+
+        /* Light Mode Rules Tweaks */
+        @media (prefers-color-scheme: light) {
+            .rules-dropdown {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+            }
+            .rules-dropdown summary { color: #495057; }
+            .rules-dropdown summary:hover { color: #000000; }
+            .rules-content {
+                color: #212529;
+                border-top: 1px solid #dee2e6;
+            }
         }
     </style>
     
@@ -140,7 +148,6 @@ st.markdown(
                 <li><strong>Winning the Pool:</strong> If your allocated country wins the World Cup final on <strong>July 20th</strong>, you take home the <strong>entire cash prize pool</strong>!</li>
                 <li><strong>The Safety Net:</strong> If the tournament is won by a country that was left unassigned/undrawn by the end of the sweepstake, <strong>all entry fees will be fully refunded</strong> to the players.</li>
             </ul>
-            <p style="margin-top: 10px; font-style: italic; opacity: 0.7;">Good luck! Ensure your entry fees are sent before drawing your team.</p>
         </div>
     </details>
     """,
@@ -178,36 +185,29 @@ allocated_df = df_teams[df_teams['StakeHolder'] != ""]
 remaining_count = 48 - len(allocated_df)
 
 if remaining_count > 0:
-    # --- STYLING ADAPTIVE INTERFACE RULES ---
+    # --- STYLING GLOBAL BUTTON CONVERSION ---
     st.markdown(
         """
         <style>
-            /* Hide generic markdown anchors */
             a { display: none !important; }
             .stMarkdown a, button a, div[data-testid="stMarkdownContainer"] a { display: none !important; }
             
-            /* --- INVERSE-COMPATIBLE FORM CONTAINER --- */
+            /* --- FORM CONTAINER --- */
             div[data-testid="stForm"] {
-                border: 1px solid var(--border-color, #2d3139) !important;
+                border: 1px solid #2d3139 !important;
                 border-radius: 12px !important;
                 box-shadow: none !important;
                 padding: 20px !important;
-                background-color: var(--secondary-background-color, #11141a) !important;
+                background-color: #11141a !important;
                 margin-top: 15px !important;
             }
-            div[data-testid="InputInstructions"] {
-                display: none !important;
-            }
-
-            .stButton {
-                width: 100% !important;
-            }
+            div[data-testid="InputInstructions"] { display: none !important; }
+            .stButton { width: 100% !important; }
             
-            /* --- ADAPTIVE MAIN DRAW PILL TOGGLE --- */
-            button[key="draw_toggle_btn"], 
-            .stButton > button {
-                background-color: var(--text-color, #ffffff) !important; /* Becomes dark text color in light mode */
-                border: 1px solid var(--border-color, transparent) !important;
+            /* Toggle Button Rules */
+            button[key="draw_toggle_btn"], .stButton > button {
+                background-color: #ffffff !important;
+                border: 1px solid #dee2e6 !important;
                 outline: none !important;
                 border-radius: 12px !important;
                 padding: 8px 16px !important; 
@@ -215,86 +215,60 @@ if remaining_count > 0:
                 height: auto !important;
                 width: 100% !important;
                 box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15) !important;
-                transition: background-color 0.25s ease, border-color 0.25s ease !important;
+                transition: background-color 0.25s ease !important;
                 display: block !important;
             }
             
-            button[key="draw_toggle_btn"] p,
-            .stButton > button p {
+            button[key="draw_toggle_btn"] p, .stButton > button p {
                 font-size: clamp(15px, 4.5vw, 22px) !important; 
                 font-weight: 800 !important;
-                color: var(--background-color, #111111) !important; /* Inverts automatically */
+                color: #111111 !important;
                 text-align: center !important;
                 margin: 0px !important;
                 line-height: 1.3 !important;
                 white-space: normal !important;
                 word-wrap: break-word !important;
-                transition: color 0.25s ease !important;
                 width: 100% !important;
             }
 
-            /* Golden Hover state tracks smoothly */
-            button[key="draw_toggle_btn"]:hover,
-            .stButton > button:hover {
-                background-color: #e6c619 !important; 
-                border-color: #e6c619 !important;
+            button[key="draw_toggle_btn"]:hover, .stButton > button:hover {
+                background-color: #e6c619 !important;
             }
-            button[key="draw_toggle_btn"]:hover p,
-            .stButton > button:hover p {
-                color: #ffffff !important; /* Locks readable contrast on gold */
+            button[key="draw_toggle_btn"]:hover p, .stButton > button:hover p {
+                color: #ffffff !important;
             }
 
-            /* Form Submission Internal Elements */
-            div[data-testid="stForm"] button[kind="primary"],
-            div[data-testid="stForm"] button[type="submit"],
-            .stFormSubmitButton > button {
-                font-size: 15px !important; 
-                font-weight: 600 !important;
+            /* Submit Button Configuration */
+            div[data-testid="stForm"] button[type="submit"], .stFormSubmitButton > button {
+                font-size: 15px !important; font-weight: 600 !important;
                 padding: 0.5rem 2.5rem !important; 
-                background-color: #28a745 !important; 
-                color: #ffffff !important;
-                border: 1px solid #218838 !important;
-                border-radius: 6px !important;
-                box-shadow: none !important;
-                transition: background-color 0.2s ease, border-color 0.2s ease !important;
-                width: auto !important;
-                min-height: unset !important;
+                background-color: #28a745 !important; color: #ffffff !important;
+                border: 1px solid #218838 !important; border-radius: 6px !important;
+                width: auto !important; min-height: unset !important;
             }
-            
-            div[data-testid="stForm"] button[kind="primary"] p,
-            div[data-testid="stForm"] button[type="submit"] p,
-            .stFormSubmitButton > button p {
-                color: #ffffff !important;
-                font-size: 15px !important;
-                font-weight: 600 !important;
+            div[data-testid="stForm"] button[type="submit"] p, .stFormSubmitButton > button p {
+                color: #ffffff !important; font-size: 15px !important; font-weight: 600 !important;
             }
 
-            @media (max-width: 480px) {
-                div[data-testid="stForm"] button[kind="primary"],
-                div[data-testid="stForm"] button[type="submit"],
-                .stFormSubmitButton > button {
-                    width: 100% !important;
+            /* --- LIGHT MODE FORM THEME ADJUSTMENT --- */
+            @media (prefers-color-scheme: light) {
+                div[data-testid="stForm"] {
+                    background-color: #fdfdfd !important;
+                    border: 1px solid #ced4da !important;
                 }
             }
-
-            div[data-testid="stForm"] button[kind="primary"]:hover,
-            div[data-testid="stForm"] button[type="submit"]:hover,
-            .stFormSubmitButton > button:hover {
-                background-color: #218838 !important; 
-                border-color: #1e7e34 !important;
-                color: #ffffff !important;
+            @media (max-width: 480px) {
+                div[data-testid="stForm"] button[type="submit"], .stFormSubmitButton > button { width: 100% !important; }
             }
         </style>
         """, 
         unsafe_allow_html=True
     )
     
-    # Render the text button at 100% width container allocation
     if st.button("👋 Click here to enter your PIN & draw a team!", key="draw_toggle_btn", use_container_width=True):
         st.session_state.show_draw_form = not st.session_state.show_draw_form
         st.rerun()
 
-    # If active, display the configuration inputs dynamically underneath it
     if st.session_state.show_draw_form:
         with st.form(key="sweepstake_form", clear_on_submit=False):
             form_col1, form_col2 = st.columns([1.2, 1])
@@ -373,7 +347,7 @@ m_col1, m_col2, m_col3, m_col4 = st.columns([1, 2, 2, 1])
 with m_col2:
     st.markdown(
         f"""
-        <div style="text-align: center; background-color: rgba(128,128,128,0.1); padding: 15px; border-radius: 10px;">
+        <div style="text-align: center; background-color: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
             <p style="font-size: 14px; margin-bottom: 5px; color: gray;">Countries Remaining</p>
             <span style="font-size: 32px; font-weight: bold; color: #ff4b4b; display: block; margin-top: 5px;">{remaining_count} / 48</span>
         </div>
@@ -384,7 +358,7 @@ with m_col2:
 with m_col3:
     st.markdown(
         f"""
-        <div style="text-align: center; background-color: rgba(128,128,128,0.1); padding: 15px; border-radius: 10px;">
+        <div style="text-align: center; background-color: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
             <p style="font-size: 14px; margin-bottom: 5px; color: gray;">Total Confirmed Entries</p>
             <span style="font-size: 32px; font-weight: bold; color: #29b5e8; display: block; margin-top: 5px;">{len(allocated_df)}</span>
         </div>
@@ -402,24 +376,49 @@ with c_btn2:
 
 st.write("")
 
-# --- TABLE VIEW (AUTOMATIC WIDTH AND SCALING FOR PHONE SCREENS) ---
+# --- ADAPTIVE TABLE VIEW (SWITCHES BG & TEXT AUTOMATICALLY FOR LIGHT MODE) ---
 table_head = """<style>
-html, body { margin: 0; padding: 0; background-color: transparent; font-family: sans-serif; overflow-x: hidden; color: var(--text-color); }
+html, body { margin: 0; padding: 0; background-color: transparent; font-family: sans-serif; overflow-x: hidden; }
 ::-webkit-scrollbar { width: 6px !important; height: 6px !important; }
-::-webkit-scrollbar-track { background: rgba(128, 128, 128, 0.05) !important; border-radius: 10px !important; }
-::-webkit-scrollbar-thumb { background: rgba(128, 128, 128, 0.2) !important; border-radius: 10px !important; }
+::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05) !important; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2) !important; }
 
 .table-container { width: 100%; overflow-x: hidden; box-sizing: border-box; }
 .sweepstake-table { width: 100%; border-collapse: collapse; margin-top: 5px; table-layout: auto; }
-.sweepstake-table th { background-color: rgba(128, 128, 128, 0.1); color: var(--text-color) !important; text-align: center; padding: 10px 6px; font-weight: 600; font-size: 13px; border-bottom: 2px solid rgba(128, 128, 128, 0.2); white-space: nowrap; }
-.sweepstake-table td { padding: 10px 4px; text-align: center; vertical-align: middle !important; border-bottom: 1px solid rgba(128, 128, 128, 0.1); box-sizing: border-box; color: var(--text-color); }
-.emoji-cell { font-size: 26px; line-height: 1; display: inline-block; vertical-align: middle; }
-.status-available { color: #28a745; font-weight: 600; font-size: 12px; } 
-.status-owned { font-weight: bold; color: #29b5e8; font-size: 12px; word-break: break-word; }
-.row-taken { background-color: rgba(255, 75, 75, 0.08) !important; } 
-.row-available { background-color: rgba(40, 167, 69, 0.08) !important; } 
 
-/* Responsive adaptations for smaller viewpoints */
+/* DARK MODE ROW BASICS (Default) */
+.sweepstake-table th { background-color: rgba(255, 255, 255, 0.08); color: #ffffff !important; text-align: center; padding: 10px 6px; font-weight: 600; font-size: 13px; border-bottom: 2px solid rgba(255, 255, 255, 0.15); white-space: nowrap; }
+.sweepstake-table td { padding: 10px 4px; text-align: center; vertical-align: middle !important; border-bottom: 1px solid rgba(255, 255, 255, 0.05); box-sizing: border-box; }
+.emoji-cell { font-size: 26px; line-height: 1; display: inline-block; vertical-align: middle; }
+
+.country-text { font-size: 14px; font-weight: 500; color: white; }
+.player-text { font-size: 12px; color: #cccccc; }
+
+.status-available { color: #a8ffb2; font-weight: 500; font-size: 12px; } 
+.status-owned { font-weight: bold; color: #29b5e8; font-size: 12px; word-break: break-word; }
+.row-taken { background-color: rgba(255, 75, 75, 0.12) !important; } 
+.row-available { background-color: rgba(40, 167, 69, 0.12) !important; } 
+
+/* --- COMPREHENSIVE LIGHT MODE OVERRIDES --- */
+@media (prefers-color-scheme: light) {
+    .sweepstake-table th { 
+        background-color: #e9ecef !important; 
+        color: #212529 !important; 
+        border-bottom: 2px solid #dee2e6 !important;
+    }
+    .sweepstake-table td { 
+        border-bottom: 1px solid #dee2e6 !important; 
+    }
+    .country-text { color: #212529 !important; }
+    .player-text { color: #495057 !important; }
+    
+    .row-taken { background-color: #f8d7da !important; }    /* Stronger soft red */
+    .row-available { background-color: #d1e7dd !important; }/* Stronger soft green */
+    
+    .status-available { color: #0f5132 !important; }
+    .status-owned { color: #0b5ed7 !important; }
+}
+
 @media (max-width: 480px) {
     .sweepstake-table th { font-size: 11px; padding: 8px 4px; }
     .sweepstake-table td { font-size: 12px; padding: 8px 2px; }
@@ -461,9 +460,9 @@ for _, row in df_teams.iterrows():
         
     table_rows += f"""<tr {row_class}>
         <td><span class='emoji-cell'>{emoji}</span></td>
-        <td style='font-size: 14px; font-weight: 500;'>{country}</td>
+        <td class='country-text'>{country}</td>
         <td style='font-size: 14px; color: #ffbf00; font-weight: bold;'>{rating}</td>
-        <td class="hide-mobile" style='font-size: 12px; opacity: 0.8;'>{star_player}</td>
+        <td class="hide-mobile player-text">{star_player}</td>
         <td>{owner_display}</td>
     </tr>"""
 
