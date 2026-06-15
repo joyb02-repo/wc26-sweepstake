@@ -36,40 +36,42 @@ for idx, row in df_live.iterrows():
         
     team_raw = str(row.iloc[2]).strip() # Column C: Team
     
-    # Filter out header labels, empty rows, or table definitions
     if not team_raw or team_raw.lower() in ["team", "nan", "val", "none"]:
         continue
         
     # Clean the points data (stripping out the *3* or *1* asterisks seen in your sheet)
     pts_raw = str(row.iloc[10]).strip() # Column K: Pts
     pts_clean = pts_raw.replace("*", "")
+    try:
+        pts_int = int(pts_clean)
+    except ValueError:
+        pts_int = 0
     
     gp_raw = str(row.iloc[3]).strip()  # Column D: GP
     
     # Clean Goal Difference (GD) value and convert float formats to clean integers
     gd_raw = str(row.iloc[9]).strip()  # Column J: GD
     try:
-        gd_clean = str(int(float(gd_raw)))
+        gd_int = int(float(gd_raw))
     except ValueError:
-        gd_clean = gd_raw # Fallback if it isn't numeric
+        gd_int = 0
         
     form_raw = str(row.iloc[11]).strip() # Column L: Form
     
     lookup_name = team_raw.lower()
-    
     if lookup_name == "usa":
         lookup_name = "united states"
         
     live_stats_lookup[lookup_name] = {
         "group": current_group,
         "gp": gp_raw,
-        "gd": gd_clean,
-        "pts": pts_clean,
+        "gd": gd_int,
+        "pts": pts_int,
         "form": form_raw if form_raw and form_raw.lower() != "nan" else "No matches yet"
     }
 
 # -----------------------------------------------------------------
-# FEATURE 1: DROPDOWN GROUP-BY-GROUP STANDINGS
+# FEATURE 1: NATIVE DROPDOWN GROUP STANDINGS DISPLAY
 # -----------------------------------------------------------------
 st.markdown("### 📊 Stakeholder Standings & Survival Tracker")
 st.caption("Select a tournament group from the dropdown below to check live stakeholder progress.")
@@ -82,15 +84,16 @@ for _, row in df_teams.iterrows():
     owner = row['StakeHolder'] if row['StakeHolder'] else "⏳ Unassigned"
     clean_name = row['Country_Clean']
     
-    stats = live_stats_lookup.get(clean_name, {"group": "Unknown", "gp": "0", "gd": "0", "pts": "0", "form": "—"})
+    stats = live_stats_lookup.get(clean_name, {"group": "Unknown", "gp": "0", "gd": 0, "pts": 0, "form": "—"})
     
     all_player_teams.append({
-        "country": country,
-        "emoji": emoji,
-        "owner": owner,
-        "group": stats["group"],
-        "pts": stats["pts"],
-        "gd": stats["gd"]
+        "Flag": emoji,
+        "Country": country,
+        "Stakeholder": owner,
+        "Group": stats["group"],
+        "Pts": stats["pts"],
+        "GD": stats["gd"],
+        "Status": "🟢 Active"
     })
 
 # Define selection choices
@@ -101,52 +104,33 @@ group_options = ["Group A", "Group B", "Group C", "Group D", "Group E", "Group F
 selected_group_label = st.selectbox("🔍 Choose a Group to view Standings:", group_options)
 selected_group_letter = selected_group_label.split(" ")[1] # Extracts just 'A', 'B', etc.
 
-# Filter teams belonging specifically to the chosen dropdown group
-group_teams = [t for t in all_player_teams if t["group"] == selected_group_letter]
+# Convert data to a DataFrame for clean, error-free native rendering
+df_display = pd.DataFrame(all_player_teams)
 
-if group_teams:
-    # Sort teams within the chosen group by points (highest first)
-    try:
-        group_teams = sorted(group_teams, key=lambda x: int(x["pts"]), reverse=True)
-    except ValueError:
-        pass
+# Filter specifically for the selected group
+df_filtered = df_display[df_display["Group"] == selected_group_letter].copy()
 
-    table_rows = ""
-    for team in group_teams:
-        status_badge = "<span style='color: #28a745; font-weight: bold;'>🟢 Active</span>"
-        row_bg = "transparent"
-            
-        table_rows += f"""
-        <tr style="background-color: {row_bg}; border-bottom: 1px solid rgba(255,255,255,0.05);">
-            <td style="padding: 12px; text-align: center; font-size: 20px;">{team['emoji']}</td>
-            <td style="font-weight: 600; color: white; padding: 12px;">{team['country']}</td>
-            <td style="color: #29b5e8; font-weight: bold; padding: 12px;">{team['owner']}</td>
-            <td style="text-align: center; font-weight: bold; color: #e6c619; padding: 12px;">{team['pts']}</td>
-            <td style="text-align: center; color: #cbd5e1; padding: 12px;">{team['gd']}</td>
-            <td style="padding: 12px;">{status_badge}</td>
-        </tr>
-        """
-
-    # Structured group display table - (COMPLETELY FIXED: Ghost </tbody> removed)
-    st.markdown(
-        f"""
-        <table style="width: 100%; border-collapse: collapse; background-color: #11141a; border-radius: 8px; overflow: hidden; margin-top: 15px; margin-bottom: 25px;">
-            <thead style="background-color: #1e293b;">
-                <tr>
-                    <th style="padding: 12px; color: white; width: 10%;">Flag</th>
-                    <th style="text-align: left; color: white; padding: 12px;">Country</th>
-                    <th style="text-align: left; color: white; padding: 12px;">Stakeholder</th>
-                    <th style="text-align: center; color: white; width: 10%; padding: 12px;">Pts</th>
-                    <th style="text-align: center; color: white; width: 10%; padding: 12px;">GD</th>
-                    <th style="text-align: left; color: white; width: 15%; padding: 12px;">Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {table_rows}
-            </tbody>
-        </table>
-        """,
-        unsafe_allow_html=True
+if not df_filtered.empty:
+    # Sort teams cleanly within the chosen group by points (highest first)
+    df_filtered = df_filtered.sort_values(by="Pts", ascending=False).reset_index(drop=True)
+    
+    # Select columns to display on the interface
+    df_render = df_filtered[["Flag", "Country", "Stakeholder", "Pts", "GD", "Status"]]
+    
+    # Render table using Streamlit's native interactive dataframe engine
+    # (Completely fixes the floating HTML code container bug!)
+    st.dataframe(
+        df_render,
+        column_config={
+            "Flag": st.column_config.TextColumn("Flag", width="small", help="National Flag Emoji"),
+            "Country": st.column_config.TextColumn("Country", width="medium"),
+            "Stakeholder": st.column_config.TextColumn("Stakeholder", width="medium"),
+            "Pts": st.column_config.NumberColumn("Pts", format="%d", width="small"),
+            "GD": st.column_config.NumberColumn("GD", format="%d", width="small"),
+            "Status": st.column_config.TextColumn("Status", width="small")
+        },
+        hide_index=True,
+        use_container_width=True
     )
 else:
     st.info(f"No stakeholder data currently mapped to Group {selected_group_letter}.")
@@ -156,7 +140,7 @@ st.write("---")
 col1, col2 = st.columns([1.2, 1])
 
 # -----------------------------------------------------------------
-# FEATURE 2: CURRENT TOP PERFORMERS (Sorted dynamically by Live Points)
+# FEATURE 2: CURRENT TOP PERFORMERS
 # -----------------------------------------------------------------
 with col1:
     st.markdown("### 📈 Form & Performance Tracker")
@@ -167,14 +151,11 @@ with col1:
         clean_name = row['Country_Clean']
         stats = live_stats_lookup.get(clean_name, None)
         if stats:
-            try:
-                leaderboard_data.append({
-                    "display": f"{row['Emoji']} {row['Country']} ({row['StakeHolder'] if row['StakeHolder'] else 'Unassigned'})",
-                    "pts": int(stats['pts']),
-                    "form": stats['form']
-                })
-            except ValueError:
-                pass
+            leaderboard_data.append({
+                "display": f"{row['Emoji']} {row['Country']} ({row['StakeHolder'] if row['StakeHolder'] else 'Unassigned'})",
+                "pts": stats['pts'],
+                "form": stats['form']
+            })
                 
     sorted_leaders = sorted(leaderboard_data, key=lambda x: x['pts'], reverse=True)
     
