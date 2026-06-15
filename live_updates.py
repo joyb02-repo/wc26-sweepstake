@@ -29,34 +29,29 @@ live_stats_lookup = {}
 current_group = "A"
 
 for idx, row in df_live.iterrows():
-    # Detect which group section we are in based on Column A
     group_val = str(row.iloc[0]).strip()
     if group_val in ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"]:
         current_group = group_val
         
-    team_raw = str(row.iloc[2]).strip() # Column C: Team
+    team_raw = str(row.iloc[2]).strip()
     
-    # Filter out header labels, empty rows, or table definitions
     if not team_raw or team_raw.lower() in ["team", "nan", "val", "none"]:
         continue
         
-    # Clean the points data (stripping out the *3* or *1* asterisks seen in your sheet)
-    pts_raw = str(row.iloc[10]).strip() # Column K: Pts
+    pts_raw = str(row.iloc[10]).strip()
     pts_clean = pts_raw.replace("*", "")
     
-    gp_raw = str(row.iloc[3]).strip()  # Column D: GP
+    gp_raw = str(row.iloc[3]).strip()
     
-    # Clean Goal Difference (GD) value and convert float formats to clean integers
-    gd_raw = str(row.iloc[9]).strip()  # Column J: GD
+    gd_raw = str(row.iloc[9]).strip()
     try:
         gd_clean = str(int(float(gd_raw)))
     except ValueError:
-        gd_clean = gd_raw # Fallback if it isn't numeric
+        gd_clean = gd_raw 
         
-    form_raw = str(row.iloc[11]).strip() # Column L: Form
+    form_raw = str(row.iloc[11]).strip()
     
     lookup_name = team_raw.lower()
-    
     if lookup_name == "usa":
         lookup_name = "united states"
         
@@ -69,13 +64,21 @@ for idx, row in df_live.iterrows():
     }
 
 # -----------------------------------------------------------------
-# FEATURE 1: DROPDOWN GROUP-BY-GROUP STANDINGS (STYLISH REVERT)
+# FEATURE 1: DUAL DROPDOWN SELECTION SYSTEM
 # -----------------------------------------------------------------
 st.markdown("### 📊 Stakeholder Standings & Survival Tracker")
-st.caption("Select a tournament group from the dropdown below to check live stakeholder progress.")
 
-# Gather all team rows with their matched live stats
+# 1. Ask user how they prefer to search
+search_mode = st.radio(
+    "How would you like to search standings?",
+    options=["Browse by Group", "Find my Country"],
+    horizontal=True
+)
+
+# Prepare lists for both menus
 all_player_teams = []
+country_options = []
+
 for _, row in df_teams.iterrows():
     country = row['Country']
     emoji = row['Emoji']
@@ -92,30 +95,52 @@ for _, row in df_teams.iterrows():
         "pts": stats["pts"],
         "gd": stats["gd"]
     })
+    country_options.append(f"{emoji} {country}")
 
-# Define selection choices
+country_options = sorted(list(set(country_options)))
 group_options = ["Group A", "Group B", "Group C", "Group D", "Group E", "Group F", 
                  "Group G", "Group H", "Group I", "Group J", "Group K", "Group L"]
 
-# Dropdown element widget
-selected_group_label = st.selectbox("🔍 Choose a Group to view Standings:", group_options)
-selected_group_letter = selected_group_label.split(" ")[1] # Extracts just 'A', 'B', etc.
+# 2. Show the matching dropdown based on the active radio choice
+selected_group_letter = None
+selected_country_name = None
 
-# Filter teams belonging specifically to the chosen dropdown group
-group_teams = [t for t in all_player_teams if t["group"] == selected_group_letter]
+if search_mode == "Browse by Group":
+    selected_group = st.selectbox("🔍 Select Group Pool:", group_options)
+    selected_group_letter = selected_group.split(" ")[1]
+else:
+    selected_country = st.selectbox("🔍 Select Country:", country_options)
+    selected_country_name = selected_country.split(" ", 1)[1].strip().lower()
+    
+    # Trace country choice back to its corresponding tournament group
+    for team in all_player_teams:
+        if team["country"].lower() == selected_country_name:
+            selected_group_letter = team["group"]
+            break
 
-if group_teams:
-    # Sort teams within the chosen group by points (highest first)
+# -----------------------------------------------------------------
+# STYLISH RENDER ENGINE
+# -----------------------------------------------------------------
+if selected_group_letter and selected_group_letter != "Unknown":
+    group_teams = [t for t in all_player_teams if t["group"] == selected_group_letter]
+
     try:
         group_teams = sorted(group_teams, key=lambda x: int(x["pts"]), reverse=True)
     except ValueError:
         pass
 
+    st.markdown(f"#### 🏷️ Live Standings: Group {selected_group_letter}")
+
     table_rows = ""
     for team in group_teams:
         status_badge = "<span style='color: #28a745; font-weight: bold;'>🟢 Active</span>"
-        row_bg = "transparent"
-            
+        
+        # Highlight row if they used country search mode
+        if search_mode == "Find my Country" and team["country"].lower() == selected_country_name:
+            row_bg = "rgba(41, 181, 232, 0.15)" # Clean stadium cyan highlight
+        else:
+            row_bg = "transparent"
+                
         table_rows += f"""
         <tr style="background-color: {row_bg}; border-bottom: 1px solid rgba(255,255,255,0.05);">
             <td style="padding: 14px; text-align: center; font-size: 20px;">{team['emoji']}</td>
@@ -127,7 +152,6 @@ if group_teams:
         </tr>
         """
 
-    # Structured group display table - Completely rebuilt to lock layout and prevent code injection leaks
     st.markdown(
         f"""
         <table style="width: 100%; border-collapse: collapse; background-color: #11141a; border-radius: 8px; overflow: hidden; margin-top: 15px; margin-bottom: 25px;">
@@ -149,14 +173,14 @@ if group_teams:
         unsafe_allow_html=True
     )
 else:
-    st.info(f"No stakeholder data currently mapped to Group {selected_group_letter}.")
+    st.info("No active data connections mapped to this choice segment yet.")
 
 st.write("---")
 
 col1, col2 = st.columns([1.2, 1])
 
 # -----------------------------------------------------------------
-# FEATURE 2: CURRENT TOP PERFORMERS (Sorted dynamically by Live Points)
+# FEATURE 2: CURRENT TOP PERFORMERS
 # -----------------------------------------------------------------
 with col1:
     st.markdown("### 📈 Form & Performance Tracker")
