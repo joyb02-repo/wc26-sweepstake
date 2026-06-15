@@ -142,7 +142,7 @@ st.markdown(
             <ul>
                 <li><strong>Entry Fee:</strong> Join the sweepstake by paying <strong>$5 per entry</strong> via cash or PayID to <strong>benjoy@up.me</strong>.</li>
                 <li><strong>Prize Pool:</strong> 100% of the entry fees go directly into the competitive prize pool.</li>
-                <li><strong>Entry Limit:</strong> You can purchase a <strong>maximum of 3 entries</strong> per person.</li>
+                <li><strong>Entry Limit:</strong> You can purchase a <strong>maximum of 5 entries</strong> per person.</li>
                 <li><strong>How to Draw:</strong> For each entry paid, you will receive a <strong>unique 5-digit PIN</strong>. Enter your PIN below to trigger the automated shuffling system and draw a random country.</li>
                 <li><strong>Exclusivity:</strong> Once you draw a country, it is permanently allocated to you and locked so no other player can claim it.</li>
                 <li><strong>Winning the Pool:</strong> If your allocated country wins the World Cup final on <strong>July 20th</strong>, you take home the <strong>entire cash prize pool</strong>!</li>
@@ -184,10 +184,6 @@ df_pins['Status'] = df_pins['Status'].fillna("Active").astype(str).str.strip()
 allocated_df = df_teams[df_teams['StakeHolder'] != ""]
 remaining_count = 48 - len(allocated_df)
 
-# Dynamic Prize Pool calculation ($5 AUD per stakeholder entry, duplicates included)
-total_entries = len(allocated_df)
-prize_pool_total = total_entries * 5
-
 if remaining_count > 0:
     # --- BULLETPROOF NATIVE OVERRIDES FOR THE MAIN DRAW BUTTON ---
     st.markdown(
@@ -210,6 +206,7 @@ if remaining_count > 0:
             /* ========================================================
                FORCE FULL EXTENSION UP TO THE EDGES OF THE WRAPPERS
                ======================================================== */
+            /* Target Streamlit's element wrappers and force block expansion */
             div[data-testid="stMainBlockContainer"] div[data-testid="stButton"],
             div[data-testid="stMainBlockContainer"] div[data-testid="stButton"] > div,
             .element-container:has(button:not([type="submit"])) {
@@ -219,6 +216,7 @@ if remaining_count > 0:
                 display: block !important;
             }
 
+            /* Apply aggressive full-bleed width styling on the native button */
             div[data-testid="stButton"] button:not([type="submit"]) {
                 background-color: #ffffff !important;
                 border: 1px solid #dee2e6 !important;
@@ -236,6 +234,7 @@ if remaining_count > 0:
                 align-items: center !important;
             }
 
+            /* Explicit text centering constraint overrides */
             div[data-testid="stButton"] button:not([type="submit"]) p {
                 font-size: clamp(16px, 4.6vw, 22px) !important; 
                 font-weight: 800 !important;
@@ -246,6 +245,7 @@ if remaining_count > 0:
                 width: 100% !important;
             }
 
+            /* Hover states */
             div[data-testid="stButton"] button:not([type="submit"]):hover {
                 background-color: #e6c619 !important;
                 border-color: #e6c619 !important;
@@ -280,6 +280,7 @@ if remaining_count > 0:
         unsafe_allow_html=True
     )
     
+    # Render native button safely
     if st.button("👋 Click here to enter your PIN & draw a team!"):
         st.session_state.show_draw_form = not st.session_state.show_draw_form
         st.rerun()
@@ -302,9 +303,9 @@ if remaining_count > 0:
                 existing_draws = df_teams[df_teams['StakeHolder'].str.lower() == user_name.lower()]
                 draw_count = len(existing_draws)
                 
-                if draw_count >= 3:
+                if draw_count >= 5:
                     drawn_countries = ", ".join([f"{row['Emoji']} {row['Country']}" for _, row in existing_draws.iterrows()])
-                    st.error(f"🚨 **{user_name}**, you have reached the maximum limit of 3 entries! You already own: {drawn_countries}")
+                    st.error(f"🚨 **{user_name}**, you have reached the maximum limit of 5 entries! You already own: {drawn_countries}")
                 else:
                     pin_match = df_pins[df_pins['PIN'] == user_pin]
                     
@@ -343,7 +344,7 @@ if remaining_count > 0:
                                 urllib.request.urlopen(req_pin)
                                 
                                 st.balloons()
-                                st.success(f"🎉 **Congratulations {user_name}!** (Draw {draw_count + 1}/3)")
+                                st.success(f"🎉 **Congratulations {user_name}!** (Draw {draw_count + 1}/5)")
                                 st.subheader(f"Your country: **{chosen_country}**")
                                 time.sleep(4)
                                 st.rerun()
@@ -352,69 +353,9 @@ if remaining_count > 0:
 else:
     st.info("🎉 All 48 countries have been claimed!")
 
-# --- VIBRANT PATTERNED PRIZE POOL SECTION ---
+# --- SCOREBOARD VIEW ---
 st.write("---")
-st.markdown(
-    f"""
-    <div style="
-        background-color: #11141a;
-        background-image: 
-            linear-gradient(30deg, #161a22 12%, transparent 12.5%, transparent 87%, #161a22 87.5%, #161a22),
-            linear-gradient(150deg, #161a22 12%, transparent 12.5%, transparent 87%, #161a22 87.5%, #161a22),
-            linear-gradient(300deg, #161a22 25%, transparent 25.5%, transparent 75%, #161a22 75.5%, #161a22),
-            linear-gradient(60deg, #161a22 25%, transparent 25.5%, transparent 75%, #161a22 75.5%, #161a22);
-        background-size: 20px 35px;
-        background-position: 0 0, 0 0, 10px 17.5px, 10px 17.5px;
-        border: 2px solid #e6c619;
-        border-radius: 14px;
-        padding: 24px;
-        text-align: center;
-        box-shadow: 0px 6px 22px rgba(230, 198, 25, 0.12);
-        margin-top: 10px;
-        margin-bottom: -10px;
-        width: 100%;
-        box-sizing: border-box;
-    ">
-        <span style="
-            font-size: clamp(12px, 3.5vw, 15px);
-            text-transform: uppercase;
-            letter-spacing: 2.5px;
-            color: #94a3b8;
-            font-weight: 700;
-            display: block;
-            margin-bottom: 6px;
-        ">
-            🏆 Total Prize Pool Fund 🏆
-        </span>
-        <span style="
-            font-size: clamp(40px, 9vw, 56px);
-            font-weight: 900;
-            color: #e6c619;
-            line-height: 1.1;
-            display: block;
-            text-shadow: 0px 3px 12px rgba(230, 198, 25, 0.45);
-        ">
-            ${prize_pool_total:,.2f} <span style="font-size: clamp(16px, 4vw, 24px); font-weight: 800; color: #cbd5e1; text-shadow: none;">AUD</span>
-        </span>
-        <span style="
-            font-size: clamp(11px, 3vw, 13px);
-            color: #64748b;
-            display: block;
-            margin-top: 8px;
-            font-style: normal;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-        ">
-            100% of entries allocated directly to the winner • ({total_entries} active entries)
-        </span>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
-# --- LIVE SCOREBOARD HEADLINE ---
-st.write("")
-st.markdown("<h3 style='text-align: center; margin-top: 15px;'>Live Sweepstake Scoreboard</h3>", unsafe_allow_html=True)
+st.markdown("<h3 style='text-align: center;'>Live Sweepstake Scoreboard</h3>", unsafe_allow_html=True)
 st.write("")
 
 m_col1, m_col2, m_col3, m_col4 = st.columns([1, 2, 2, 1])
