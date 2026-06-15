@@ -141,9 +141,6 @@ if group_teams:
                     <th style="text-align: left; color: white; font-size: 15px; font-weight: 600; width: 15%; padding: 14px;">Status</th>
                 </tr>
             </thead>
-            <tbody>
-                {table_rows}
-            </tbody>
         </table>
         """,
         unsafe_allow_html=True
