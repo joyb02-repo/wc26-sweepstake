@@ -45,7 +45,14 @@ for idx, row in df_live.iterrows():
     pts_clean = pts_raw.replace("*", "")
     
     gp_raw = str(row.iloc[3]).strip()  # Column D: GP
+    
+    # Clean Goal Difference (GD) value and convert float formats to clean integers
     gd_raw = str(row.iloc[9]).strip()  # Column J: GD
+    try:
+        gd_clean = str(int(float(gd_raw)))
+    except ValueError:
+        gd_clean = gd_raw # Fallback if it isn't numeric
+        
     form_raw = str(row.iloc[11]).strip() # Column L: Form
     
     lookup_name = team_raw.lower()
@@ -56,16 +63,16 @@ for idx, row in df_live.iterrows():
     live_stats_lookup[lookup_name] = {
         "group": current_group,
         "gp": gp_raw,
-        "gd": gd_raw,
+        "gd": gd_clean,
         "pts": pts_clean,
         "form": form_raw if form_raw and form_raw.lower() != "nan" else "No matches yet"
     }
 
 # -----------------------------------------------------------------
-# FEATURE 1: GROUP-BY-GROUP STAKEHOLDER STANDINGS
+# FEATURE 1: DROPDOWN GROUP-BY-GROUP STANDINGS
 # -----------------------------------------------------------------
 st.markdown("### 📊 Stakeholder Standings & Survival Tracker")
-st.caption("Live tournament standings grouped by their official tournament pools.")
+st.caption("Select a tournament group from the dropdown below to check live stakeholder progress.")
 
 # Gather all team rows with their matched live stats
 all_player_teams = []
@@ -86,24 +93,24 @@ for _, row in df_teams.iterrows():
         "gd": stats["gd"]
     })
 
-# Group names to display sequentially
-group_list = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"]
+# Define selection choices
+group_options = ["Group A", "Group B", "Group C", "Group D", "Group E", "Group F", 
+                 "Group G", "Group H", "Group I", "Group J", "Group K", "Group L"]
 
-for g in group_list:
-    # Filter teams belonging to the current group iteration
-    group_teams = [t for t in all_player_teams if t["group"] == g]
-    
-    if not group_teams:
-        continue # Skip rendering if no stakeholders are mapped to this group yet
-        
-    # Sort teams within the group by points (highest first)
+# Dropdown element widget
+selected_group_label = st.selectbox("🔍 Choose a Group to view Standings:", group_options)
+selected_group_letter = selected_group_label.split(" ")[1] # Extracts just 'A', 'B', etc.
+
+# Filter teams belonging specifically to the chosen dropdown group
+group_teams = [t for t in all_player_teams if t["group"] == selected_group_letter]
+
+if group_teams:
+    # Sort teams within the chosen group by points (highest first)
     try:
         group_teams = sorted(group_teams, key=lambda x: int(x["pts"]), reverse=True)
     except ValueError:
         pass
 
-    st.markdown(f"#### 🏷️ Group {g}")
-    
     table_rows = ""
     for team in group_teams:
         status_badge = "<span style='color: #28a745; font-weight: bold;'>🟢 Active</span>"
@@ -111,27 +118,27 @@ for g in group_list:
             
         table_rows += f"""
         <tr style="background-color: {row_bg}; border-bottom: 1px solid rgba(255,255,255,0.05);">
-            <td style="padding: 10px; text-align: center; font-size: 20px;">{team['emoji']}</td>
-            <td style="font-weight: 600; color: white;">{team['country']}</td>
-            <td style="color: #29b5e8; font-weight: bold;">{team['owner']}</td>
-            <td style="text-align: center; font-weight: bold; color: #e6c619;">{team['pts']}</td>
-            <td style="text-align: center; color: #cbd5e1;">{team['gd']}</td>
-            <td>{status_badge}</td>
+            <td style="padding: 12px; text-align: center; font-size: 20px;">{team['emoji']}</td>
+            <td style="font-weight: 600; color: white; padding: 12px;">{team['country']}</td>
+            <td style="color: #29b5e8; font-weight: bold; padding: 12px;">{team['owner']}</td>
+            <td style="text-align: center; font-weight: bold; color: #e6c619; padding: 12px;">{team['pts']}</td>
+            <td style="text-align: center; color: #cbd5e1; padding: 12px;">{team['gd']}</td>
+            <td style="padding: 12px;">{status_badge}</td>
         </tr>
         """
 
-    # Render a separate structured clean table for the current group pool
+    # Structured group display table - (COMPLETELY FIXED: Ghost </tbody> removed)
     st.markdown(
         f"""
-        <table style="width: 100%; border-collapse: collapse; background-color: #11141a; border-radius: 8px; overflow: hidden; margin-bottom: 25px;">
+        <table style="width: 100%; border-collapse: collapse; background-color: #11141a; border-radius: 8px; overflow: hidden; margin-top: 15px; margin-bottom: 25px;">
             <thead style="background-color: #1e293b;">
                 <tr>
-                    <th style="padding: 10px; color: white; width: 10%;">Flag</th>
-                    <th style="text-align: left; color: white;">Country</th>
-                    <th style="text-align: left; color: white;">Stakeholder</th>
-                    <th style="text-align: center; color: white; width: 10%;">Pts</th>
-                    <th style="text-align: center; color: white; width: 10%;">GD</th>
-                    <th style="text-align: left; color: white; width: 15%;">Status</th>
+                    <th style="padding: 12px; color: white; width: 10%;">Flag</th>
+                    <th style="text-align: left; color: white; padding: 12px;">Country</th>
+                    <th style="text-align: left; color: white; padding: 12px;">Stakeholder</th>
+                    <th style="text-align: center; color: white; width: 10%; padding: 12px;">Pts</th>
+                    <th style="text-align: center; color: white; width: 10%; padding: 12px;">GD</th>
+                    <th style="text-align: left; color: white; width: 15%; padding: 12px;">Status</th>
                 </tr>
             </thead>
             <tbody>
@@ -141,6 +148,8 @@ for g in group_list:
         """,
         unsafe_allow_html=True
     )
+else:
+    st.info(f"No stakeholder data currently mapped to Group {selected_group_letter}.")
 
 st.write("---")
 
