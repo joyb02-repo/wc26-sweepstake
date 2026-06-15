@@ -24,8 +24,7 @@ except Exception as e:
     st.error("Failed to sync shared data. Ensure your 'LiveTable' tab name and credentials match perfectly.")
     st.stop()
 
-# --- BULLETPROOF DATA CLEANING FOR THE SCRAPED GRID ---
-# We map through your scraped table to extract true team stats and filter out header/empty spacer rows.
+# --- DATA CLEANING AND LOOKUP GENERATION ---
 live_stats_lookup = {}
 current_group = "A"
 
@@ -49,10 +48,8 @@ for idx, row in df_live.iterrows():
     gd_raw = str(row.iloc[9]).strip()  # Column J: GD
     form_raw = str(row.iloc[11]).strip() # Column L: Form
     
-    # Standardize team name lookup string to perfectly match your stakeholder database
     lookup_name = team_raw.lower()
     
-    # Fallback/Aliases for shorthand names if necessary (e.g., matching USA)
     if lookup_name == "usa":
         lookup_name = "united states"
         
@@ -65,60 +62,86 @@ for idx, row in df_live.iterrows():
     }
 
 # -----------------------------------------------------------------
-# FEATURE 1: DYNAMIC STAKEHOLDER SURVIVAL & STANDINGS ENGINE
+# FEATURE 1: GROUP-BY-GROUP STAKEHOLDER STANDINGS
 # -----------------------------------------------------------------
 st.markdown("### 📊 Stakeholder Standings & Survival Tracker")
-st.caption("Live standings and statistics mapped directly from tournament tracking grids.")
+st.caption("Live tournament standings grouped by their official tournament pools.")
 
-table_rows = ""
+# Gather all team rows with their matched live stats
+all_player_teams = []
 for _, row in df_teams.iterrows():
     country = row['Country']
     emoji = row['Emoji']
     owner = row['StakeHolder'] if row['StakeHolder'] else "⏳ Unassigned"
     clean_name = row['Country_Clean']
     
-    # Match stakeholder country up against our freshly cleaned stats engine
-    stats = live_stats_lookup.get(clean_name, {"group": "—", "gp": "0", "gd": "0", "pts": "0", "form": "—"})
+    stats = live_stats_lookup.get(clean_name, {"group": "Unknown", "gp": "0", "gd": "0", "pts": "0", "form": "—"})
     
-    # Custom automated logic determining status criteria
-    # If a team has played group stage matches but points are 0 or negative GD, you can flag it manually,
-    # or let the system register them as "Active" while group stages run.
-    status_badge = "<span style='color: #28a745; font-weight: bold;'>🟢 Active</span>"
-    row_bg = "transparent"
+    all_player_teams.append({
+        "country": country,
+        "emoji": emoji,
+        "owner": owner,
+        "group": stats["group"],
+        "pts": stats["pts"],
+        "gd": stats["gd"]
+    })
+
+# Group names to display sequentially
+group_list = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"]
+
+for g in group_list:
+    # Filter teams belonging to the current group iteration
+    group_teams = [t for t in all_player_teams if t["group"] == g]
+    
+    if not group_teams:
+        continue # Skip rendering if no stakeholders are mapped to this group yet
         
-    table_rows += f"""
-    <tr style="background-color: {row_bg}; border-bottom: 1px solid rgba(255,255,255,0.05);">
-        <td style="padding: 12px; text-align: center; font-size: 22px;">{emoji}</td>
-        <td style="font-weight: 600; color: white;">{country} <span style="font-size: 11px; color:#64748b; font-weight:normal;">(Group {stats['group']})</span></td>
-        <td style="color: #29b5e8; font-weight: bold;">{owner}</td>
-        <td style="text-align: center; font-weight: bold; color: #e6c619;">{stats['pts']}</td>
-        <td style="text-align: center; color: #cbd5e1;">{stats['gd']}</td>
-        <td>{status_badge}</td>
-    </tr>
-    """
+    # Sort teams within the group by points (highest first)
+    try:
+        group_teams = sorted(group_teams, key=lambda x: int(x["pts"]), reverse=True)
+    except ValueError:
+        pass
 
-st.markdown(
-    f"""
-    <table style="width: 100%; border-collapse: collapse; background-color: #11141a; border-radius: 8px; overflow: hidden;">
-        <thead style="background-color: #1e293b;">
-            <tr>
-                <th style="padding: 12px; color: white; width: 10%;">Flag</th>
-                <th style="text-align: left; color: white;">Country</th>
-                <th style="text-align: left; color: white;">Stakeholder</th>
-                <th style="text-align: center; color: white; width: 10%;">Pts</th>
-                <th style="text-align: center; color: white; width: 10%;">GD</th>
-                <th style="text-align: left; color: white; width: 15%;">Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            {table_rows}
-        </tbody>
-    </table>
-    """,
-    unsafe_allow_html=True
-)
+    st.markdown(f"#### 🏷️ Group {g}")
+    
+    table_rows = ""
+    for team in group_teams:
+        status_badge = "<span style='color: #28a745; font-weight: bold;'>🟢 Active</span>"
+        row_bg = "transparent"
+            
+        table_rows += f"""
+        <tr style="background-color: {row_bg}; border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <td style="padding: 10px; text-align: center; font-size: 20px;">{team['emoji']}</td>
+            <td style="font-weight: 600; color: white;">{team['country']}</td>
+            <td style="color: #29b5e8; font-weight: bold;">{team['owner']}</td>
+            <td style="text-align: center; font-weight: bold; color: #e6c619;">{team['pts']}</td>
+            <td style="text-align: center; color: #cbd5e1;">{team['gd']}</td>
+            <td>{status_badge}</td>
+        </tr>
+        """
 
-st.write("")
+    # Render a separate structured clean table for the current group pool
+    st.markdown(
+        f"""
+        <table style="width: 100%; border-collapse: collapse; background-color: #11141a; border-radius: 8px; overflow: hidden; margin-bottom: 25px;">
+            <thead style="background-color: #1e293b;">
+                <tr>
+                    <th style="padding: 10px; color: white; width: 10%;">Flag</th>
+                    <th style="text-align: left; color: white;">Country</th>
+                    <th style="text-align: left; color: white;">Stakeholder</th>
+                    <th style="text-align: center; color: white; width: 10%;">Pts</th>
+                    <th style="text-align: center; color: white; width: 10%;">GD</th>
+                    <th style="text-align: left; color: white; width: 15%;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {table_rows}
+            </tbody>
+        </table>
+        """,
+        unsafe_allow_html=True
+    )
+
 st.write("---")
 
 col1, col2 = st.columns([1.2, 1])
@@ -130,7 +153,6 @@ with col1:
     st.markdown("### 📈 Form & Performance Tracker")
     st.caption("Active team performance highlights and match streaks recorded live.")
     
-    # Sort your stakeholders by how many points their drawn team currently holds!
     leaderboard_data = []
     for _, row in df_teams.iterrows():
         clean_name = row['Country_Clean']
@@ -148,7 +170,7 @@ with col1:
     sorted_leaders = sorted(leaderboard_data, key=lambda x: x['pts'], reverse=True)
     
     if sorted_leaders:
-        for idx, leader in enumerate(sorted_leaders[:5]): # Show top 5 point holders
+        for idx, leader in enumerate(sorted_leaders[:5]):
             st.markdown(
                 f"""
                 <div style="background: #1a1c23; padding: 12px; border-left: 4px solid #29b5e8; margin-bottom: 8px; border-radius: 0 6px 6px 0;">
@@ -171,13 +193,12 @@ with col2:
     st.markdown("### 👟 Recent Matches")
     st.caption("Quick overview of recent group stage results.")
     
-    # We grab the top form descriptions from the live lookup map to display what happened
     match_samples = [l for l in live_stats_lookup.values() if l['form'] and l['form'] != "—"]
     
     if match_samples:
         count = 0
         for item in match_samples:
-            if count >= 3: # Limit card deck size
+            if count >= 3:
                 break
             if "Won" in item['form'] or "Drew" in item['form'] or "Lost" in item['form']:
                 st.markdown(
